@@ -1,0 +1,11 @@
+/* Theme 3: Soft Pastel (light, playful, cupcake-shop feel) */
+[data-theme="pastel"]{
+  --bg:#FFF7F9; --surface:#FFFFFF; --surface-alt:#FBE3EA; --border:#F4CFDA;
+  --text:#5B4650; --heading:#3E2C36; --accent:#C2517A;
+  --btn-bg:#E58BA8; --btn-text:#3E2C36; --whatsapp:#1FA855;
+  --font-heading:"Playfair Display",Georgia,serif; --font-body:"Montserrat",system-ui,sans-serif;
+  --heading-weight:600;
+  --radius-card:22px; --radius-pill:999px; --radius-arch:999px;
+  --shadow:0 8px 22px rgba(194,81,122,.12);
+  --space-3:1.25rem; --space-5:4rem;
+}

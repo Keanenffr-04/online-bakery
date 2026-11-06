@@ -1,0 +1,30 @@
+/* base.css: layout + components. Uses ONLY theme tokens (see theme-*.css).
+   Themes change tokens, never layout. */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.6}
+h1,h2,h3{font-family:var(--font-heading);font-weight:var(--heading-weight);line-height:1.15;margin:0 0 .5em;color:var(--heading)}
+h1{font-size:clamp(2rem,6vw,3.25rem)}
+h2{font-size:clamp(1.5rem,4vw,2.1rem)}
+p{margin:0 0 1em}
+.container{max-width:960px;margin:0 auto;padding:0 var(--space-3)}
+.section{padding:var(--space-5) 0}
+.eyebrow{font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+
+.btn{display:inline-block;padding:.8em 1.6em;border-radius:var(--radius-pill);border:1.5px solid var(--btn-bg);
+  background:var(--btn-bg);color:var(--btn-text);font:600 .95rem var(--font-body);cursor:pointer;text-decoration:none;
+  transition:transform .15s ease,box-shadow .15s ease}
+.btn:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+.btn:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.btn--ghost{background:transparent;color:var(--btn-bg)}
+.btn--whatsapp{background:var(--whatsapp);border-color:var(--whatsapp);color:#fff}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);
+  box-shadow:var(--shadow);overflow:hidden}
+.card__media{aspect-ratio:4/5;background:var(--surface-alt);
+  border-radius:var(--radius-arch) var(--radius-arch) 0 0; /* arch motif from the logo */
+  display:grid;place-items:center;font-size:3rem}
+.card__body{padding:var(--space-3)}
+.card__price{font-weight:700;color:var(--accent)}
+.badge{display:inline-block;padding:.2em .7em;border-radius:var(--radius-pill);background:var(--surface-alt);
+  color:var(--text);font-size:.75rem;border:1px solid var(--border)}

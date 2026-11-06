@@ -1,0 +1,11 @@
+/* Theme 2: Cocoa & Cream (warm, dark-chocolate accents) */
+[data-theme="cocoa"]{
+  --bg:#FAF4EA; --surface:#FFFBF4; --surface-alt:#EFE2CF; --border:#E2D2BA;
+  --text:#4A3626; --heading:#2F2015; --accent:#8A5A34;
+  --btn-bg:#4A3626; --btn-text:#FAF4EA; --whatsapp:#1FA855;
+  --font-heading:"Bodoni Moda","Playfair Display",Georgia,serif; --font-body:"Inter",system-ui,sans-serif;
+  --heading-weight:600;
+  --radius-card:14px; --radius-pill:999px; --radius-arch:999px;
+  --shadow:0 6px 18px rgba(74,54,38,.10);
+  --space-3:1.25rem; --space-5:4rem;
+}

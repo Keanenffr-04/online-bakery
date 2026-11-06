@@ -1,0 +1,11 @@
+/* Theme 1: Classic Black & White (matches the logo: ink, paper, cocoa line) */
+[data-theme="classic"]{
+  --bg:#FFFFFF; --surface:#FFFFFF; --surface-alt:#F3F1EE; --border:#E4E0DA;
+  --text:#2A2A2A; --heading:#111111; --accent:#4A3626;
+  --btn-bg:#111111; --btn-text:#FFFFFF; --whatsapp:#1FA855;
+  --font-heading:"Playfair Display","Bodoni Moda",Georgia,serif; --font-body:"Montserrat",system-ui,sans-serif;
+  --heading-weight:700;
+  --radius-card:4px; --radius-pill:2px; --radius-arch:999px;
+  --shadow:0 1px 2px rgba(0,0,0,.06);
+  --space-3:1.25rem; --space-5:4rem;
+}

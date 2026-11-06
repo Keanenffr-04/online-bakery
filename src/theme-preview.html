@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Theme preview | The Sweetest Bakery</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@500;600&family=Inter:wght@400;600&family=Montserrat:wght@400;600&family=Playfair+Display:wght@600;700&display=swap">
+<link rel="stylesheet" href="themes/base.css">
+<link rel="stylesheet" href="themes/theme-classic.css">
+<link rel="stylesheet" href="themes/theme-cocoa.css">
+<link rel="stylesheet" href="themes/theme-pastel.css">
+<style>
+  body{background:#EEE;font-family:system-ui,sans-serif}
+  .page-head{padding:2rem 0 0;text-align:center;color:#333}
+  .theme-block{margin:2rem auto;max-width:960px;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.15)}
+  .theme-label{background:#222;color:#fff;font:600 .8rem system-ui;letter-spacing:.1em;padding:.5rem 1rem;text-transform:uppercase}
+  .demo{display:grid;gap:2rem;grid-template-columns:1fr;align-items:center}
+  @media(min-width:720px){.demo{grid-template-columns:1fr 1fr}}
+  .logo-wrap{display:grid;place-items:center}
+  .logo-wrap img{width:min(260px,70%);aspect-ratio:1;object-fit:cover;object-position:center;
+    border-radius:var(--radius-card);background:#fff;clip-path:inset(4% 4% 4% 4%)}
+  .row{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1rem}
+</style>
+</head>
+<body>
+<div class="page-head container">
+  <h1 style="font-family:Georgia,serif">Theme preview</h1>
+  <p>Same layout, three sets of tokens. Pick your favourite, Becca.</p>
+</div>
+<!-- data-theme blocks: each one is a self-contained sample -->
+<div id="themes"></div>
+<script>
+// Config comes from one place: edit the list below to add/remove themes.
+const THEMES=[["classic","Classic Black & White"],["cocoa","Cocoa & Cream"],["pastel","Soft Pastel"]];
+const WA="https://wa.me/27833413166"; // matches config/business.json
+document.getElementById("themes").innerHTML=THEMES.map(([id,name])=>`
+<section class="theme-block" data-theme="${id}">
+  <div class="theme-label">${name}</div>
+  <div class="section" style="background:var(--bg)"><div class="container demo">
+    <div class="logo-wrap"><img src="../assets/logo/logo-original.jpeg" alt="The Sweetest Bakery logo"></div>
+    <div>
+      <p class="eyebrow">Handmade with love</p>
+      <h1>The Sweetest Bakery</h1>
+      <p>Cakes, cupcakes, cookies and bread, baked fresh by Becca.</p>
+      <div class="row">
+        <a class="btn" href="#">Browse the menu</a>
+        <a class="btn btn--ghost" href="#">Custom orders</a>
+        <a class="btn btn--whatsapp" href="${WA}">WhatsApp us</a>
+      </div>
+    </div>
+    <article class="card">
+      <div class="card__media" aria-hidden="true">🍰</div>
+      <div class="card__body">
+        <span class="badge">Cakes</span>
+        <h3 style="margin-top:.5rem">Chocolate Ganache Cake</h3>
+        <p>Sample card. Real products arrive in v4.</p>
+        <span class="card__price">R 450</span>
+      </div>
+    </article>
+  </div></div>
+</section>`).join("");
+</script>
+</body>
+</html>
