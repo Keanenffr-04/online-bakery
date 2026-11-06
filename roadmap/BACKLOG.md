@@ -26,3 +26,10 @@ Owner request (`Changes for next version.md`):
 3. Admin (`src/admin.html`, footer "Staff login"): login + sign-up (sign-ups need approval), pending orders tracker with statuses, menu item editor, theme tester with live preview, home/menu layout options, add/remove admins, change own password/username, export files. Root admin `admin` / `admin1` (username fixed, password changeable; banner nags until changed).
 
 Notes: still a static site, so admin data (accounts, orders, edits) is saved in the browser (localStorage) and is NOT real security or shared between devices. "Publish" tab exports `site-settings.json` / `products.json` to drop into the repo to make changes live. Real accounts/orders across devices need a backend (see Ideas Parking Lot). Floating WhatsApp button moved to v5.
+
+## v5: Menu dropdown + hover style (done, 2026-11-06)
+Owner request (`Changes for next version.md`, items 1 and 2):
+1. Header menu is now a **dropdown at all times**: the Menu/Close button shows on every screen size and opens a panel under it (full width on phones, 290px panel on larger screens). Closes on Escape or a click elsewhere. Code: `src/js/site.js`, `src/css/site.css`.
+2. **Hover style:** hovering (or keyboard-focusing) a menu item fills it with the theme's button colours and underlines it. Uses theme tokens only, so Classic is black/white, Cocoa is chocolate/cream, Pastel is pink. The current page keeps the accent colour until hovered.
+
+Notes: the WhatsApp button inside the dropdown keeps its own green hover. Items 3 to 7 of the owner list are scheduled in the roadmap (v6 onward). The old v5 (floating WhatsApp + theme switcher) moved to after them.

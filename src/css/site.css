@@ -13,19 +13,26 @@
 .nav-toggle{background:none;border:1.5px solid var(--border);border-radius:var(--radius-pill);color:var(--heading);
   font:600 .85rem var(--font-body);padding:.5em 1em;cursor:pointer}
 .nav-toggle:focus-visible,.nav a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-.nav{display:none;flex-direction:column;border-top:1px solid var(--border);padding:.5rem 0 1rem}
-.nav.is-open{display:flex}
-.nav a{padding:.7rem 0;text-decoration:none;color:var(--text);font-size:.95rem;border-bottom:1px solid var(--border)}
+.nav-toggle:hover{background:var(--btn-bg);border-color:var(--btn-bg);color:var(--btn-text)}
+.site-header .container{position:relative}
+
+/* v5: the menu is a dropdown at every screen size (full width on phones, a panel under the button on bigger screens) */
+.nav{display:none;position:absolute;top:calc(100% + .3rem);left:var(--space-3);right:var(--space-3);z-index:60;
+  flex-direction:column;gap:.15rem;padding:.5rem;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-card);box-shadow:0 14px 34px color-mix(in srgb,var(--heading) 16%,transparent)}
+.nav.is-open{display:flex;animation:nav-in .14s ease-out}
+@keyframes nav-in{from{opacity:0;transform:translateY(-6px)}}
+@media(prefers-reduced-motion:reduce){.nav.is-open{animation:none}}
+.nav a{display:block;padding:.75rem 1rem;text-decoration:none;color:var(--text);font-size:.95rem;
+  border-radius:max(2px,calc(var(--radius-card) - 4px));
+  text-decoration-line:none;text-decoration-thickness:2px;text-underline-offset:.35em;
+  transition:background-color .15s ease,color .15s ease}
+/* v5: hover / keyboard focus = filled highlight + underline (colours come from the theme) */
+.nav a:not(.btn):hover,.nav a:not(.btn):focus-visible{background:var(--btn-bg);color:var(--btn-text);text-decoration-line:underline}
 .nav a[aria-current="page"]{color:var(--accent);font-weight:600}
-.nav .btn{margin-top:.8rem;text-align:center;border-bottom:1.5px solid var(--whatsapp)}
-@media(min-width:1000px){
-  .site-header .container{display:flex;align-items:center;justify-content:space-between;gap:1.5rem}
-  .site-header__bar{min-height:72px}
-  .nav-toggle{display:none}
-  .nav,.nav.is-open{display:flex;flex-direction:row;align-items:center;gap:1.1rem;border:0;padding:0}
-  .nav a{padding:.4rem 0;border:0;font-size:.82rem;white-space:nowrap}
-  .nav .btn{margin:0 0 0 .4rem;padding:.55em 1.1em;font-size:.82rem}
-}
+.nav a[aria-current="page"]:hover,.nav a[aria-current="page"]:focus-visible{color:var(--btn-text)}
+.nav a.btn{margin-top:.4rem;padding:.8em 1.2em;text-align:center}
+@media(min-width:600px){.nav{left:auto;width:290px}}
 
 /* Hero */
 .hero{padding:var(--space-5) 0;background:var(--bg)}

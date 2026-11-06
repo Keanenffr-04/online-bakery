@@ -1,7 +1,7 @@
 # online-bakery 🐇🍰
 Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
 
-**Current version:** see `VERSION` (v4 = Menu page with filters + decluttered home + admin page (`/src/admin.html`, default `admin` / `admin1`); serve the repo root with `python3 -m http.server` and open `/src/index.html`)
+**Current version:** see `VERSION` (v5 = header menu is always a dropdown with a hover highlight; v4 = Menu page with filters + decluttered home + admin page (`/src/admin.html`, default `admin` / `admin1`); serve the repo root with `python3 -m http.server` and open `/src/index.html`)
 
 ## Goals
 - Sleek and modern, but dead simple to use

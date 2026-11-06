@@ -45,11 +45,17 @@
   const y = document.getElementById("year"); if (y) y.textContent = new Date().getFullYear();
 
   const toggle = document.querySelector(".nav-toggle"), nav = document.getElementById("nav");
-  if (toggle && nav) toggle.addEventListener("click", () => {
-    const open = nav.classList.toggle("is-open");
-    toggle.setAttribute("aria-expanded", open);
-    toggle.textContent = open ? "Close" : "Menu";
-  });
+  if (toggle && nav) {
+    const setOpen = open => {
+      nav.classList.toggle("is-open", open);
+      toggle.setAttribute("aria-expanded", open);
+      toggle.textContent = open ? "Close" : "Menu";
+    };
+    toggle.addEventListener("click", () => setOpen(!nav.classList.contains("is-open")));
+    // v5: the menu is a dropdown everywhere, so close it on Escape or when clicking elsewhere
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && nav.classList.contains("is-open")) { setOpen(false); toggle.focus(); } });
+    document.addEventListener("click", e => { if (!nav.contains(e.target) && !toggle.contains(e.target)) setOpen(false); });
+  }
 
   // Business details: single source of truth is config/business.json (never hardcode them here).
   fetch("../config/business.json").then(r => r.json()).then(b => {
