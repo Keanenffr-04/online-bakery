@@ -33,3 +33,10 @@ Owner request (`Changes for next version.md`, items 1 and 2):
 2. **Hover style:** hovering (or keyboard-focusing) a menu item fills it with the theme's button colours and underlines it. Uses theme tokens only, so Classic is black/white, Cocoa is chocolate/cream, Pastel is pink. The current page keeps the accent colour until hovered.
 
 Notes: the WhatsApp button inside the dropdown keeps its own green hover. Items 3 to 7 of the owner list are scheduled in the roadmap (v6 onward). The old v5 (floating WhatsApp + theme switcher) moved to after them.
+
+## v6: Clicked menu colour + inverting buttons (done, 2026-11-06)
+Owner request (`Changes for next version.md`, items 3 and 4):
+3. **Clicked menu text** turns the theme's link colour while pressed, and the page you are on keeps that link colour in the dropdown. New theme token `--link` (Classic blue, Cocoa caramel, Pastel raspberry) in `src/themes/theme-*.css`; used in `src/css/site.css`.
+4. **Buttons invert on hover:** filled buttons (See the menu, Order buttons) go white with coloured text; WhatsApp buttons go white with green text and green outline; outline ("ghost") buttons fill in. New theme token `--btn-invert-text` keeps the text readable on each theme. Code: `src/themes/base.css`. Applies to every `.btn` site-wide (including the one inside the dropdown) so buttons behave the same everywhere.
+
+Notes: Hover tested on all three themes. Items 5 to 7 are still scheduled (v7 to v9).

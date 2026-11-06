@@ -18,6 +18,10 @@ p{margin:0 0 1em}
 .btn:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 .btn--ghost{background:transparent;color:var(--btn-bg)}
 .btn--whatsapp{background:var(--whatsapp);border-color:var(--whatsapp);color:#fff}
+/* v6: on hover the button colours invert (filled becomes outlined, outlined becomes filled) */
+.btn:hover{background:var(--surface);color:var(--btn-invert-text)}
+.btn--ghost:hover{background:var(--btn-bg);color:var(--btn-text)}
+.btn--whatsapp:hover{background:var(--surface);color:color-mix(in srgb,var(--whatsapp) 78%,#000)}
 
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);
   box-shadow:var(--shadow);overflow:hidden}

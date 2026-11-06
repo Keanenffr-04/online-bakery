@@ -29,8 +29,10 @@
   transition:background-color .15s ease,color .15s ease}
 /* v5: hover / keyboard focus = filled highlight + underline (colours come from the theme) */
 .nav a:not(.btn):hover,.nav a:not(.btn):focus-visible{background:var(--btn-bg);color:var(--btn-text);text-decoration-line:underline}
-.nav a[aria-current="page"]{color:var(--accent);font-weight:600}
+/* v6: clicked item (and the page you are on) uses the theme's link colour */
+.nav a[aria-current="page"],.nav a:not(.btn):active{color:var(--link);font-weight:600}
 .nav a[aria-current="page"]:hover,.nav a[aria-current="page"]:focus-visible{color:var(--btn-text)}
+.nav a:not(.btn):active{background:var(--surface-alt);color:var(--link);text-decoration-line:underline}
 .nav a.btn{margin-top:.4rem;padding:.8em 1.2em;text-align:center}
 @media(min-width:600px){.nav{left:auto;width:290px}}
 
@@ -90,6 +92,7 @@
 /* Featured cards: shorter media than category tiles */
 .grid--3 .card__media{aspect-ratio:4/3}
 .nav a.btn--whatsapp{color:#fff}
+.nav a.btn--whatsapp:hover{color:color-mix(in srgb,var(--whatsapp) 78%,#000)}
 
 /* v4: menu page, chips, product cards (kept light on purpose) */
 .btn--sm{padding:.45em 1.1em;font-size:.85rem}
