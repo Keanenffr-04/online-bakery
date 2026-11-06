@@ -28,9 +28,12 @@
       </a>
       <button class="nav__burger" type="button" aria-expanded="false" aria-controls="nav" aria-label="Open menu"><span></span><span></span><span></span></button>
       <nav class="nav" id="nav" aria-label="Main">${NAV.map(item).join("")}</nav>
+      <a class="cart-link" href="cart.html"${page === "cart.html" ? ' aria-current="page"' : ""} aria-label="Cart, empty"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M5 8h14l-1.2 11.2a1.5 1.5 0 0 1-1.5 1.3H7.7a1.5 1.5 0 0 1-1.5-1.3L5 8Zm4 0V6.5a3 3 0 0 1 6 0V8"/></svg><span class="cart-badge" hidden>0</span></a>
     </div>
   </div>
 </header>`;
+
+  window.SBCart && SBCart.sync(); // header exists now: show the current cart count
 
   // Scrolling ticker strips: "specials" at the very top of every page (v9) and "orders" at the very bottom (v10).
   // Text + on/off come from admin (settings.specials / settings.orders).

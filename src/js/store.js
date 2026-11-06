@@ -24,9 +24,9 @@
         return { biz: biz || {}, settings, categories: data.categories || [], products: data.products || [], published: { settings: base, products: pubProd } };
       })());
     },
+    // v10.2: the card button adds to the cart (SBCart, js/cart.js). One WhatsApp message is sent from the Cart page.
     card(p, biz) {
-      const href = (biz.whatsappLink || "contact.html") + "?text=" + encodeURIComponent("Hi! I'd like to order: " + p.name);
-      return `<article class="card pcard"><div class="card__media" aria-hidden="true">${esc(p.emoji || "🍰")}</div><div class="card__body"><h3>${esc(p.name)}</h3><p class="pcard__desc">${esc(p.description)}</p><div class="pcard__foot"><span class="card__price">R ${esc(p.price)}</span><a class="btn btn--sm" target="_blank" rel="noopener" href="${href}">Order</a></div></div></article>`;
+      return `<article class="card pcard"><div class="card__media" aria-hidden="true">${esc(p.emoji || "🍰")}</div><div class="card__body"><h3>${esc(p.name)}</h3><p class="pcard__desc">${esc(p.description)}</p><div class="pcard__foot"><span class="card__price">R ${esc(p.price)}</span><button type="button" class="btn btn--sm" data-add="${esc(p.id)}" data-name="${esc(p.name)}" aria-label="Add ${esc(p.name)} to cart">Add</button></div></div></article>`;
     }
   };
 })();

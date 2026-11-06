@@ -2,7 +2,7 @@
 Append-only. Never delete. Items may move to a later version (leave a note). Finished items go to `BACKLOG.md` with the version number.
 Rule: **max 1 or 2 things per version.**
 
-**Next up: v10.2**  (v10.1 done, see BACKLOG.md; numbering is now v10.1, v10.2, ...)
+**Next up: v10.3**  (v10.2 done, see BACKLOG.md; numbering is v10.1, v10.2, ... The current plan is the "MASTER PLAN" at the bottom of this file; older notes above are kept for history and are superseded by it.)
 
 ---
 ## v2: Research + theme foundation (DONE, see BACKLOG.md)
@@ -92,3 +92,64 @@ Owner said: do 2 things, push the rest into the roadmap.
 6. **Allergen/dietary tags + filters** on menu items (vegan, gluten-free, nut-free).
 7. **Admin that works across devices** (real backend), because today saved changes live in one browser and need the manual Publish step. Worth doing before Becca relies on it daily.
 8. Small polish: reserve space for the strips so the page does not jump on first load; make a special clickable; start/end dates on specials.
+
+
+---
+## Owner change list 6 (from `Changes for next version.md`, added with v10.2)
+Owner's list, kept as written:
+1. Get it online (hosting on GitHub Pages or Netlify, favicon, SEO, a share image for WhatsApp and Facebook links, a domain). **Owner wants this LAST, once happy with everything.**
+2. Real product photos instead of emoji. **Owner does this when real photos exist.**
+3. A simple cart that sends one WhatsApp message with the whole order.
+4. The Custom Order form (occasion, date, servings, flavours), still a placeholder page.
+5. FAQ and reviews covering lead times, allergens, delivery or collection, and payment.
+6. Allergen tags with filters on the menu (vegan, gluten-free, nut-free).
+7. An admin that works across devices. Today Becca's changes live in one browser and need the manual Publish step. Fix before she relies on it daily.
+
+Owner also asked for the two zips (`online_bakery_marketplace_v1` and `_v2`, Keagan's Django marketplace) to be used as a **reference** when building this roadmap, placed "where you see fit", and **not all at once**.
+- v10.2 (DONE, see BACKLOG.md): items 3 and 4 (cart + Custom Order form). The older v10.2 to v10.4 slots (Instagram/Facebook footer, glass cards, most recent + popular) slide back, see the master plan.
+
+---
+## What the Keagan reference repos taught us (reviewed in v10.2)
+Both repos are the same Django + MySQL + Stripe marketplace (v2 is v1 with a styling refresh and a `.env`). Only **ideas** are borrowed, no code. We stay static + WhatsApp-first until the backend step (v10.7) and take only what a one-baker shop needs.
+
+| Keagan feature | What it is there | Where it lands here |
+|---|---|---|
+| Cart (add, update quantity, remove, header badge; a later commit "fix the cart item badge counter") | Per-user cart rows in the database | **Done v10.2** as a browser cart + one WhatsApp message. Badge also follows other tabs. |
+| Product fields: stock quantity, availability flag, low-stock threshold, inventory page | Vendor inventory screen | **v10.6**: "Sold out today" toggle per product in admin (no stock counting, Becca bakes to order) |
+| Categories managed by an admin (add, edit, delete) | Admin CRUD | **v10.6**: admin can add, rename and reorder menu sections (today they are fixed in `products.json`) |
+| Order statuses (pending, paid, cancelled), order list, order detail, edit/delete | Order model + admin screens | **v10.7**: orders land in the admin Orders list (needs the backend); wording kept to Becca's real flow: New, Confirmed, Ready, Collected/Delivered, Cancelled |
+| Order confirmation page, printable invoice | Django templates | **v10.8**: "Thank you" page after sending + printable order slip/invoice for Becca |
+| Sales dashboard, analytics, reports (download CSV, print) | Admin analytics + report downloads | **v10.8**: simple "this week / this month" numbers and a CSV download from the Orders list |
+| Activity log (who changed what) | `ActivityLog` model | **v10.8**: small change log in admin (useful once Becca and a helper both edit) |
+| Admin backup | Backup download | **v10.7**: automatic copy of menu + settings + orders (backend) plus a manual "Download backup" button |
+| Product search | `/search/` page | **v10.5**: search box on the Menu page (small, pairs with the allergen filters) |
+| Privacy policy + Terms pages | Static templates | **v10.9**: Privacy (POPIA, South Africa) + Terms/ordering policy pages, written from Becca's real rules |
+| Stripe Checkout + webhook (card payments) | Online payments | **After launch, only if wanted**: SA options are Yoco / PayFast / Ozow. Not planned before launch (Becca takes payment by EFT/cash, owner to confirm) |
+| Vendors, vendor IDs, customer accounts, multi-vendor marketplace | Marketplace roles | **Not wanted** (one bakery, no vendors). Customer accounts only if repeat-order history is ever asked for |
+| Django admin, Swagger API, Postman collection, MySQL | Heavy stack | **Not wanted** (see ARCHITECTURE.md). Backend step uses a hosted service instead (Supabase or Firebase) |
+
+Housekeeping flagged from the zip: `online_bakery_marketplace_v2` contains a `.env` (real-looking database and Stripe settings) and a 395 MB `.venv` inside the upload. Those should never be committed or shared; if the keys are real, rotate them. No licence file in either repo, so nothing was copied.
+
+---
+## MASTER PLAN (current order, added with v10.2)
+Rule still holds: **max 1 or 2 things per version**. Owner's list comes first, then the older scheduled items, then Keagan-inspired items, then the two "owner decides when" items last. Nothing is deleted from the sections above; where an older note names a different version, this plan wins.
+
+| Version | What | Source |
+|---|---|---|
+| v10.2 | **DONE**: cart that sends one WhatsApp message; Custom Order form | Owner list 6, items 3 + 4 |
+| **v10.3** | **FAQ page** (lead times, allergens, delivery or collection, payment) + **reviews/testimonials** section. Owner supplies the real answers and reviews; until then placeholders are clearly marked | Owner list 6, item 5 |
+| v10.4 | **Allergen/dietary tags + filters** on the Menu (vegan, gluten-free, nut-free; tags editable in admin) + **search box** on the Menu | Owner list 6, item 6; Keagan search |
+| v10.5 | **Instagram + Facebook** footer section (placeholder handle `sweetest.bakery`, real info from owner) + **glass-style best-seller cards** with admin choice of how many | Older v10.2 and v10.3 slots |
+| v10.6 | **Most recent + most popular** section on Home + **admin extras**: "Sold out today" toggle, manage menu sections | Older v10.4 slot; Keagan inventory + categories |
+| v10.7 | **Admin that works across devices** (hosted backend: login, menu and settings saved online and live instantly, no manual Publish; orders captured; automatic backup). This is one big item, it gets a version to itself. Do it before Becca relies on the admin daily | Owner list 6, item 7; Keagan orders + backup |
+| v10.8 | **Order tools** (needs v10.7): order statuses, thank-you page after sending, printable order slip, simple weekly/monthly numbers + CSV, change log | Keagan order, invoice, analytics, report, activity-log ideas |
+| v10.9 | **Privacy (POPIA) + Terms** pages + theme switcher for visitors + pick the favourite theme with Becca | Keagan policy pages; older v5 item |
+| **When photos exist** | **Real product photos instead of emoji** (a photo per product, set in admin; emoji stays as the fallback). Owner decides when; can slot in anywhere before launch. Tip: ask the owner for photos with the same light and background | Owner list 6, item 2 |
+| **LAST (v11, owner's call)** | **Get it online**: hosting (GitHub Pages or Netlify), favicon, SEO + page titles, Open Graph share image for WhatsApp/Facebook, custom domain, a launch checklist. Only when the owner says "I'm happy with everything" | Owner list 6, item 1; Claude's suggestion 1 |
+| After launch (ideas) | Online payments (Yoco/PayFast), privacy-friendly analytics, availability calendar, specials with start/end dates, clickable specials, gallery, reserve space for the strips so the page does not jump | Ideas Parking Lot |
+
+Notes for whoever builds the next version:
+- Keep the cart and Custom Order form WhatsApp-based until v10.7. After the backend exists, orders can ALSO be saved to the admin Orders list, while still opening WhatsApp.
+- Allergen wording is safety-relevant: tags are only what Becca confirms, with a line such as "ask us about allergens, we bake in a kitchen that handles nuts" **only if true** (owner to confirm). Do not invent claims.
+- Product photos and launch are deliberately last: do not start them without the owner saying so.
+

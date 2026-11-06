@@ -17,16 +17,49 @@
 <div id="site-header"></div>
 
 <main id="main">
-  <section class="section soon"><div class="container">
-    <p class="eyebrow">Coming soon</p>
-    <h1>Custom Orders</h1>
-    <p>Birthdays, weddings and events: the custom order form is coming in v6. For now, tell us what you need on WhatsApp.</p>
-    <a class="btn" href="contact.html">Contact us</a>
+  <section class="section"><div class="container">
+    <div class="section__head">
+      <p class="eyebrow">Birthdays, weddings and events</p>
+      <h1>Custom Orders</h1>
+      <p>Tell us what you have in mind. When you press the button, WhatsApp opens with your details already typed in, and Becca replies to confirm availability and the price. Nothing is sent until you press send in WhatsApp.</p>
+    </div>
+    <form id="co-form" class="form form--card card" novalidate>
+      <div class="card__body">
+        <div class="form__row">
+          <div><label for="co-name">Your name <span class="req" aria-hidden="true">*</span></label><input id="co-name" name="name" autocomplete="name" required></div>
+          <div><label for="co-occasion">Occasion <span class="req" aria-hidden="true">*</span></label>
+            <select id="co-occasion" name="occasion" required>
+              <option value="">Choose&hellip;</option><option>Birthday</option><option>Wedding</option><option>Anniversary</option><option>Baby shower</option><option>Engagement</option><option>Graduation</option><option>Corporate event</option><option>Other</option>
+            </select></div>
+        </div>
+        <div class="form__row">
+          <div><label for="co-date">Date you need it <span class="req" aria-hidden="true">*</span></label><input id="co-date" name="date" type="date" required></div>
+          <div><label for="co-method">Collection or delivery</label>
+            <select id="co-method" name="method"><option>Not sure yet</option><option>Collection</option><option>Delivery</option></select></div>
+        </div>
+        <div class="form__row">
+          <div><label for="co-what">What would you like?</label>
+            <select id="co-what" name="what"><option>Cake</option><option>Cupcakes</option><option>Cookies</option><option>Bread</option><option>A mix of things</option><option>Something else</option></select></div>
+          <div><label for="co-servings">How many people / servings? <span class="req" aria-hidden="true">*</span></label><input id="co-servings" name="servings" type="number" min="1" max="1000" inputmode="numeric" required></div>
+        </div>
+        <label for="co-flavours">Flavours</label>
+        <input id="co-flavours" name="flavours" placeholder="e.g. chocolate with vanilla buttercream">
+        <label for="co-diet">Allergies or dietary needs <span class="muted">(optional)</span></label>
+        <input id="co-diet" name="diet" placeholder="e.g. nut-free, vegetarian">
+        <label for="co-notes">Design, colours, message and other notes <span class="muted">(optional)</span></label>
+        <textarea id="co-notes" name="notes" rows="4" placeholder="Theme, colours, the message to write on it. You can send photos for inspiration in WhatsApp afterwards."></textarea>
+        <p class="form__error" id="co-error" role="alert" hidden></p>
+        <button class="btn btn--whatsapp btn--block" type="submit" id="co-send">Send on WhatsApp</button>
+        <p class="muted small" id="co-note">Fields marked * are needed so Becca can quote properly.</p>
+      </div>
+    </form>
   </div></section>
 </main>
 
 <div id="site-footer"></div>
 <script src="js/store.js"></script>
+<script src="js/cart.js"></script>
 <script src="js/site.js"></script>
+<script src="js/custom-order.js"></script>
 </body>
 </html>

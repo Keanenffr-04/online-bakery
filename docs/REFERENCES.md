@@ -25,3 +25,7 @@ Status: **PARTLY REVIEWED in v2** (surface review from search/GitHub pages only;
 ## Still to do
 - Review `online_bakery_marketplace_v2` (needs fetch access).
 - Verify licences of the repos above before borrowing anything.
+
+## Update (v10.2): Keagan's two repos reviewed from the uploaded zip
+`online_bakery_marketplace_v1` and `_v2` were read from the owner's zip (no internet needed). They are the same Django + MySQL + Stripe marketplace (customers, vendors, admin; cart, checkout, orders, inventory, analytics, reports, activity log, backup, privacy/terms pages). v2 differs from v1 mainly in styling, the logo and login/register templates, and it also ships a `.env` and a `.venv` (do not share or commit those; rotate any real keys). **No licence file in either repo, so no code was copied**; only feature ideas, mapped to versions in `roadmap/ROADMAP.md` ("What the Keagan reference repos taught us"). This closes the "Review `online_bakery_marketplace_v2`" item above; licences of the other third-party repos listed earlier are still unverified.
+

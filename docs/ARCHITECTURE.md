@@ -45,3 +45,10 @@ Payments, user accounts, delivery tracking, real database.
 - New settings in `site-settings.json` / `store.js` defaults: `heroStyle`, `greeting` (headline of the baked-goods hero; the small line above it is "Good morning/afternoon/evening" from the visitor's clock). `tagline` is shared by both heroes (`data-tagline`).
 - Admin "Theme & layout": changing Menu layout jumps the live preview to the Menu page; hero/greeting/home changes jump it to Home, so a change is always visible.
 - Publish tab downloads three files (settings, products, `offline-data.js`) so the local preview cannot go stale.
+
+## v10.2 update: cart + custom order form (still static, still WhatsApp-first)
+- **Cart:** `src/js/cart.js` exposes `window.SBCart` (get, add, set, remove, clear, count, lines, message). It stores `{items:[{id,q}], meta:{name,dateISO,method,notes}}` in `localStorage["sb_cart"]` (per browser, no accounts, max 99 per item). It is loaded on every public page between `store.js` and `site.js`; `site.js` draws the header cart link (`.cart-link` + `.cart-badge`) and `SBCart.sync()` keeps the badge right (also across tabs via the `storage` event). Product cards from `SB.card()` carry `data-add="<product id>"`; one delegated click handler adds to the cart.
+- **Cart page:** `src/cart.html` + `src/js/cart-page.js` join cart rows with live product data (`SB.load()`), drop products that no longer exist or are hidden, and build the one `wa.me/<number>?text=...` link from `config/business.json`.
+- **Custom Order form:** `src/custom-orders.html` + `src/js/custom-order.js` validate, then `window.open` the same kind of `wa.me` link. No data is stored or sent anywhere else.
+- **Later (v10.7+):** once there is a hosted backend, the same message data can also be saved as an order in the admin; `SBCart.lines()` / `SBCart.message()` are the seam for that.
+
