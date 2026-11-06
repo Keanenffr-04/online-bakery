@@ -72,10 +72,11 @@
     <label>Section</label><select name="category">${d.categories.map(c => `<option value="${c.id}" ${c.id === e.category ? "selected" : ""}>${esc(c.name)}</option>`).join("")}</select>
     <label>Description</label><textarea name="description">${esc(e.description)}</textarea>
     <div class="adm-row"><div><label>Price (R)</label><input name="price" type="number" min="0" value="${esc(e.price)}" required></div><div><label>Emoji</label><input name="emoji" value="${esc(e.emoji)}"></div></div>
+    <label>Dietary tags <span class="muted">(only tick what is definitely true)</span></label><div class="adm-tags">${SB.TAGS.map(([id, n]) => `<label class="chk"><input type="checkbox" name="tag_${id}" ${(e.tags || []).includes(id) ? "checked" : ""}>${n}</label>`).join("")}</div>
     <label class="chk"><input type="checkbox" name="featured" ${e.featured ? "checked" : ""}>Show on home page</label>
     <label class="chk"><input type="checkbox" name="visible" ${e.visible !== false ? "checked" : ""}>Visible on menu</label>
     <p><button class="btn btn--sm" type="submit">Save</button> ${state.edit ? '<button class="btn btn--sm btn--ghost" type="button" data-act="pcancel">Cancel</button>' : ""}</p></form></div>
-    <div class="adm-card"><h2>${d.products.length} items</h2><ul class="adm-list">${d.products.map(p => `<li><div>${esc(p.emoji)} <strong>${esc(p.name)}</strong> <span class="muted">R ${esc(p.price)}</span> ${p.featured ? '<span class="tag">home</span>' : ""} ${p.visible === false ? '<span class="tag">hidden</span>' : ""}</div>
+    <div class="adm-card"><h2>${d.products.length} items</h2><ul class="adm-list">${d.products.map(p => `<li><div>${esc(p.emoji)} <strong>${esc(p.name)}</strong> <span class="muted">R ${esc(p.price)}</span> ${p.featured ? '<span class="tag">home</span>' : ""} ${p.visible === false ? '<span class="tag">hidden</span>' : ""} ${(p.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join(" ")}</div>
     <div class="adm-actions"><button class="btn btn--sm btn--ghost" data-act="pedit" data-id="${p.id}">Edit</button><button class="btn btn--sm btn--ghost" data-act="pdel" data-id="${p.id}">Delete</button></div></li>`).join("")}</ul></div></div>`;
   }
 
@@ -150,7 +151,8 @@
     if (k === "signup") return signup(v.u.trim(), v.p);
     if (k === "order") { const o = J("sb_orders", []); o.unshift({ id: uid(), status: "pending", ...v }); S("sb_orders", o); return go("orders", "Order saved."); }
     if (k === "product") {
-      const p = { ...v, price: Number(v.price), featured: !!v.featured, visible: !!v.visible }, L = state.data.products;
+      const p = { ...v, price: Number(v.price), featured: !!v.featured, visible: !!v.visible, tags: SB.TAGS.map(t => t[0]).filter(id => v["tag_" + id]) }, L = state.data.products;
+      SB.TAGS.forEach(t => delete p["tag_" + t[0]]);
       if (state.edit) Object.assign(L.find(x => x.id === state.edit), p); else L.push({ id: "p" + uid(), ...p });
       state.edit = null; saveProducts(); return go("menu", "Menu saved.");
     }

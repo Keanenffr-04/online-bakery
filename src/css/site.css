@@ -273,3 +273,12 @@ button.btn:disabled{opacity:.6;cursor:not-allowed}
 .review{margin:0}.review blockquote{margin:.4rem 0 .8rem;font-style:italic}
 .review figcaption{font-weight:600;font-size:.9rem}
 .stars{color:var(--accent);letter-spacing:.1em}
+
+/* v10.4: menu search + dietary tag filters + tags on cards */
+.menu-tools{display:grid;gap:.75rem;margin:-.5rem 0 1.5rem}
+.menu-tools input[type=search]{width:100%;max-width:420px;font:400 1rem var(--font-body);padding:.7em 1em;min-height:46px;border:1.5px solid var(--border);border-radius:var(--radius-pill);background:var(--bg);color:var(--text)}
+.menu-tools input[type=search]:focus-visible{outline:3px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.menu-tools .chips{margin:0}
+.chips--tags .chip{font-size:.82rem;padding:.35em 1em}
+.pcard__tags{display:flex;flex-wrap:wrap;gap:.3rem;margin:0 0 .75rem}
+.menu-empty{grid-column:1/-1;text-align:center;padding:2rem 1rem;border:1px dashed var(--border);border-radius:var(--radius-card)}

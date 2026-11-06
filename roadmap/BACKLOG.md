@@ -112,3 +112,15 @@ Tests (headless browser, file://): 6 items, drafts flagged, accordion opens, emp
 
 Notes: FAQ and reviews are not editable in the admin yet (v10.7, with the backend); edit the JSON for now. Allergen wording is deliberately cautious; the allergen tags and filters are v10.4.
 
+## v10.4: Dietary tags + filters, menu search (done, 2026-11-06)
+Owner list 6, item 6 (+ Keagan's product search idea):
+1. **Dietary tags.** Four tags (Vegan, Gluten-free, Nut-free, Dairy-free; list in `SB.TAGS`, `src/js/store.js`). A product's tags are `tags: ["vegan", ...]` in `products.json`. Tags show as small badges on product cards (Menu and Home). **No product has been tagged**: I did not guess anything about allergens, so the shipped menu has no tags yet.
+2. **Filters on the Menu.** Tag buttons appear under the section buttons, but only for tags at least one visible product actually has. Picking several tags keeps only items that have ALL of them (e.g. Vegan + Nut-free). They combine with the section buttons and the search. A short line "Tags are a guide only. Please tell us about any allergies when you order." shows only when tag filters exist. No claims are made about the kitchen.
+3. **Search box** on the Menu: matches name and description, every word must match, works together with sections and tags; "Nothing matches that" with a **Clear filters** button.
+4. **Admin:** Menu items > Add/Edit has "Dietary tags" tick boxes (labelled "only tick what is definitely true"); ticked tags show in the item list. Saves like every other menu change (Save to this device, then Publish).
+Code: `src/js/pages.js` (menu block rewritten), `src/js/store.js`, `src/menu.html`, `src/js/admin.js`, styles at the end of `src/css/site.css` and `admin.css`.
+
+Tests (headless browser, file://): no tags = no filters/note; search (single, multi-word, within a section, no match, clear); with test tags: only used tags offered (Dairy-free hidden), badges, single and combined (AND) filters, impossible combination message; admin login, tick, save, list, re-edit shows ticks, saved JSON has clean `tags` (no `tag_*` leftovers) and the public menu picks them up; 4 widths no sideways scroll; crawl of 22 URLs from `preview.html`: no dead links or errors.
+
+Notes: `products.json` and `offline-data.js` did not change. Tags are per device until published (same as all admin changes).
+

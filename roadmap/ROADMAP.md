@@ -2,7 +2,7 @@
 Append-only. Never delete. Items may move to a later version (leave a note). Finished items go to `BACKLOG.md` with the version number.
 Rule: **max 1 or 2 things per version.**
 
-**Next up: v10.4**  (v10.3 done, see BACKLOG.md; v10.2 done, see BACKLOG.md; numbering is v10.1, v10.2, ... The current plan is the "MASTER PLAN" at the bottom of this file; older notes above are kept for history and are superseded by it.)
+**Next up: v10.5**  (v10.4 done, see BACKLOG.md; v10.3 done, see BACKLOG.md; v10.2 done, see BACKLOG.md; numbering is v10.1, v10.2, ... The current plan is the "MASTER PLAN" at the bottom of this file; older notes above are kept for history and are superseded by it.)
 
 ---
 ## v2: Research + theme foundation (DONE, see BACKLOG.md)
@@ -138,8 +138,8 @@ Rule still holds: **max 1 or 2 things per version**. Owner's list comes first, t
 |---|---|---|
 | v10.2 | **DONE**: cart that sends one WhatsApp message; Custom Order form | Owner list 6, items 3 + 4 |
 | v10.3 | **DONE**: **FAQ page** (lead times, allergens, delivery or collection, payment) + **reviews/testimonials** section. Owner supplies the real answers and reviews; until then placeholders are clearly marked | Owner list 6, item 5 |
-| **v10.4** | **Allergen/dietary tags + filters** on the Menu (vegan, gluten-free, nut-free; tags editable in admin) + **search box** on the Menu | Owner list 6, item 6; Keagan search |
-| v10.5 | **Instagram + Facebook** footer section (placeholder handle `sweetest.bakery`, real info from owner) + **glass-style best-seller cards** with admin choice of how many | Older v10.2 and v10.3 slots |
+| v10.4 | **DONE**: **Allergen/dietary tags + filters** on the Menu (vegan, gluten-free, nut-free; tags editable in admin) + **search box** on the Menu | Owner list 6, item 6; Keagan search |
+| **v10.5** | **Instagram + Facebook** footer section (placeholder handle `sweetest.bakery`, real info from owner) + **glass-style best-seller cards** with admin choice of how many | Older v10.2 and v10.3 slots |
 | v10.6 | **Most recent + most popular** section on Home + **admin extras**: "Sold out today" toggle, manage menu sections | Older v10.4 slot; Keagan inventory + categories |
 | v10.7 | **Admin that works across devices** (hosted backend: login, menu and settings saved online and live instantly, no manual Publish; orders captured; automatic backup). This is one big item, it gets a version to itself. Do it before Becca relies on the admin daily | Owner list 6, item 7; Keagan orders + backup |
 | v10.8 | **Order tools** (needs v10.7): order statuses, thank-you page after sending, printable order slip, simple weekly/monthly numbers + CSV, change log | Keagan order, invoice, analytics, report, activity-log ideas |
@@ -154,3 +154,6 @@ Notes for whoever builds the next version:
 - Product photos and launch are deliberately last: do not start them without the owner saying so.
 
 - v10.3 (DONE, see BACKLOG.md): FAQ page + reviews section. **Owner to-do:** confirm or rewrite the 6 draft FAQ answers (notice needed, allergens, delivery area/fees, payment) and send real reviews. Editing FAQ/reviews inside the admin comes with the backend (v10.7); until then they are edited in `config/site-settings.json`.
+
+- v10.4 (DONE, see BACKLOG.md): dietary tags + filters + menu search. **Owner to-do:** tell me (or tick in admin, Menu items > Edit) which products are vegan, gluten-free, nut-free or dairy-free. Until something is ticked, no tag filters or allergy note show on the site. Ideas for later: add more tags (egg-free, halaal) in `SB.TAGS` in `store.js`.
+

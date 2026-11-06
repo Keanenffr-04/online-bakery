@@ -55,3 +55,6 @@ Payments, user accounts, delivery tracking, real database.
 ## v10.3 update: FAQ + reviews
 - `faq` and `reviews` are arrays in `config/site-settings.json` (so they also flow through the offline copy and the admin Publish export). `pages.js` renders them (`#faq-list`, `#reviews-grid`); reviews are hidden while empty. Nav has a new `FAQ` entry in `NAV` (`site.js`).
 
+## v10.4 update: tags, filters, search
+- Tag list is code, not data: `SB.TAGS` in `store.js` (id, label). Products carry `tags: [ids]`. The Menu page (`pages.js`) filters by section, tags (AND) and search words, all client-side; tag buttons only show for tags in use. Admin product form writes `tags` from `tag_<id>` checkboxes.
+

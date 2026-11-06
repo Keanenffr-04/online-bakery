@@ -17,17 +17,29 @@ SB.load().then(({ biz, settings: s, categories: cs, products }) => {
   }
   const m = document.getElementById("menu-grid"), chips = document.getElementById("chips");
   if (m && chips) {
-    let cur = new URLSearchParams(location.search).get("c") || "all";
+    // v10.4: section chips + search box + dietary tag filters (a tag filter keeps only items that have ALL the picked tags)
+    let cur = new URLSearchParams(location.search).get("c") || "all", q = "";
     if (!cs.some(c => c.id === cur)) cur = "all";
+    const picked = new Set(), qi = document.getElementById("menu-q"), tc = document.getElementById("tag-chips"), tn = document.getElementById("tag-note");
+    const used = SB.TAGS.filter(([id]) => vis.some(p => (p.tags || []).includes(id)));  // only offer tags somebody has actually set
+    if (tc && used.length) { tc.hidden = false; if (tn) tn.hidden = false; }
+    const drawTags = () => { if (tc) tc.innerHTML = used.map(([id, n]) => `<button type="button" class="chip" data-t="${SB.esc(id)}" aria-pressed="${picked.has(id)}">${SB.esc(n)}</button>`).join(""); };
     const draw = () => {
       chips.innerHTML = [{ id: "all", name: "All", icon: "" }, ...cs].map(c => `<button type="button" class="chip" data-c="${SB.esc(c.id)}" aria-pressed="${c.id === cur}">${c.icon ? SB.esc(c.icon) + " " : ""}${SB.esc(c.name)}</button>`).join("");
-      const list = vis.filter(p => cur === "all" || p.category === cur);
+      drawTags();
+      const words = q.toLowerCase().split(/\s+/).filter(Boolean);
+      const list = vis.filter(p => (cur === "all" || p.category === cur) && [...picked].every(t => (p.tags || []).includes(t)) &&
+        words.every(w => (p.name + " " + (p.description || "")).toLowerCase().includes(w)));
       m.className = "menu menu--" + s.menuLayout;
-      m.innerHTML = list.length ? list.map(p => SB.card(p, biz)).join("") : "<p>Nothing here yet, check back soon.</p>";
+      m.innerHTML = list.length ? list.map(p => SB.card(p, biz)).join("") : `<div class="menu-empty"><p>${q || picked.size ? "Nothing matches that." : "Nothing here yet, check back soon."}</p>${q || picked.size || cur !== "all" ? '<button type="button" class="btn btn--sm btn--ghost" data-clear>Clear filters</button>' : ""}</div>`;
     };
     chips.addEventListener("click", e => { const b = e.target.closest("[data-c]"); if (!b) return; cur = b.dataset.c; history.replaceState(null, "", cur === "all" ? "menu.html" : "?c=" + cur); draw(); });
+    if (tc) tc.addEventListener("click", e => { const b = e.target.closest("[data-t]"); if (!b) return; const t = b.dataset.t; picked.has(t) ? picked.delete(t) : picked.add(t); draw(); const nb = tc.querySelector(`[data-t="${t}"]`); if (nb) nb.focus(); });
+    if (qi) qi.addEventListener("input", () => { q = qi.value.trim(); draw(); });
+    m.addEventListener("click", e => { if (!e.target.closest("[data-clear]")) return; cur = "all"; q = ""; picked.clear(); if (qi) qi.value = ""; history.replaceState(null, "", "menu.html"); draw(); });
     draw();
   }
+
   // v10.3: FAQ (accordion) + reviews. Both come from config/site-settings.json (faq, reviews). Reviews stay hidden while empty.
   const stars = n => { n = Math.max(0, Math.min(5, Math.round(Number(n) || 0))); return n ? `<span class="stars" role="img" aria-label="${n} out of 5 stars">${"\u2605".repeat(n)}${"\u2606".repeat(5 - n)}</span>` : ""; };
   const fl = document.getElementById("faq-list");

@@ -5,7 +5,8 @@
   const D = { theme: "classic", tagline: "", heroStyle: "logo", greeting: "Welcome in, something sweet is baking.", home: { hero: true, featured: true, cta: true }, featuredCount: 3, menuLayout: "grid", faq: [], reviews: [], specials: { enabled: true, items: ["Today's specials: ask Becca on WhatsApp", "Custom cakes for every occasion, order online"] }, orders: { enabled: true, items: ["How to order: message Becca on WhatsApp", "Tell us what you'd like, the date you need it and any notes"] } };
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const SB = window.SB = {
-    esc, THEMES: [["classic", "Classic Black & White"], ["cocoa", "Cocoa & Cream"], ["pastel", "Soft Pastel"]],
+    esc, TAGS: [["vegan", "Vegan"], ["gluten-free", "Gluten-free"], ["nut-free", "Nut-free"], ["dairy-free", "Dairy-free"]],
+    THEMES: [["classic", "Classic Black & White"], ["cocoa", "Cocoa & Cream"], ["pastel", "Soft Pastel"]],
     load() {
       return SB._p || (SB._p = (async () => {
         // Opened from disk (file://)? Browsers block fetch() there, so read the copy in js/offline-data.js instead.
@@ -26,7 +27,8 @@
     },
     // v10.2: the card button adds to the cart (SBCart, js/cart.js). One WhatsApp message is sent from the Cart page.
     card(p, biz) {
-      return `<article class="card pcard"><div class="card__media" aria-hidden="true">${esc(p.emoji || "🍰")}</div><div class="card__body"><h3>${esc(p.name)}</h3><p class="pcard__desc">${esc(p.description)}</p><div class="pcard__foot"><span class="card__price">R ${esc(p.price)}</span><button type="button" class="btn btn--sm" data-add="${esc(p.id)}" data-name="${esc(p.name)}" aria-label="Add ${esc(p.name)} to cart">Add</button></div></div></article>`;
+      const tg = (p.tags || []).map(id => (SB.TAGS.find(t => t[0] === id) || [])[1]).filter(Boolean);
+      return `<article class="card pcard"><div class="card__media" aria-hidden="true">${esc(p.emoji || "🍰")}</div><div class="card__body"><h3>${esc(p.name)}</h3><p class="pcard__desc">${esc(p.description)}</p>${tg.length ? `<p class="pcard__tags" aria-label="Dietary tags">${tg.map(t => `<span class="badge">${esc(t)}</span>`).join("")}</p>` : ""}<div class="pcard__foot"><span class="card__price">R ${esc(p.price)}</span><button type="button" class="btn btn--sm" data-add="${esc(p.id)}" data-name="${esc(p.name)}" aria-label="Add ${esc(p.name)} to cart">Add</button></div></div></article>`;
     }
   };
 })();

@@ -21,6 +21,12 @@
   <section class="section"><div class="container">
     <div class="section__head"><h1>Menu</h1><p>Pick a section, tap Add on what you like, then send your whole order to Becca in one WhatsApp message from your cart.</p></div>
     <div class="chips" id="chips" role="group" aria-label="Menu sections"></div>
+    <div class="menu-tools">
+      <label class="sr-only" for="menu-q">Search the menu</label>
+      <input id="menu-q" type="search" placeholder="Search the menu" autocomplete="off" enterkeyhint="search">
+      <div class="chips chips--tags" id="tag-chips" role="group" aria-label="Dietary filters" hidden></div>
+      <p class="muted small" id="tag-note" hidden>Tags are a guide only. Please tell us about any allergies when you order.</p>
+    </div>
     <div id="menu-grid" class="menu menu--grid" aria-live="polite"></div>
   </div></section>
 </main>

@@ -22,3 +22,4 @@
 .themes button{text-align:left}
 .adm iframe{width:100%;height:560px;border:1px solid var(--border);border-radius:var(--radius-card);background:#fff}
 .muted{opacity:.75;font-size:.85rem}
+.adm-tags{display:flex;flex-wrap:wrap;gap:.2rem 1rem;margin:.25rem 0 .5rem}
