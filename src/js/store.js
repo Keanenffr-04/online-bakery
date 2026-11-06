@@ -2,7 +2,7 @@
    (localStorage). Inside the admin preview iframe it uses the unsaved draft instead. */
 (function () {
   const J = (s, k) => { try { return JSON.parse(s.getItem(k)); } catch (e) { return null; } };
-  const D = { theme: "classic", tagline: "", home: { hero: true, featured: true, cta: true }, featuredCount: 3, menuLayout: "grid" };
+  const D = { theme: "classic", tagline: "", heroStyle: "logo", greeting: "Welcome in, something sweet is baking.", home: { hero: true, featured: true, cta: true }, featuredCount: 3, menuLayout: "grid" };
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const SB = window.SB = {
     esc, THEMES: [["classic", "Classic Black & White"], ["cocoa", "Cocoa & Cream"], ["pastel", "Soft Pastel"]],

@@ -17,6 +17,8 @@ window.SB_OFFLINE = {
   "settings": {
     "theme": "classic",
     "tagline": "Cakes, cupcakes, cookies and bread, baked fresh to order by Becca.",
+    "heroStyle": "logo",
+    "greeting": "Welcome in, something sweet is baking.",
     "home": {
       "hero": true,
       "featured": true,

@@ -39,3 +39,9 @@ Payments, user accounts, delivery tracking, real database.
 ## v7 update: header + local preview
 - Header: plain links (Home, Custom Orders, About, Contact) plus ONE dropdown, **Menu**, whose panel lists the food sections (Full menu + each category from `products.json`, so it always matches the Menu page filters). WhatsApp button sits in the header bar, not in the nav. Phones: logo + WhatsApp on row 1, links on row 2; from 860px it is one row. Code: `NAV` in `src/js/site.js`, styles in `src/css/site.css`.
 - Local preview: `preview.html` (repo root) links to every page. Browsers block `fetch()` of local files, so when `location.protocol === "file:"` `store.js` reads `src/js/offline-data.js` (a copy of the three data files) instead. Hosted sites are unaffected and keep reading the real JSON. `site.js` now gets business details through `SB.load()` so there is one loading path.
+
+## v8 update: hero styles + layout settings
+- Two heroes live in `src/index.html`: `data-section="hero"` (logo) and `data-section="hero-bakes"` (baked-goods pattern + greeting). `pages.js` keeps the one chosen by `heroStyle` (`logo` default, or `bakes`) and removes the other; the Hero checkbox removes both. The pattern is an inline SVG `<pattern>` (cookies, cupcakes, donuts) styled with theme tokens via `.bk*` classes in `site.css`, so every theme recolours it.
+- New settings in `site-settings.json` / `store.js` defaults: `heroStyle`, `greeting` (headline of the baked-goods hero; the small line above it is "Good morning/afternoon/evening" from the visitor's clock). `tagline` is shared by both heroes (`data-tagline`).
+- Admin "Theme & layout": changing Menu layout jumps the live preview to the Menu page; hero/greeting/home changes jump it to Home, so a change is always visible.
+- Publish tab downloads three files (settings, products, `offline-data.js`) so the local preview cannot go stale.

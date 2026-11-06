@@ -2,7 +2,7 @@
 Append-only. Never delete. Items may move to a later version (leave a note). Finished items go to `BACKLOG.md` with the version number.
 Rule: **max 1 or 2 things per version.**
 
-**Next up: v8**  (v7 done, see BACKLOG.md)
+**Next up: v9**  (v8 done, see BACKLOG.md)
 
 ---
 ## v2: Research + theme foundation (DONE, see BACKLOG.md)
@@ -60,3 +60,8 @@ Done in v5: items 1 and 2 (see BACKLOG.md). The old v5 (floating WhatsApp + them
 ## Owner change list 2 (from `Changes for next version.md`, added with v7)
 - v7 (DONE, see BACKLOG.md): 1. preview is now `preview.html` with every link working. 2. only "Menu" is a dropdown (food sections).
 - The earlier suggested items slide one version because the owner's new list came first: **v8** = item 5 (Instagram + Facebook footer section); **v9** = item 6 (glass-style "Fresh from the oven" cards, admin picks how many); **v10** = item 7 (most recent + most popular section). Then floating WhatsApp button + theme switcher, then custom orders + launch prep. (Max 2 to 3 things per version, owner's call.)
+
+---
+## Owner change list 3 (from `Changes for next version_1.md`, added with v8)
+- v8 (DONE, see BACKLOG.md): 1. second hero (baked goods + admin greeting). 2. Menu layout List fixed.
+- The owner list's earlier items slide one more version because this list came first: **v9** = Instagram + Facebook footer section; **v10** = glass-style "Fresh from the oven" cards + admin choice of how many; **v11** = most recent + most popular section. Then floating WhatsApp button + theme switcher, then custom orders + launch prep.

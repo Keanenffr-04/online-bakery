@@ -1,7 +1,13 @@
 {
   "theme": "classic",
   "tagline": "Cakes, cupcakes, cookies and bread, baked fresh to order by Becca.",
-  "home": { "hero": true, "featured": true, "cta": true },
+  "heroStyle": "logo",
+  "greeting": "Welcome in, something sweet is baking.",
+  "home": {
+    "hero": true,
+    "featured": true,
+    "cta": true
+  },
   "featuredCount": 3,
   "menuLayout": "grid",
   "_note": "Published site settings. The admin page (src/admin.html) can export a new copy of this file."

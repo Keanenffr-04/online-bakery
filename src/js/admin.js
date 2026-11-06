@@ -79,12 +79,15 @@
     <div class="adm-actions"><button class="btn btn--sm btn--ghost" data-act="pedit" data-id="${p.id}">Edit</button><button class="btn btn--sm btn--ghost" data-act="pdel" data-id="${p.id}">Delete</button></div></li>`).join("")}</ul></div></div>`;
   }
 
+  const OFFLINE_HEAD = "/* offline-data.js: a COPY of config/business.json, config/site-settings.json and src/data/products.json.\n   Only used when the site is opened straight from disk (file://, e.g. preview.html), because browsers block\n   fetch() of local files. The live/hosted site ignores this file and reads the real JSON files.\n   KEEP IN SYNC: whenever one of those three files changes, regenerate this file (see docs/AI_HANDOFF.md). */\n";
   const draftKey = () => sessionStorage.setItem("sb_preview", JSON.stringify({ settings: state.draft }));
   function look() {
     const s = state.draft;
     return `<div class="adm-split"><div class="adm-card"><h2>Theme</h2><div class="themes">${SB.THEMES.map(([id, n]) => `<button class="btn btn--sm ${s.theme === id ? "" : "btn--ghost"}" data-act="theme" data-v="${id}">${n}</button>`).join("")}</div>
     <h2 style="margin-top:1.2rem">Home page</h2>${[["hero", "Hero"], ["featured", "Featured items"], ["cta", "Order banner"]].map(([k, n]) => `<label class="chk"><input type="checkbox" data-act="home" data-k="${k}" ${s.home[k] !== false ? "checked" : ""}>${n}</label>`).join("")}
     <label>Featured items shown</label><select data-act="fc">${[2, 3, 4, 6].map(n => `<option ${n == s.featuredCount ? "selected" : ""}>${n}</option>`).join("")}</select>
+    <label>Hero style</label><select data-act="hs"><option value="logo" ${s.heroStyle !== "bakes" ? "selected" : ""}>Logo (rabbit)</option><option value="bakes" ${s.heroStyle === "bakes" ? "selected" : ""}>Baked goods + greeting</option></select>
+    <label>Greeting (baked goods hero)</label><input data-act="gr" maxlength="80" value="${esc(s.greeting)}">
     <label>Hero text</label><textarea data-act="tag">${esc(s.tagline)}</textarea>
     <label>Menu layout</label><select data-act="ml"><option value="grid" ${s.menuLayout === "grid" ? "selected" : ""}>Grid</option><option value="list" ${s.menuLayout === "list" ? "selected" : ""}>List</option></select>
     <p style="margin-top:1rem"><button class="btn btn--sm" data-act="lsave">Save to this device</button> <button class="btn btn--sm btn--ghost" data-act="lreset">Reset</button></p>
@@ -112,9 +115,10 @@
 
   function publish() {
     return `<div class="adm-card"><h2>Make changes live for everyone</h2>
-    <p>Saved changes only show in this browser. To publish them, download these two files and replace the originals in the project, then re-upload the site:</p>
+    <p>Saved changes only show in this browser. To publish them, download these three files and replace the originals in the project, then re-upload the site:</p>
     <p><button class="btn btn--sm" data-act="dl-set">Download site-settings.json</button> <span class="muted">replaces <code>config/site-settings.json</code></span></p>
     <p><button class="btn btn--sm" data-act="dl-prod">Download products.json</button> <span class="muted">replaces <code>src/data/products.json</code></span></p>
+    <p><button class="btn btn--sm" data-act="dl-off">Download offline-data.js</button> <span class="muted">replaces <code>src/js/offline-data.js</code> (keeps <code>preview.html</code> showing the same thing)</span></p>
     <p><button class="btn btn--sm btn--ghost" data-act="dl-ord">Download orders (CSV)</button></p>
     <p><button class="btn btn--sm btn--ghost" data-act="discard">Discard my saved changes on this device</button></p></div>`;
   }
@@ -160,8 +164,16 @@
 
   app.addEventListener("input", e => {
     const t = e.target, a = t.dataset.act, s = state.draft; if (!a || !s || t.tagName === "BUTTON") return;
-    if (a === "tag") s.tagline = t.value; else if (a === "fc") s.featuredCount = +t.value; else if (a === "ml") s.menuLayout = t.value; else if (a === "home") s.home[t.dataset.k] = t.checked; else return;
-    draftKey(); const fr = $("iframe"); if (fr) fr.src = state.page;
+    if (a === "tag") s.tagline = t.value; else if (a === "gr") s.greeting = t.value; else if (a === "hs") s.heroStyle = t.value; else if (a === "fc") s.featuredCount = +t.value; else if (a === "ml") s.menuLayout = t.value; else if (a === "home") s.home[t.dataset.k] = t.checked; else return;
+    draftKey();
+    // Show the change where it can be seen: layout -> Menu preview, everything else here -> Home preview.
+    const want = a === "ml" ? "menu.html" : "index.html";
+    if (state.page !== want) {
+      state.page = want; go("look");
+      const el = $(`[data-act="${a}"]`); if (el) { el.focus(); if (el.setSelectionRange && el.type !== "checkbox") el.setSelectionRange(el.value.length, el.value.length); }
+      return;
+    }
+    const fr = $("iframe"); if (fr) fr.src = state.page;
   });
 
   app.addEventListener("change", e => {
@@ -187,6 +199,7 @@
     if (a === "adel") { if (confirm("Remove " + u + "?")) saveA(admins().filter(x => x.u !== u || x.root)); return go("admins"); }
     if (a === "areset") { const p = prompt("New password for " + u + " (6+ characters):"); if (p && p.length >= 6) { const all = admins(), x = find(all, u); x.salt = uid() + uid(); x.h = await hash(p, x.salt); saveA(all); return go("admins", "Password changed."); } return; }
     if (a === "dl-set") return dl("site-settings.json", JSON.stringify(state.draft || state.data.settings, null, 2));
+    if (a === "dl-off") return dl("offline-data.js", OFFLINE_HEAD + "window.SB_OFFLINE = " + JSON.stringify({ business: state.data.biz, settings: state.draft || state.data.settings, products: { categories: state.data.categories, products: state.data.products } }, null, 2) + ";\n", "text/javascript");
     if (a === "dl-prod") return dl("products.json", JSON.stringify({ categories: state.data.categories, products: state.data.products }, null, 2));
     if (a === "dl-ord") { const rows = [["name", "phone", "items", "date", "total", "status"], ...J("sb_orders", []).map(o => [o.name, o.phone, o.items, o.date, o.total, o.status])]; return dl("orders.csv", rows.map(r => r.map(c => '"' + String(c || "").replace(/"/g, '""') + '"').join(",")).join("\n"), "text/csv"); }
     if (a === "discard") { if (confirm("Remove all changes saved on this device (settings and menu)? Orders are kept.")) { ["sb_settings", "sb_products"].forEach(k => localStorage.removeItem(k)); sessionStorage.removeItem("sb_preview"); await init(); return go("publish", "Back to the published version."); } }
