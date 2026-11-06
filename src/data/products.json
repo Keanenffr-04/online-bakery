@@ -1,0 +1,18 @@
+{
+  "_note": "SAMPLE menu and prices. Replace with Becca's real menu (or export from the admin page).",
+  "categories": [
+    { "id": "cakes", "name": "Cakes", "icon": "🍰" },
+    { "id": "treats", "name": "Small Treats", "icon": "🧁" },
+    { "id": "bread", "name": "Bread", "icon": "🍞" }
+  ],
+  "products": [
+    { "id": "p1", "name": "Chocolate Ganache Cake", "category": "cakes", "description": "Rich, glossy and made to share.", "price": 450, "emoji": "🍰", "featured": true, "visible": true },
+    { "id": "p2", "name": "Red Velvet Cake", "category": "cakes", "description": "Cream cheese frosting, soft crumb.", "price": 420, "emoji": "🎂", "featured": false, "visible": true },
+    { "id": "p3", "name": "Carrot Cake", "category": "cakes", "description": "Spiced, moist, walnut crunch.", "price": 380, "emoji": "🥕", "featured": false, "visible": true },
+    { "id": "p4", "name": "Vanilla Cupcakes (6)", "category": "treats", "description": "Light sponge with buttercream swirls.", "price": 180, "emoji": "🧁", "featured": true, "visible": true },
+    { "id": "p5", "name": "Choc Chip Cookies (6)", "category": "treats", "description": "Crisp edges, gooey middles.", "price": 90, "emoji": "🍪", "featured": false, "visible": true },
+    { "id": "p6", "name": "Cinnamon Rolls (4)", "category": "treats", "description": "Warm, sticky, cream cheese glaze.", "price": 120, "emoji": "🥐", "featured": false, "visible": true },
+    { "id": "p7", "name": "Sourdough Loaf", "category": "bread", "description": "Crusty outside, soft inside.", "price": 65, "emoji": "🍞", "featured": true, "visible": true },
+    { "id": "p8", "name": "Seed Loaf", "category": "bread", "description": "Hearty and full of seeds.", "price": 60, "emoji": "🌾", "featured": false, "visible": true }
+  ]
+}

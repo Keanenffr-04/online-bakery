@@ -2,7 +2,7 @@
 Append-only. Never delete. Items may move to a later version (leave a note). Finished items go to `BACKLOG.md` with the version number.
 Rule: **max 1 or 2 things per version.**
 
-**Next up: v4**  (v3 done, see BACKLOG.md)
+**Next up: v5**  (v4 done, see BACKLOG.md)
 
 ---
 ## v2: Research + theme foundation (DONE, see BACKLOG.md)
@@ -14,13 +14,14 @@ Instruction to whoever builds this:
 1. Crop/clean the logo (transparent PNG/SVG, light and dark versions).
 2. Build the Home page and the sticky nav with all sections from ARCHITECTURE.md, mobile-first. Placeholder content is fine.
 
-## v4: Menu sections + products
+## v4: Menu sections + products + admin (DONE, see BACKLOG.md; item 2 of the original v4 plan, the floating WhatsApp button, moved to v5)
 1. Create `src/data/products.json` and render each category page from it (cards with image, price, description).
 2. Add a floating **WhatsApp button** on every page plus an "Order on WhatsApp" button per product (prefilled message).
 
 ## v5: Theme switcher
-1. Add the visitor-facing theme switcher (remembers the choice).
-2. Polish each theme until the owner picks a favourite; keep the others available.
+1. Floating WhatsApp button on every page (moved from v4).
+2. Add the visitor-facing theme switcher (remembers the choice).
+3. Polish each theme until the owner picks a favourite; keep the others available.
 
 ## v6: Custom orders + launch prep
 1. Custom Order page: a simple form that builds a WhatsApp message (occasion, date, servings, flavours, notes).
@@ -42,3 +43,6 @@ Instruction to whoever builds this:
 - Analytics (privacy-friendly)
 - Finish reference review: `online_bakery_marketplace_v2` + verify licences (moved from v2)
 - Pick favourite theme with Becca (preview: `src/theme-preview.html`), feeds v5
+- Real admin backend (Supabase/Firebase/Netlify Identity) so admin accounts, orders and edits work across devices and go live instantly (v4 admin is browser-only)
+- Customer-side order form that lands in the admin Orders list (needs the backend above)
+- Product photos instead of emoji

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Sweetest Bakery | Handmade cakes, cupcakes, cookies &amp; bread</title>
+<title>Handmade cakes, treats &amp; bread | The Sweetest Bakery</title>
 <meta name="description" content="Handmade cakes, cupcakes, cookies and bread by Becca. Order online and chat with us on WhatsApp.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@500;600&family=Inter:wght@400;600&family=Montserrat:wght@400;600&family=Playfair+Display:wght@600;700&display=swap">
 <link rel="stylesheet" href="themes/base.css">
@@ -11,21 +11,22 @@
 <link rel="stylesheet" href="themes/theme-cocoa.css">
 <link rel="stylesheet" href="themes/theme-pastel.css">
 <link rel="stylesheet" href="css/site.css">
+<script src="js/boot.js"></script>
 </head>
-<body data-theme="classic"><!-- theme switcher arrives in v5 -->
+<body>
 <a class="skip" href="#main">Skip to content</a>
 <div id="site-header"></div>
 
 <main id="main">
-  <section class="hero">
+  <div data-home>
+  <section class="hero" data-section="hero">
     <div class="container hero__grid">
       <div>
         <p class="eyebrow">Handmade with love</p>
         <h1>The Sweetest Bakery</h1>
-        <p>Cakes, cupcakes, cookies and bread, baked fresh to order by Becca. Pick something from the menu, then message us on WhatsApp.</p>
+        <p id="hero-tagline">Cakes, cupcakes, cookies and bread, baked fresh to order by Becca.</p>
         <div class="hero__actions">
-          <a class="btn" href="cakes.html">Browse the menu</a>
-          <a class="btn btn--ghost" href="custom-orders.html">Custom orders</a>
+          <a class="btn" href="menu.html">See the menu</a>
           <a class="btn btn--whatsapp" data-wa href="#">WhatsApp us</a>
         </div>
       </div>
@@ -33,51 +34,27 @@
     </div>
   </section>
 
-  <section class="section section--alt">
+  <section class="section section--alt" data-section="featured">
     <div class="container">
-      <div class="section__head"><p class="eyebrow">The menu</p><h2>Find what you're craving</h2></div>
-      <div class="grid grid--cats">
-        <a class="card tile" href="cakes.html"><div class="card__media" aria-hidden="true">🍰</div><div class="card__body"><h3>Cakes</h3></div></a>
-        <a class="card tile" href="cupcakes.html"><div class="card__media" aria-hidden="true">🧁</div><div class="card__body"><h3>Cupcakes &amp; Treats</h3></div></a>
-        <a class="card tile" href="cookies.html"><div class="card__media" aria-hidden="true">🍪</div><div class="card__body"><h3>Cookies &amp; Pastries</h3></div></a>
-        <a class="card tile" href="bread.html"><div class="card__media" aria-hidden="true">🍞</div><div class="card__body"><h3>Bread</h3></div></a>
-        <a class="card tile" href="custom-orders.html"><div class="card__media" aria-hidden="true">🎂</div><div class="card__body"><h3>Custom Orders</h3></div></a>
-      </div>
+      <div class="section__head"><h2>Fresh from the oven</h2></div>
+      <div class="grid grid--3 menu" id="featured-grid"></div>
+      <p class="more"><a class="btn btn--ghost" href="menu.html">View the full menu</a></p>
     </div>
   </section>
 
-  <section class="section">
-    <div class="container">
-      <div class="section__head"><p class="eyebrow">Featured</p><h2>Fresh from the oven</h2><p>Placeholder items. Becca's real menu and prices arrive in v4.</p></div>
-      <div class="grid grid--3">
-        <article class="card"><div class="card__media" aria-hidden="true">🍰</div><div class="card__body"><span class="badge">Cakes</span><h3 style="margin-top:.5rem">Chocolate Ganache Cake</h3><p>Rich, glossy and made to share.</p><span class="card__price">R 450</span></div></article>
-        <article class="card"><div class="card__media" aria-hidden="true">🧁</div><div class="card__body"><span class="badge">Cupcakes</span><h3 style="margin-top:.5rem">Vanilla Cupcakes (6)</h3><p>Light sponge with buttercream swirls.</p><span class="card__price">R 180</span></div></article>
-        <article class="card"><div class="card__media" aria-hidden="true">🍞</div><div class="card__body"><span class="badge">Bread</span><h3 style="margin-top:.5rem">Sourdough Loaf</h3><p>Crusty outside, soft inside.</p><span class="card__price">R 65</span></div></article>
-      </div>
-    </div>
-  </section>
-
-  <section class="section section--alt">
-    <div class="container">
-      <div class="section__head"><p class="eyebrow">How to order</p><h2>Three easy steps</h2></div>
-      <ol class="steps">
-        <li><h3>Choose</h3><p>Browse the menu or tell us about your custom cake.</p></li>
-        <li><h3>Message us</h3><p>Tap WhatsApp and send your order, date and any notes.</p></li>
-        <li><h3>Enjoy</h3><p>Becca confirms the details and bakes it fresh for you.</p></li>
-      </ol>
-    </div>
-  </section>
-
-  <section class="section cta">
+  <section class="section cta" data-section="cta">
     <div class="container">
       <h2>Ready to order?</h2>
       <p>Chat with us on WhatsApp, we usually reply quickly.</p>
       <a class="btn btn--whatsapp" data-wa href="#">Order on WhatsApp</a>
     </div>
   </section>
+  </div>
 </main>
 
 <div id="site-footer"></div>
+<script src="js/store.js"></script>
 <script src="js/site.js"></script>
+<script src="js/pages.js"></script>
 </body>
 </html>

@@ -18,3 +18,11 @@ Notes: Themes only change tokens (colours, fonts, radius, shadow, spacing), per 
 2. Home page + sticky nav: `src/index.html` (hero, category tiles, featured placeholders, how to order, WhatsApp CTA), `src/css/site.css`, `src/js/site.js` (renders the shared header/footer from one NAV list, mobile menu, WhatsApp links from `config/business.json`). Mobile-first; hamburger below 1000px.
 
 Notes: Added "Coming soon" placeholder pages for every nav item (cakes, cupcakes, cookies, bread, custom-orders, about, contact) so no link 404s; v4 and v6 replace them. Default theme is `classic` via `data-theme` on `<body>` (switcher is v5). `site.js` fetches `../config/business.json`, so serve the repo root (`python3 -m http.server`, open `/src/`); opened straight from disk the WhatsApp buttons fall back to the Contact page. Featured items are fake samples until v4.
+
+## v4: Menu hub, decluttered home, admin (done, 2026-11-06)
+Owner request (`Changes for next version.md`):
+1. One **Menu** page (`src/menu.html`) with section filter buttons (All / Cakes / Small Treats / Bread) replaces the separate category pages and the long nav. Old `cakes.html`, `cupcakes.html`, `cookies.html`, `bread.html` now redirect to `menu.html?c=...`. Cleaner cards (name, one-line description, price, Order button). Products live in `src/data/products.json` (SAMPLE items and prices).
+2. Home page cut down to hero + featured + one WhatsApp banner. Menu tiles and "How to order" removed from home (How to order now on Contact). Nav is Home, Menu, Custom Orders, About, Contact.
+3. Admin (`src/admin.html`, footer "Staff login"): login + sign-up (sign-ups need approval), pending orders tracker with statuses, menu item editor, theme tester with live preview, home/menu layout options, add/remove admins, change own password/username, export files. Root admin `admin` / `admin1` (username fixed, password changeable; banner nags until changed).
+
+Notes: still a static site, so admin data (accounts, orders, edits) is saved in the browser (localStorage) and is NOT real security or shared between devices. "Publish" tab exports `site-settings.json` / `products.json` to drop into the repo to make changes live. Real accounts/orders across devices need a backend (see Ideas Parking Lot). Floating WhatsApp button moved to v5.

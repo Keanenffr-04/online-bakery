@@ -3,10 +3,7 @@
 (function () {
   const NAV = [
     ["Home", "index.html"],
-    ["Cakes", "cakes.html"],
-    ["Cupcakes & Treats", "cupcakes.html"],
-    ["Cookies & Pastries", "cookies.html"],
-    ["Bread", "bread.html"],
+    ["Menu", "menu.html"],
     ["Custom Orders", "custom-orders.html"],
     ["About", "about.html"],
     ["Contact", "contact.html"]
@@ -41,7 +38,7 @@
       <div><h3>Explore</h3><ul>${NAV.slice(1).map(([l, h]) => `<li><a href="${h}">${l.replace("&", "&amp;")}</a></li>`).join("")}</ul></div>
       <div><h3>Order</h3><p>Online orders only.<br>WhatsApp: <a data-wa data-biz="phoneDisplay" href="#"></a></p></div>
     </div>
-    <small>&copy; <span id="year"></span> <span data-biz="name">The Sweetest Bakery</span></small>
+    <small>&copy; <span id="year"></span> <span data-biz="name">The Sweetest Bakery</span> &middot; <a href="admin.html">Staff login</a></small>
   </div>
 </footer>`;
 

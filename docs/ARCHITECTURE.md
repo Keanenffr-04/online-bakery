@@ -29,3 +29,9 @@ Themes are CSS variable files in `src/themes/` (e.g. `theme-classic.css`). A the
 
 ## Non-goals for now
 Payments, user accounts, delivery tracking, real database.
+
+## v4 update: data + admin (static, browser-only)
+- Site data load order: published files (`config/site-settings.json`, `src/data/products.json`) then this browser's admin changes (`localStorage`: `sb_settings`, `sb_products`). Code: `src/js/store.js`.
+- Admin (`src/admin.html` + `js/admin.js`): accounts/orders in `localStorage` (`sb_admins`, `sb_orders`), SHA-256 salted password hashes. Convenience lock only, not secure. Replace with a real backend before relying on it.
+- Menu is one page (`menu.html`) filtered by category; categories are defined in `products.json`.
+- Theme is applied to `<html data-theme>` by `js/boot.js` (before paint) and `store.js`.
