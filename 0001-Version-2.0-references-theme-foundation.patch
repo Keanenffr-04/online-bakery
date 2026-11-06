@@ -1,0 +1,289 @@
+From d097cb37acd521405e9b4780b6032ae8cb6c52c4 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 6 Nov 2026 14:19:51 +0000
+Subject: [PATCH] Version 2.0: references + theme foundation
+
+---
+ README.md                    |  4 +--
+ VERSION                      |  2 +-
+ docs/REFERENCES.md           | 30 ++++++++++++-----
+ roadmap/BACKLOG.md           |  6 ++++
+ roadmap/ROADMAP.md           |  6 ++--
+ src/theme-preview.html       | 64 ++++++++++++++++++++++++++++++++++++
+ src/themes/base.css          | 30 +++++++++++++++++
+ src/themes/theme-classic.css | 11 +++++++
+ src/themes/theme-cocoa.css   | 11 +++++++
+ src/themes/theme-pastel.css  | 11 +++++++
+ 10 files changed, 162 insertions(+), 13 deletions(-)
+ create mode 100644 src/theme-preview.html
+ create mode 100644 src/themes/base.css
+ create mode 100644 src/themes/theme-classic.css
+ create mode 100644 src/themes/theme-cocoa.css
+ create mode 100644 src/themes/theme-pastel.css
+
+diff --git a/README.md b/README.md
+index 321cd2f..5047dda 100644
+--- a/README.md
++++ b/README.md
+@@ -1,7 +1,7 @@
+ # online-bakery 🐇🍰
+ Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
+ 
+-**Current version:** see `VERSION` (v1 = foundation docs only, no site code yet)
++**Current version:** see `VERSION` (v2 = research + 3 themes and a preview page; open `src/theme-preview.html` in a browser)
+ 
+ ## Goals
+ - Sleek and modern, but dead simple to use
+@@ -18,7 +18,7 @@ online-bakery/
+ ├── docs/           BRAND.md, ARCHITECTURE.md, AI_HANDOFF.md, REFERENCES.md
+ ├── config/         business.json (name, WhatsApp, etc.)
+ ├── assets/logo/    logo files
+-└── src/            site code (starts in v2)
++└── src/            site code: themes/ (v2), theme-preview.html
+ ```
+ 
+ ## Working rules (important)
+diff --git a/VERSION b/VERSION
+index 6e8bf73..0ea3a94 100644
+--- a/VERSION
++++ b/VERSION
+@@ -1 +1 @@
+-0.1.0
++0.2.0
+diff --git a/docs/REFERENCES.md b/docs/REFERENCES.md
+index b064bc7..05b9ec6 100644
+--- a/docs/REFERENCES.md
++++ b/docs/REFERENCES.md
+@@ -1,13 +1,27 @@
+ # Reference Repos
+-Status: **NOT YET REVIEWED** (scheduled for v2). Do not copy code without checking licences.
++Status: **PARTLY REVIEWED in v2** (surface review from search/GitHub pages only; no cloning, no internet in the build sandbox). Do not copy code without checking licences.
+ 
+ ## Provided by the owner
+-- https://github.com/keaganfrr-03/online_bakery_marketplace_v1
+-- https://github.com/keaganfrr-03/online_bakery_marketplace_v2
++| Repo | Licence | Stack | Good | Avoid / not for us | Ideas |
++|---|---|---|---|---|---|
++| keaganfrr-03/online_bakery_marketplace_v1 | none visible on the repo page | Django + MySQL, Stripe, Swagger API | Vendor/customer roles, seeded demo data, product media folder | Far too heavy for our static, WhatsApp-first site | Product fields (name, price, image), category structure |
++| keaganfrr-03/online_bakery_marketplace_v2 | **NOT REVIEWED** (page could not be fetched) | unknown | n/a | n/a | Review in a later version when internet access is available |
+ 
+-## To find (v2 task)
+-Search GitHub for other bakery/cafe/food-ordering site repos. For each one record:
+-repo URL | licence | stack | what's good (layout, sections, theming, cart) | what to avoid | ideas to steal
++## Found in v2 (all unverified licences: check before reusing anything)
++| Repo / source | Stack | Good | Avoid | Ideas to steal (ideas only, not code) |
++|---|---|---|---|---|
++| andile593/59-cafe | React + Firebase | Product list/detail, cart, checkout flow | Needs accounts + backend; overkill | Cart UX for the "Simple cart via WhatsApp" idea |
++| Devleena2003/E-Bakery-Website | Unknown (page content thin) | Simple bakery storefront | Unclear quality | Section layout reference |
++| prasantmahato/Creamycreations | Unknown; has a LICENSE file (type not confirmed) | Simple online bakery shop | Unclear | Home page structure |
++| KrithikaPoojary/Bakery-Hub | Marketplace w/ OTP email (Brevo SMTP) | Order tracking concept | Accounts/OTP not needed | Order status wording |
++| Framer "Bakeri" template (design only, not a repo) | Framer | Menu showcase, signature collections, testimonials, FAQ | Paid/proprietary: look, don't copy | Home sections: featured items, testimonials, FAQ |
++| Contra case study "Online Platform for Small Bakeries" (design only) | n/a | Users want customisation + an in-store feel | n/a | Supports our Custom Orders page and WhatsApp-first approach |
+ 
+-## Findings
+-(empty, fill in during v2)
++## Takeaways
++1. Most bakery repos are full e-commerce (accounts, payments, databases). Our plain static + WhatsApp approach is deliberately lighter; keep it.
++2. Recurring good ideas: category sections, featured items, testimonials, FAQ, customisation for cakes. All already on the roadmap or Ideas Parking Lot.
++3. No code was copied from anywhere.
++
++## Still to do
++- Review `online_bakery_marketplace_v2` (needs fetch access).
++- Verify licences of the repos above before borrowing anything.
+diff --git a/roadmap/BACKLOG.md b/roadmap/BACKLOG.md
+index eed6968..0eb2180 100644
+--- a/roadmap/BACKLOG.md
++++ b/roadmap/BACKLOG.md
+@@ -6,3 +6,9 @@ Append-only. Never delete. Newest at the bottom.
+ 2. Roadmap + backlog system created; v2 to v6 planned
+ 
+ Notes: The two reference repos were NOT reviewed in v1 (no internet access during build). Moved to v2.
++
++## v2: Research + theme foundation (done, 2026-11-06)
++1. Reference research: `docs/REFERENCES.md` filled in. Partly done: owner repo v1 + 5 other sources reviewed at surface level; owner repo v2 could not be fetched, licences unverified (see "Still to do" there).
++2. Theme system: `src/themes/base.css` + 3 token themes (`theme-classic.css`, `theme-cocoa.css`, `theme-pastel.css`) and `src/theme-preview.html` (logo, heading, buttons incl. WhatsApp, card per theme).
++
++Notes: Themes only change tokens (colours, fonts, radius, shadow, spacing), per ARCHITECTURE.md. Logo in the preview is still the original JPEG (cropped by CSS); proper transparent logo is v3. Leftover review of reference repo v2 + licence checks moved to the Ideas Parking Lot.
+diff --git a/roadmap/ROADMAP.md b/roadmap/ROADMAP.md
+index 6d5af3c..fb005b3 100644
+--- a/roadmap/ROADMAP.md
++++ b/roadmap/ROADMAP.md
+@@ -2,10 +2,10 @@
+ Append-only. Never delete. Items may move to a later version (leave a note). Finished items go to `BACKLOG.md` with the version number.
+ Rule: **max 1 or 2 things per version.**
+ 
+-**Next up: v2**
++**Next up: v3**  (v2 done, see BACKLOG.md)
+ 
+ ---
+-## v2: Research + theme foundation
++## v2: Research + theme foundation (DONE, see BACKLOG.md)
+ Instruction to whoever builds this:
+ 1. **Review the reference repos.** Open both `online_bakery_marketplace_v1` and `_v2`, then search GitHub for 4 to 6 more bakery/food-ordering sites. Fill in `docs/REFERENCES.md` (licence, stack, good/bad, ideas). Don't copy code you can't legally reuse.
+ 2. **Build the theme system.** Create `src/themes/` with a base stylesheet plus 3 theme token files built from the brand notes (e.g. *Classic Black & White*, *Cocoa & Cream*, *Soft Pastel*). Make a one-page preview that shows each theme with the logo, a heading, a button and a card.
+@@ -40,3 +40,5 @@ Instruction to whoever builds this:
+ - Delivery/collection area info
+ - Seasonal / holiday specials banner
+ - Analytics (privacy-friendly)
++- Finish reference review: `online_bakery_marketplace_v2` + verify licences (moved from v2)
++- Pick favourite theme with Becca (preview: `src/theme-preview.html`), feeds v5
+diff --git a/src/theme-preview.html b/src/theme-preview.html
+new file mode 100644
+index 0000000..7e77e5b
+--- /dev/null
++++ b/src/theme-preview.html
+@@ -0,0 +1,64 @@
++<!doctype html>
++<html lang="en">
++<head>
++<meta charset="utf-8">
++<meta name="viewport" content="width=device-width, initial-scale=1">
++<title>Theme preview | The Sweetest Bakery</title>
++<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@500;600&family=Inter:wght@400;600&family=Montserrat:wght@400;600&family=Playfair+Display:wght@600;700&display=swap">
++<link rel="stylesheet" href="themes/base.css">
++<link rel="stylesheet" href="themes/theme-classic.css">
++<link rel="stylesheet" href="themes/theme-cocoa.css">
++<link rel="stylesheet" href="themes/theme-pastel.css">
++<style>
++  body{background:#EEE;font-family:system-ui,sans-serif}
++  .page-head{padding:2rem 0 0;text-align:center;color:#333}
++  .theme-block{margin:2rem auto;max-width:960px;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.15)}
++  .theme-label{background:#222;color:#fff;font:600 .8rem system-ui;letter-spacing:.1em;padding:.5rem 1rem;text-transform:uppercase}
++  .demo{display:grid;gap:2rem;grid-template-columns:1fr;align-items:center}
++  @media(min-width:720px){.demo{grid-template-columns:1fr 1fr}}
++  .logo-wrap{display:grid;place-items:center}
++  .logo-wrap img{width:min(260px,70%);aspect-ratio:1;object-fit:cover;object-position:center;
++    border-radius:var(--radius-card);background:#fff;clip-path:inset(4% 4% 4% 4%)}
++  .row{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1rem}
++</style>
++</head>
++<body>
++<div class="page-head container">
++  <h1 style="font-family:Georgia,serif">Theme preview</h1>
++  <p>Same layout, three sets of tokens. Pick your favourite, Becca.</p>
++</div>
++<!-- data-theme blocks: each one is a self-contained sample -->
++<div id="themes"></div>
++<script>
++// Config comes from one place: edit the list below to add/remove themes.
++const THEMES=[["classic","Classic Black & White"],["cocoa","Cocoa & Cream"],["pastel","Soft Pastel"]];
++const WA="https://wa.me/27833413166"; // matches config/business.json
++document.getElementById("themes").innerHTML=THEMES.map(([id,name])=>`
++<section class="theme-block" data-theme="${id}">
++  <div class="theme-label">${name}</div>
++  <div class="section" style="background:var(--bg)"><div class="container demo">
++    <div class="logo-wrap"><img src="../assets/logo/logo-original.jpeg" alt="The Sweetest Bakery logo"></div>
++    <div>
++      <p class="eyebrow">Handmade with love</p>
++      <h1>The Sweetest Bakery</h1>
++      <p>Cakes, cupcakes, cookies and bread, baked fresh by Becca.</p>
++      <div class="row">
++        <a class="btn" href="#">Browse the menu</a>
++        <a class="btn btn--ghost" href="#">Custom orders</a>
++        <a class="btn btn--whatsapp" href="${WA}">WhatsApp us</a>
++      </div>
++    </div>
++    <article class="card">
++      <div class="card__media" aria-hidden="true">🍰</div>
++      <div class="card__body">
++        <span class="badge">Cakes</span>
++        <h3 style="margin-top:.5rem">Chocolate Ganache Cake</h3>
++        <p>Sample card. Real products arrive in v4.</p>
++        <span class="card__price">R 450</span>
++      </div>
++    </article>
++  </div></div>
++</section>`).join("");
++</script>
++</body>
++</html>
+diff --git a/src/themes/base.css b/src/themes/base.css
+new file mode 100644
+index 0000000..c6b4738
+--- /dev/null
++++ b/src/themes/base.css
+@@ -0,0 +1,30 @@
++/* base.css: layout + components. Uses ONLY theme tokens (see theme-*.css).
++   Themes change tokens, never layout. */
++*,*::before,*::after{box-sizing:border-box}
++html{-webkit-text-size-adjust:100%}
++body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.6}
++h1,h2,h3{font-family:var(--font-heading);font-weight:var(--heading-weight);line-height:1.15;margin:0 0 .5em;color:var(--heading)}
++h1{font-size:clamp(2rem,6vw,3.25rem)}
++h2{font-size:clamp(1.5rem,4vw,2.1rem)}
++p{margin:0 0 1em}
++.container{max-width:960px;margin:0 auto;padding:0 var(--space-3)}
++.section{padding:var(--space-5) 0}
++.eyebrow{font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
++
++.btn{display:inline-block;padding:.8em 1.6em;border-radius:var(--radius-pill);border:1.5px solid var(--btn-bg);
++  background:var(--btn-bg);color:var(--btn-text);font:600 .95rem var(--font-body);cursor:pointer;text-decoration:none;
++  transition:transform .15s ease,box-shadow .15s ease}
++.btn:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
++.btn:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
++.btn--ghost{background:transparent;color:var(--btn-bg)}
++.btn--whatsapp{background:var(--whatsapp);border-color:var(--whatsapp);color:#fff}
++
++.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);
++  box-shadow:var(--shadow);overflow:hidden}
++.card__media{aspect-ratio:4/5;background:var(--surface-alt);
++  border-radius:var(--radius-arch) var(--radius-arch) 0 0; /* arch motif from the logo */
++  display:grid;place-items:center;font-size:3rem}
++.card__body{padding:var(--space-3)}
++.card__price{font-weight:700;color:var(--accent)}
++.badge{display:inline-block;padding:.2em .7em;border-radius:var(--radius-pill);background:var(--surface-alt);
++  color:var(--text);font-size:.75rem;border:1px solid var(--border)}
+diff --git a/src/themes/theme-classic.css b/src/themes/theme-classic.css
+new file mode 100644
+index 0000000..71532b9
+--- /dev/null
++++ b/src/themes/theme-classic.css
+@@ -0,0 +1,11 @@
++/* Theme 1: Classic Black & White (matches the logo: ink, paper, cocoa line) */
++[data-theme="classic"]{
++  --bg:#FFFFFF; --surface:#FFFFFF; --surface-alt:#F3F1EE; --border:#E4E0DA;
++  --text:#2A2A2A; --heading:#111111; --accent:#4A3626;
++  --btn-bg:#111111; --btn-text:#FFFFFF; --whatsapp:#1FA855;
++  --font-heading:"Playfair Display","Bodoni Moda",Georgia,serif; --font-body:"Montserrat",system-ui,sans-serif;
++  --heading-weight:700;
++  --radius-card:4px; --radius-pill:2px; --radius-arch:999px;
++  --shadow:0 1px 2px rgba(0,0,0,.06);
++  --space-3:1.25rem; --space-5:4rem;
++}
+diff --git a/src/themes/theme-cocoa.css b/src/themes/theme-cocoa.css
+new file mode 100644
+index 0000000..7ccc67f
+--- /dev/null
++++ b/src/themes/theme-cocoa.css
+@@ -0,0 +1,11 @@
++/* Theme 2: Cocoa & Cream (warm, dark-chocolate accents) */
++[data-theme="cocoa"]{
++  --bg:#FAF4EA; --surface:#FFFBF4; --surface-alt:#EFE2CF; --border:#E2D2BA;
++  --text:#4A3626; --heading:#2F2015; --accent:#8A5A34;
++  --btn-bg:#4A3626; --btn-text:#FAF4EA; --whatsapp:#1FA855;
++  --font-heading:"Bodoni Moda","Playfair Display",Georgia,serif; --font-body:"Inter",system-ui,sans-serif;
++  --heading-weight:600;
++  --radius-card:14px; --radius-pill:999px; --radius-arch:999px;
++  --shadow:0 6px 18px rgba(74,54,38,.10);
++  --space-3:1.25rem; --space-5:4rem;
++}
+diff --git a/src/themes/theme-pastel.css b/src/themes/theme-pastel.css
+new file mode 100644
+index 0000000..2a90a20
+--- /dev/null
++++ b/src/themes/theme-pastel.css
+@@ -0,0 +1,11 @@
++/* Theme 3: Soft Pastel (light, playful, cupcake-shop feel) */
++[data-theme="pastel"]{
++  --bg:#FFF7F9; --surface:#FFFFFF; --surface-alt:#FBE3EA; --border:#F4CFDA;
++  --text:#5B4650; --heading:#3E2C36; --accent:#C2517A;
++  --btn-bg:#E58BA8; --btn-text:#3E2C36; --whatsapp:#1FA855;
++  --font-heading:"Playfair Display",Georgia,serif; --font-body:"Montserrat",system-ui,sans-serif;
++  --heading-weight:600;
++  --radius-card:22px; --radius-pill:999px; --radius-arch:999px;
++  --shadow:0 8px 22px rgba(194,81,122,.12);
++  --space-3:1.25rem; --space-5:4rem;
++}
+-- 
+2.43.0
+
