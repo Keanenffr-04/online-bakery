@@ -1,0 +1,11 @@
+{
+  "name": "The Sweetest Bakery",
+  "owner": "Becca Smith",
+  "phoneDisplay": "083 341 3166",
+  "whatsappNumber": "27833413166",
+  "whatsappLink": "https://wa.me/27833413166",
+  "country": "ZA",
+  "currency": "ZAR",
+  "mode": "online-only",
+  "_note": "Single source of truth for business details. Never hardcode these elsewhere."
+}
