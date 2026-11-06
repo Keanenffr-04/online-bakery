@@ -33,6 +33,13 @@ window.SB_OFFLINE = {
         "Custom cakes for every occasion, order online"
       ]
     },
+    "orders": {
+      "enabled": true,
+      "items": [
+        "How to order: message Becca on WhatsApp",
+        "Tell us what you'd like, the date you need it and any notes"
+      ]
+    },
     "_note": "Published site settings. The admin page (src/admin.html) can export a new copy of this file."
   },
   "products": {
