@@ -8,3 +8,4 @@ You are continuing the build of **The Sweetest Bakery** website (repo: online-ba
 5. New ideas from the owner: add to the roadmap where they fit best.
 6. Keep it sleek, modern, simple. Sections over clutter. Don't over-build, the owner has limited Claude usage.
 7. Business details come from `config/business.json` only.
+8. Deliver the finished version as a **.zip of the whole repo (with `.git`) with your work already committed**, named `online-bakery-vN.zip`. Do not hand over a loose patch for the owner to apply (see README rule 6).
