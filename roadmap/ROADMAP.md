@@ -2,7 +2,7 @@
 Append-only. Never delete. Items may move to a later version (leave a note). Finished items go to `BACKLOG.md` with the version number.
 Rule: **max 1 or 2 things per version.**
 
-**Next up: v11**  (v10 done, see BACKLOG.md)
+**Next up: v10.2**  (v10.1 done, see BACKLOG.md; numbering is now v10.1, v10.2, ...)
 
 ---
 ## v2: Research + theme foundation (DONE, see BACKLOG.md)
@@ -76,3 +76,19 @@ Owner said: do 2 things, push the rest into the roadmap.
 
 - v10 (DONE, see BACKLOG.md): items 3 and 4 of owner list 4 (bottom orders strip; floating WhatsApp button + other WhatsApp buttons removed). Next: **v11** = Instagram + Facebook footer section, **v12** = glass-style best-seller cards, **v13** = most recent + most popular section, then theme switcher, custom orders + launch prep.
 - Open question for the owner (v11 or later): the per-product **Order** buttons on menu cards were KEPT in v10 (they send the product name to WhatsApp). Remove them or keep them?
+
+---
+## Owner change list 5 (from `Changes for next version_1.md`, added with v10.1)
+- **Renumbering (owner request):** after v10 the versions are v10.1, v10.2, and so on. The old names slide: **v10.2** = Instagram + Facebook footer section (was v11); **v10.3** = glass-style best-seller cards + admin choice of how many (was v12); **v10.4** = most recent + most popular section (was v13). Then theme switcher, custom orders + launch prep. Older notes above that say v11/v12/v13 mean these.
+- v10.1 (DONE, see BACKLOG.md): 1. both strips stay pinned while scrolling (top strip above the header, orders strip at the bottom of the screen). 2. One codebase, two layouts: three-line dropdown menu on phones/tablets, links as clickable buttons in the header on desktop.
+- Item 4 of the list was a question ("what else would you add?"); the answer is in the Ideas Parking Lot below ("Claude's suggestions").
+
+## Claude's suggestions (added with v10.1; owner to pick what goes into a version)
+1. **Launch prep** (biggest gap): put the site online (GitHub Pages or Netlify), favicon, page titles/SEO, an Open Graph image so links look nice when shared on WhatsApp/Facebook, and a custom domain guide.
+2. **Real product photos** instead of emoji (a small image per product, set in admin). Biggest visual upgrade for a bakery.
+3. **Simple cart that sends one WhatsApp message** with the whole order (tap Add on several items, one message to Becca).
+4. **Custom Order form** (occasion, date, servings, flavours, notes) that builds the WhatsApp message. The page is still a placeholder.
+5. **FAQ + reviews** (lead time, allergens, delivery or collection area, "how do I pay"), which also answers the questions Becca gets repeatedly.
+6. **Allergen/dietary tags + filters** on menu items (vegan, gluten-free, nut-free).
+7. **Admin that works across devices** (real backend), because today saved changes live in one browser and need the manual Publish step. Worth doing before Becca relies on it daily.
+8. Small polish: reserve space for the strips so the page does not jump on first load; make a special clickable; start/end dates on specials.

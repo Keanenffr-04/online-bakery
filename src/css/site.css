@@ -5,18 +5,35 @@
 .skip:focus{left:0}
 
 /* Sticky header + nav.
-   v7: links sit in the header; ONLY "Menu" is a dropdown (the food sections). On phones the header is two rows:
-   logo + WhatsApp on top, the links underneath. From 860px up it is one row. */
-.site-header{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border)}
+   v10.1: ONE codebase, two layouts. Phones/tablets (under 860px): logo + a three-line menu button; tapping it drops
+   down every link (Menu's food sections are expanded inside it). Desktop (860px and up): all links sit in the header
+   as clickable buttons, and Menu opens a small dropdown. Both stay pinned at the top while scrolling,
+   under the specials strip (its height is published in --specials-h by site.js). */
+.site-header{position:sticky;top:var(--specials-h,0px);z-index:50;background:var(--bg);border-bottom:1px solid var(--border)}
 .site-header__bar{display:flex;flex-wrap:wrap;align-items:center;gap:.25rem .5rem;padding:.5rem 0}
 .brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--heading);margin-right:auto;
   font:var(--heading-weight) .95rem var(--font-heading)}
 .brand img{height:40px;width:auto;display:block}
-.nav{order:3;flex:1 0 100%;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0 .1rem}
+
+/* The three-line (hamburger) button, mobile only */
+.nav__burger{display:grid;place-content:center;gap:5px;width:44px;height:44px;padding:0;background:none;cursor:pointer;
+  border:1.5px solid var(--border);border-radius:var(--radius-card);color:var(--heading);transition:background-color .15s ease,color .15s ease}
+.nav__burger span{display:block;width:22px;height:2px;border-radius:2px;background:currentColor;transition:transform .2s ease,opacity .2s ease}
+.nav__burger:hover,.nav__burger:focus-visible{background:var(--btn-bg);border-color:var(--btn-bg);color:var(--btn-text)}
+.nav__burger:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.site-header.is-open .nav__burger span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.site-header.is-open .nav__burger span:nth-child(2){opacity:0}
+.site-header.is-open .nav__burger span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+/* Mobile menu: hidden until the button is tapped, then a full-width list under the bar */
+.nav{order:3;flex:1 0 100%;display:none;flex-direction:column;padding:.25rem 0 .75rem;border-top:1px solid var(--border);
+  max-height:calc(100dvh - 4.5rem - var(--specials-h,0px) - var(--orders-h,0px));overflow-y:auto}
+.site-header.is-open .nav{display:flex}
 .nav a:focus-visible,.nav__trigger:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 
 /* Links and the Menu trigger share one look */
-.nav a,.nav__trigger{display:block;padding:.55rem .3rem;white-space:nowrap;text-decoration:none;color:var(--text);font:400 .8rem var(--font-body);
+.nav a,.nav__trigger{display:flex;align-items:center;justify-content:space-between;width:100%;text-align:left;padding:.85rem .6rem;
+  white-space:nowrap;text-decoration:none;color:var(--text);font:400 1rem var(--font-body);
   background:none;border:0;cursor:pointer;border-radius:max(2px,calc(var(--radius-card) - 4px));
   text-decoration-line:none;text-decoration-thickness:2px;text-underline-offset:.35em;
   transition:background-color .15s ease,color .15s ease}
@@ -29,30 +46,30 @@
 .nav__trigger.is-current:focus-visible,.nav__trigger.is-current[aria-expanded="true"]{color:var(--btn-text)}
 .nav a:active,.nav__trigger:active{background:var(--surface-alt);color:var(--link);text-decoration-line:underline}
 
-/* The one dropdown: Menu */
+/* Menu: on phones its sections are an indented list inside the mobile menu; on desktop a dropdown (below) */
 .nav__drop{position:relative}
-.nav__trigger::after{content:"";display:inline-block;width:.38em;height:.38em;margin:0 0 .18em .45em;
+.nav__trigger::after{content:"";display:inline-block;width:.38em;height:.38em;margin:0 .3rem .18em .45em;
   border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg);transition:transform .15s ease}
 .nav__trigger[aria-expanded="true"]::after{transform:rotate(225deg);margin-bottom:-.05em}
-.nav__panel{position:absolute;top:calc(100% + .3rem);left:0;z-index:60;min-width:200px;max-width:calc(100vw - 2rem);
-  display:flex;flex-direction:column;gap:.15rem;padding:.4rem;background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius-card);box-shadow:0 14px 34px color-mix(in srgb,var(--heading) 16%,transparent);
-  animation:nav-in .14s ease-out}
+.nav__panel{display:flex;flex-direction:column;gap:.1rem;margin:.1rem 0 .3rem .6rem;padding:0 0 0 .6rem;border-left:2px solid var(--border)}
 .nav__panel[hidden]{display:none}
-.nav__panel a{padding:.7rem 1rem;font-size:.92rem;white-space:nowrap}
+.nav__panel a{padding:.7rem .75rem;font-size:.95rem}
 @keyframes nav-in{from{opacity:0;transform:translateY(-6px)}}
-@media(prefers-reduced-motion:reduce){.nav__panel{animation:none}}
+@media(prefers-reduced-motion:reduce){.nav__panel,.nav__burger span{animation:none;transition:none}}
 
-@media(min-width:420px){
-  .site-header__bar{column-gap:1rem}
-  .brand{font-size:1.05rem}.brand img{height:44px}
-  .nav a,.nav__trigger{padding:.55rem .5rem;font-size:.84rem}
-}
+@media(min-width:420px){.brand{font-size:1.05rem}.brand img{height:44px}}
+
+/* Desktop: links in the header, Menu is a floating dropdown, no hamburger */
 @media(min-width:860px){
+  .nav__burger{display:none}
   .site-header__bar{flex-wrap:nowrap;min-height:64px;padding:0}
   .brand{margin-right:0}
-  .nav{order:0;flex:0 1 auto;margin-left:auto;gap:.25rem}
-  .nav a,.nav__trigger{font-size:.92rem;padding:.55rem .8rem}
+  .nav{display:flex;order:0;flex:0 1 auto;flex-direction:row;align-items:center;margin-left:auto;gap:.25rem;padding:0;border:0;max-height:none;overflow:visible}
+  .nav a,.nav__trigger{display:block;width:auto;font-size:.92rem;padding:.55rem .8rem}
+  .nav__panel{position:absolute;top:calc(100% + .3rem);left:0;z-index:60;min-width:200px;max-width:calc(100vw - 2rem);
+    margin:0;padding:.4rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);
+    box-shadow:0 14px 34px color-mix(in srgb,var(--heading) 16%,transparent);animation:nav-in .14s ease-out}
+  .nav__panel a{padding:.7rem 1rem;font-size:.92rem}
 }
 
 /* Hero */
@@ -145,7 +162,7 @@
 
 /* v9: specials strip, a scrolling ticker above the header on every page. Theme tokens only.
    Two identical groups slide left by exactly one group, so the loop is seamless. Pauses on hover/focus. */
-.specials{background:var(--btn-bg);color:var(--btn-text);overflow:hidden;font:600 .78rem var(--font-body);letter-spacing:.08em;text-transform:uppercase}
+.specials{position:relative;background:var(--btn-bg);color:var(--btn-text);overflow:hidden;font:600 .78rem var(--font-body);letter-spacing:.08em;text-transform:uppercase}
 .specials__track{display:flex;width:max-content;animation:specials-slide var(--specials-time,30s) linear infinite}
 .specials:hover .specials__track{animation-play-state:paused}
 .specials__group{display:flex;flex:none}
@@ -161,8 +178,12 @@
 }
 
 /* v10: orders strip at the very bottom (same ticker as the specials strip) + floating WhatsApp button */
-.specials--bottom{border-top:1px solid var(--border)}
-.wa-float{position:fixed;z-index:70;right:max(1rem,env(safe-area-inset-right));bottom:max(1rem,env(safe-area-inset-bottom));
+/* v10.1: both strips stay put while scrolling. Top strip is pinned above the sticky header; orders strip is pinned to the
+   bottom of the screen. site.js publishes their heights as --specials-h / --orders-h (page padding + header offset + button lift). */
+.specials--top{position:sticky;top:0;z-index:55}
+.specials--bottom{position:fixed;left:0;right:0;bottom:0;z-index:55;padding-bottom:env(safe-area-inset-bottom,0px);border-top:1px solid var(--border)}
+body{padding-bottom:var(--orders-h,0px)}
+.wa-float{position:fixed;z-index:70;right:max(1rem,env(safe-area-inset-right));bottom:calc(max(var(--orders-h,0px),env(safe-area-inset-bottom,0px)) + 1rem);
   display:grid;place-items:center;width:58px;height:58px;border-radius:50%;background:var(--whatsapp);color:#fff;text-decoration:none;
   box-shadow:0 6px 18px rgba(0,0,0,.28);transition:transform .15s ease,box-shadow .15s ease}
 .wa-float:hover{transform:scale(1.08);box-shadow:0 10px 24px rgba(0,0,0,.32)}

@@ -26,6 +26,7 @@
         <img src="../assets/logo/logo-mark.png" alt="" width="34" height="44">
         <span data-biz="name">The Sweetest Bakery</span>
       </a>
+      <button class="nav__burger" type="button" aria-expanded="false" aria-controls="nav" aria-label="Open menu"><span></span><span></span><span></span></button>
       <nav class="nav" id="nav" aria-label="Main">${NAV.map(item).join("")}</nav>
     </div>
   </div>
@@ -33,7 +34,7 @@
 
   // Scrolling ticker strips: "specials" at the very top of every page (v9) and "orders" at the very bottom (v10).
   // Text + on/off come from admin (settings.specials / settings.orders).
-  const strip = (cfg, cls, label, add) => {
+  const strip = (cfg, cls, label, add, cssVar) => {
     const items = ((cfg || {}).items || []).filter(Boolean);
     if ((cfg || {}).enabled === false || !items.length || document.querySelector("." + cls)) return;
     const group = (hidden, n) => `<div class="specials__group"${hidden ? ' aria-hidden="true"' : ""}>${Array.from({ length: n }, (_, i) => items.map(t => `<span class="specials__item"${i ? " data-rep" : ""}>${SB.esc(t)}</span>`).join("")).join("")}</div>`;
@@ -45,10 +46,13 @@
     const track = bar.firstElementChild;
     let n = 1; while (track.firstElementChild.scrollWidth < window.innerWidth && n < 12) { n++; track.innerHTML = group(false, n) + group(true, n); }
     track.style.setProperty("--specials-time", Math.max(14, track.firstElementChild.scrollWidth / 55) + "s");
+    // Publish this strip's height so the header (sticks under the top strip), page bottom padding and the floating button can make room.
+    const publish = () => document.documentElement.style.setProperty(cssVar, bar.offsetHeight + "px");
+    publish(); if (window.ResizeObserver) new ResizeObserver(publish).observe(bar);
   };
   window.SB && SB.load().then(({ settings }) => {
-    strip(settings.specials, "specials--top", "Specials", el => document.body.prepend(el));
-    strip(settings.orders, "specials--bottom", "How to order", el => document.body.append(el));
+    strip(settings.specials, "specials--top", "Specials", el => document.body.prepend(el), "--specials-h");
+    strip(settings.orders, "specials--bottom", "How to order", el => document.body.append(el), "--orders-h");
   });
 
   // v10: one floating WhatsApp button on every page (the only WhatsApp button besides the one on the Contact page).
@@ -74,15 +78,30 @@
 
   const y = document.getElementById("year"); if (y) y.textContent = new Date().getFullYear();
 
-  // Food-menu dropdown: click/tap or keyboard to open; closes on Escape, outside click or tabbing away.
-  const drop = document.querySelector(".nav__drop");
+  // Menu: a dropdown on desktop, an expandable list inside the three-line menu on phones (under 860px).
+  // Closes on Escape, outside click or tabbing away (desktop). One codebase, the CSS picks the layout.
+  const drop = document.querySelector(".nav__drop"), hdr = document.querySelector(".site-header"), burger = document.querySelector(".nav__burger");
+  const isMobile = () => matchMedia("(max-width:859px)").matches;
   if (drop) {
     const trig = drop.querySelector(".nav__trigger"), panel = drop.querySelector(".nav__panel");
     const setOpen = open => { panel.hidden = !open; trig.setAttribute("aria-expanded", open); };
+    const setMenu = open => {
+      hdr.classList.toggle("is-open", open); burger.setAttribute("aria-expanded", open); burger.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      if (open && isMobile()) setOpen(true); // show all the food sections right away
+    };
     trig.addEventListener("click", () => setOpen(panel.hidden));
-    document.addEventListener("keydown", e => { if (e.key === "Escape" && !panel.hidden) { setOpen(false); trig.focus(); } });
-    document.addEventListener("click", e => { if (!drop.contains(e.target)) setOpen(false); });
-    drop.addEventListener("focusout", e => { if (e.relatedTarget && !drop.contains(e.relatedTarget)) setOpen(false); });
+    burger.addEventListener("click", () => setMenu(!hdr.classList.contains("is-open")));
+    document.addEventListener("keydown", e => {
+      if (e.key !== "Escape") return;
+      if (hdr.classList.contains("is-open")) { setMenu(false); burger.focus(); }
+      else if (!panel.hidden) { setOpen(false); trig.focus(); }
+    });
+    document.addEventListener("click", e => {
+      if (!isMobile() && !drop.contains(e.target)) setOpen(false);
+      if (!hdr.contains(e.target)) setMenu(false);
+    });
+    drop.addEventListener("focusout", e => { if (!isMobile() && e.relatedTarget && !drop.contains(e.relatedTarget)) setOpen(false); });
+    matchMedia("(max-width:859px)").addEventListener("change", () => { setMenu(false); setOpen(false); });
 
     // Sections in the dropdown come from the product data (same list as the filter buttons on the Menu page).
     window.SB && SB.load().then(({ categories }) => {
