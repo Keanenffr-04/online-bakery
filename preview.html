@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en" data-theme="classic">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preview | The Sweetest Bakery</title>
+<link rel="stylesheet" href="src/themes/base.css">
+<link rel="stylesheet" href="src/themes/theme-classic.css">
+<style>
+  /* preview.html: double-click this file to look around the site. No install, no server. */
+  .wrap{max-width:900px;margin:0 auto;padding:2.5rem 1.25rem 3rem}
+  .top{display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap;margin-bottom:2rem}
+  .top img{height:96px;width:auto}
+  .top p{margin:0 0 .75rem;max-width:44ch}
+  h2{font-size:1.1rem;letter-spacing:.14em;text-transform:uppercase;margin:2.25rem 0 1rem;font-family:var(--font-body);font-weight:600}
+  .grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+  .tile{display:block;padding:1.1rem 1.25rem;text-decoration:none;color:var(--text);background:var(--surface);
+    border:1px solid var(--border);border-radius:var(--radius-card);box-shadow:var(--shadow);transition:transform .15s ease,box-shadow .15s ease}
+  a.tile:hover,a.tile:focus-visible{transform:translateY(-2px);border-color:var(--btn-bg)}
+  .tile strong{display:block;font:var(--heading-weight) 1.15rem var(--font-heading);color:var(--heading)}
+  .tile span{font-size:.88rem;opacity:.8}
+  .tile .subs{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.8rem}
+  .subs a{font-size:.82rem;padding:.3em .8em;border-radius:var(--radius-pill);border:1.5px solid var(--border);color:var(--text);text-decoration:none;background:var(--surface-alt)}
+  .subs a:hover,.subs a:focus-visible{background:var(--btn-bg);border-color:var(--btn-bg);color:var(--btn-text)}
+  small{display:block;margin-top:2.5rem;opacity:.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <img src="assets/logo/logo-light.png" alt="The Sweetest Bakery logo">
+    <div>
+      <p class="eyebrow">Local preview</p>
+      <h1 style="margin-bottom:.35em">The Sweetest Bakery</h1>
+      <p>Click any page below to open it. Every link on the site works from here, so you can click around like a customer would.</p>
+      <a class="btn" href="src/index.html">Open the website</a>
+    </div>
+  </div>
+
+  <h2>Pages</h2>
+  <div class="grid">
+    <a class="tile" href="src/index.html"><strong>Home</strong><span>Hero, fresh from the oven, WhatsApp banner</span></a>
+    <div class="tile">
+      <a href="src/menu.html" style="text-decoration:none;color:inherit"><strong>Menu</strong><span>Every product, filtered by section</span></a>
+      <div class="subs" id="menu-sections"><a href="src/menu.html">Full menu</a></div>
+    </div>
+    <a class="tile" href="src/custom-orders.html"><strong>Custom Orders</strong><span>Birthdays, weddings, events</span></a>
+    <a class="tile" href="src/about.html"><strong>About</strong><span>Becca's story</span></a>
+    <a class="tile" href="src/contact.html"><strong>Contact</strong><span>How to order on WhatsApp</span></a>
+  </div>
+
+  <h2>Behind the scenes</h2>
+  <div class="grid">
+    <a class="tile" href="src/admin.html"><strong>Staff admin</strong><span>Orders, menu editor, theme tester</span></a>
+    <a class="tile" href="src/theme-preview.html"><strong>Theme preview</strong><span>Classic, Cocoa and Pastel side by side</span></a>
+  </div>
+
+  <small>Preview works straight from this file. When the site is hosted online it uses the real files in <code>config/</code> and <code>src/data/</code>.</small>
+</div>
+
+<!-- Menu sections come from the same data the site uses (offline copy), so they match the dropdown and filters. -->
+<script src="src/js/offline-data.js"></script>
+<script>
+  (function () {
+    var d = window.SB_OFFLINE, box = document.getElementById("menu-sections");
+    if (!d || !d.products || !box) return;
+    d.products.categories.forEach(function (c) {
+      var a = document.createElement("a");
+      a.href = "src/menu.html?c=" + encodeURIComponent(c.id);
+      a.textContent = (c.icon ? c.icon + " " : "") + c.name;
+      box.appendChild(a);
+    });
+  })();
+</script>
+</body>
+</html>

@@ -35,3 +35,7 @@ Payments, user accounts, delivery tracking, real database.
 - Admin (`src/admin.html` + `js/admin.js`): accounts/orders in `localStorage` (`sb_admins`, `sb_orders`), SHA-256 salted password hashes. Convenience lock only, not secure. Replace with a real backend before relying on it.
 - Menu is one page (`menu.html`) filtered by category; categories are defined in `products.json`.
 - Theme is applied to `<html data-theme>` by `js/boot.js` (before paint) and `store.js`.
+
+## v7 update: header + local preview
+- Header: plain links (Home, Custom Orders, About, Contact) plus ONE dropdown, **Menu**, whose panel lists the food sections (Full menu + each category from `products.json`, so it always matches the Menu page filters). WhatsApp button sits in the header bar, not in the nav. Phones: logo + WhatsApp on row 1, links on row 2; from 860px it is one row. Code: `NAV` in `src/js/site.js`, styles in `src/css/site.css`.
+- Local preview: `preview.html` (repo root) links to every page. Browsers block `fetch()` of local files, so when `location.protocol === "file:"` `store.js` reads `src/js/offline-data.js` (a copy of the three data files) instead. Hosted sites are unaffected and keep reading the real JSON. `site.js` now gets business details through `SB.load()` so there is one loading path.

@@ -8,8 +8,14 @@
     esc, THEMES: [["classic", "Classic Black & White"], ["cocoa", "Cocoa & Cream"], ["pastel", "Soft Pastel"]],
     load() {
       return SB._p || (SB._p = (async () => {
-        const get = u => fetch(u).then(r => r.json()).catch(() => null);
-        const [biz, pubSet, pubProd] = await Promise.all([get("../config/business.json"), get("../config/site-settings.json"), get("data/products.json")]);
+        // Opened from disk (file://)? Browsers block fetch() there, so read the copy in js/offline-data.js instead.
+        const FILE = location.protocol === "file:";
+        const mirror = () => window.SB_OFFLINE ? Promise.resolve(window.SB_OFFLINE) : new Promise(res => {
+          const el = document.createElement("script"); el.src = "js/offline-data.js";
+          el.onload = el.onerror = () => res(window.SB_OFFLINE || {}); document.head.appendChild(el);
+        });
+        const get = (u, key) => FILE ? mirror().then(m => m[key] || null) : fetch(u).then(r => r.json()).catch(() => null);
+        const [biz, pubSet, pubProd] = await Promise.all([get("../config/business.json", "business"), get("../config/site-settings.json", "settings"), get("data/products.json", "products")]);
         const pv = window.top !== window ? J(sessionStorage, "sb_preview") : null;
         const base = { ...D, ...(pubSet || {}) }, own = (pv && pv.settings) || J(localStorage, "sb_settings") || {};
         const settings = { ...base, ...own, home: { ...D.home, ...(base.home || {}), ...(own.home || {}) } };

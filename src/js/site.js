@@ -1,16 +1,21 @@
 /* site.js: renders the shared header + footer, wires WhatsApp links from config/business.json,
-   and handles the mobile menu. Edit NAV below to change the menu everywhere. */
+   and handles the food-menu dropdown. Edit NAV below to change the menu everywhere. */
 (function () {
+  // Third value = true means "this item is the food-menu dropdown" (the only dropdown in the header).
   const NAV = [
     ["Home", "index.html"],
-    ["Menu", "menu.html"],
+    ["Menu", "menu.html", true],
     ["Custom Orders", "custom-orders.html"],
     ["About", "about.html"],
     ["Contact", "contact.html"]
   ];
   const page = location.pathname.split("/").pop() || "index.html";
-  const links = NAV.map(([label, href]) =>
-    `<a href="${href}"${href === page ? ' aria-current="page"' : ""}>${label.replace("&", "&amp;")}</a>`).join("");
+  const item = ([label, href, drop]) => drop
+    ? `<div class="nav__drop">
+        <button class="nav__trigger${href === page ? " is-current" : ""}" type="button" aria-expanded="false" aria-controls="menu-panel">${label}</button>
+        <div class="nav__panel" id="menu-panel" hidden><a href="${href}">Full menu</a></div>
+      </div>`
+    : `<a href="${href}"${href === page ? ' aria-current="page"' : ""}>${label.replace("&", "&amp;")}</a>`;
 
   const header = document.getElementById("site-header");
   if (header) header.outerHTML = `
@@ -21,11 +26,9 @@
         <img src="../assets/logo/logo-mark.png" alt="" width="34" height="44">
         <span data-biz="name">The Sweetest Bakery</span>
       </a>
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
+      <a class="btn btn--sm btn--whatsapp site-header__wa" data-wa href="#">WhatsApp us</a>
+      <nav class="nav" id="nav" aria-label="Main">${NAV.map(item).join("")}</nav>
     </div>
-    <nav class="nav" id="nav" aria-label="Main">${links}
-      <a class="btn btn--whatsapp" data-wa href="#">WhatsApp us</a>
-    </nav>
   </div>
 </header>`;
 
@@ -44,29 +47,34 @@
 
   const y = document.getElementById("year"); if (y) y.textContent = new Date().getFullYear();
 
-  const toggle = document.querySelector(".nav-toggle"), nav = document.getElementById("nav");
-  if (toggle && nav) {
-    const setOpen = open => {
-      nav.classList.toggle("is-open", open);
-      toggle.setAttribute("aria-expanded", open);
-      toggle.textContent = open ? "Close" : "Menu";
-    };
-    toggle.addEventListener("click", () => setOpen(!nav.classList.contains("is-open")));
-    // v5: the menu is a dropdown everywhere, so close it on Escape or when clicking elsewhere
-    document.addEventListener("keydown", e => { if (e.key === "Escape" && nav.classList.contains("is-open")) { setOpen(false); toggle.focus(); } });
-    document.addEventListener("click", e => { if (!nav.contains(e.target) && !toggle.contains(e.target)) setOpen(false); });
+  // Food-menu dropdown: click/tap or keyboard to open; closes on Escape, outside click or tabbing away.
+  const drop = document.querySelector(".nav__drop");
+  if (drop) {
+    const trig = drop.querySelector(".nav__trigger"), panel = drop.querySelector(".nav__panel");
+    const setOpen = open => { panel.hidden = !open; trig.setAttribute("aria-expanded", open); };
+    trig.addEventListener("click", () => setOpen(panel.hidden));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && !panel.hidden) { setOpen(false); trig.focus(); } });
+    document.addEventListener("click", e => { if (!drop.contains(e.target)) setOpen(false); });
+    drop.addEventListener("focusout", e => { if (e.relatedTarget && !drop.contains(e.relatedTarget)) setOpen(false); });
+
+    // Sections in the dropdown come from the product data (same list as the filter buttons on the Menu page).
+    window.SB && SB.load().then(({ categories }) => {
+      const cur = page === "menu.html" ? (new URLSearchParams(location.search).get("c") || "") : null;
+      const rows = [["", "Full menu"], ...categories.map(c => [c.id, (c.icon ? c.icon + " " : "") + c.name])];
+      panel.innerHTML = rows.map(([id, label]) =>
+        `<a href="menu.html${id ? "?c=" + encodeURIComponent(id) : ""}"${cur === id ? ' aria-current="page"' : ""}>${SB.esc(label)}</a>`).join("");
+    });
   }
 
   // Business details: single source of truth is config/business.json (never hardcode them here).
-  fetch("../config/business.json").then(r => r.json()).then(b => {
+  // SB.load() reads the JSON on a server, or its offline copy when the page is opened straight from disk.
+  (window.SB ? SB.load().then(d => d.biz) : Promise.resolve({})).then(b => {
     document.querySelectorAll("[data-biz]").forEach(el => { const v = b[el.dataset.biz]; if (v) el.textContent = el.dataset.biz === "owner" ? v.split(" ")[0] : v; });
     document.querySelectorAll("[data-wa]").forEach(el => {
+      if (!b.whatsappLink) { el.href = "contact.html"; return; }
       const msg = el.dataset.waText || "Hi! I'd like to order from The Sweetest Bakery.";
       el.href = `${b.whatsappLink}?text=${encodeURIComponent(msg)}`;
       el.target = "_blank"; el.rel = "noopener";
     });
-  }).catch(() => {
-    // e.g. opened straight from disk (file://). Serve the repo root to see WhatsApp links: python3 -m http.server
-    document.querySelectorAll("[data-wa]").forEach(el => { el.href = "contact.html"; });
   });
 })();
