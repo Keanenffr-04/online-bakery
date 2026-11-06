@@ -32,6 +32,21 @@
   </div>
 </header>`;
 
+  // v9: specials strip at the very top of every page (scrolling ticker). Text + on/off come from admin (settings.specials).
+  window.SB && SB.load().then(({ settings }) => {
+    const sp = settings.specials || {}, items = (sp.items || []).filter(Boolean);
+    if (sp.enabled === false || !items.length || document.querySelector(".specials")) return;
+    const group = (hidden, n) => `<div class="specials__group"${hidden ? ' aria-hidden="true"' : ""}>${Array.from({ length: n }, (_, i) => items.map(t => `<span class="specials__item"${i ? " data-rep" : ""}>${SB.esc(t)}</span>`).join("")).join("")}</div>`;
+    const bar = document.createElement("div");
+    bar.className = "specials"; bar.setAttribute("role", "region"); bar.setAttribute("aria-label", "Specials");
+    bar.innerHTML = `<div class="specials__track">${group(false, 1)}${group(true, 1)}</div>`;
+    document.body.prepend(bar);
+    // Repeat the messages until one group is wider than the screen, so the loop never shows a gap.
+    const track = bar.firstElementChild;
+    let n = 1; while (track.firstElementChild.scrollWidth < window.innerWidth && n < 12) { n++; track.innerHTML = group(false, n) + group(true, n); }
+    track.style.setProperty("--specials-time", Math.max(14, track.firstElementChild.scrollWidth / 55) + "s");
+  });
+
   const footer = document.getElementById("site-footer");
   if (footer) footer.outerHTML = `
 <footer class="site-footer">

@@ -145,3 +145,20 @@
 #featured-grid.menu{grid-template-columns:repeat(2,1fr)}
 @media(min-width:760px){#featured-grid.menu{grid-template-columns:repeat(3,1fr)}}
 .more{text-align:center;margin:2rem 0 0}
+
+/* v9: specials strip, a scrolling ticker above the header on every page. Theme tokens only.
+   Two identical groups slide left by exactly one group, so the loop is seamless. Pauses on hover/focus. */
+.specials{background:var(--btn-bg);color:var(--btn-text);overflow:hidden;font:600 .78rem var(--font-body);letter-spacing:.08em;text-transform:uppercase}
+.specials__track{display:flex;width:max-content;animation:specials-slide var(--specials-time,30s) linear infinite}
+.specials:hover .specials__track{animation-play-state:paused}
+.specials__group{display:flex;flex:none}
+.specials__item{display:flex;align-items:center;white-space:nowrap;padding:.6rem 0}
+.specials__item::after{content:"\2726";margin:0 1.75rem;opacity:.7}
+@keyframes specials-slide{to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){
+  .specials__track{animation:none;width:auto;justify-content:center;flex-wrap:wrap;padding:.25rem 1rem}
+  .specials__group[aria-hidden="true"],.specials__item[data-rep]{display:none}
+  .specials__group{flex:0 1 auto;flex-wrap:wrap;justify-content:center}
+  .specials__item{padding:.35rem 0;white-space:normal;text-align:center}
+  .specials__item::after{display:none}
+}

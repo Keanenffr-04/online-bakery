@@ -56,3 +56,16 @@ Owner request (`Changes for next version_1.md`, items 1 and 2):
 Tests: admin flow (hero style, greeting, hero checkbox, layout jump, save, real pages, Publish downloads) on file:// and http; v7 link crawl + dropdown checks re-run, all passing.
 
 Notes: no photos yet, the pattern is drawn shapes (real photos stay in the Ideas Parking Lot). I could not reproduce List failing when the setting was applied normally on the Menu page, so if it still stays grid for you, tell me where you were looking (admin preview, saved site, or a published copy). Items 5 to 7 of the owner list are still scheduled.
+
+## v9: Best sellers heading + specials strip (done, 2026-11-06)
+Owner request (`Changes for next version.md`, items 1 and 2; items 3 and 4 pushed to the roadmap as v10):
+1. **Heading changed.** The Home section "Fresh from the oven" is now **"Our best sellers"** (`src/index.html`; the preview.html blurb updated too). It still shows the products ticked "Show on home page" in admin.
+2. **Specials strip at the very top of every page.** A thin scrolling ticker above the header, modelled on the offer strip on lovedbychrist.co.za (messages repeat and glide across, ticker stops while you hover). It uses the theme's button colours, so it is black on Classic, chocolate on Cocoa and pink on Pastel. The header stays sticky under it; the strip itself scrolls away with the page. Appears on every public page (Home, Menu and each section, Custom Orders, About, Contact), not on the admin login.
+   - **Admin:** Theme & layout now has a **Specials strip** box: an on/off tick and a text box, one special per line (up to 6). The preview on the right updates as you type. Save to this device, then publish like every other setting.
+   - **Data:** new `specials: { enabled, items[] }` in `config/site-settings.json` (and so in `src/js/offline-data.js`, regenerated). Default text is neutral placeholder wording ("Today's specials: ask Becca on WhatsApp" / "Custom cakes for every occasion, order online"), **no made-up prices or discounts**. Becca should replace it with the real specials.
+   - **Code:** `src/js/site.js` (builds the strip), `src/css/site.css` (end of file), `src/js/store.js` (defaults + merge), `src/js/admin.js`.
+   - **Accessibility:** with "reduce motion" turned on in the visitor's device, the ticker does not move and the messages sit centred and wrap instead; the duplicate copy used for the loop is hidden from screen readers.
+
+Tests (headless browser, file://): strip is the first thing on all 9 public pages at 320, 390 and 1280px wide, loop group always wider than the screen, no sideways scroll, header sticks at the top when scrolling, all 3 themes checked, reduced-motion checked, admin on/off + typing updates the preview, and Save shows on real pages. No JS errors.
+
+Notes: the very first paint has no strip and it appears a moment later, once the settings have loaded (it pushes the page down about 34px). A fix (reserving the space) can come later if it bothers anyone.

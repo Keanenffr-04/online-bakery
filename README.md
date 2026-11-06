@@ -1,7 +1,7 @@
 # online-bakery 🐇🍰
 Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
 
-**Current version:** see `VERSION` (v8 = second hero (baked goods + greeting, chosen in admin) + menu List layout fixed; v7 = double-click `preview.html` to browse the whole site + only "Menu" is a dropdown; v6 = clicked menu link colour + buttons invert on hover; v5 = header menu is always a dropdown with a hover highlight; v4 = Menu page with filters + decluttered home + admin page (`/src/admin.html`, default `admin` / `admin1`); to preview, double-click `preview.html`)
+**Current version:** see `VERSION` (v9 = "Our best sellers" heading + scrolling specials strip at the top of every page (text and on/off in admin); v8 = second hero (baked goods + greeting, chosen in admin) + menu List layout fixed; v7 = double-click `preview.html` to browse the whole site + only "Menu" is a dropdown; v6 = clicked menu link colour + buttons invert on hover; v5 = header menu is always a dropdown with a hover highlight; v4 = Menu page with filters + decluttered home + admin page (`/src/admin.html`, default `admin` / `admin1`); to preview, double-click `preview.html`)
 
 ## Goals
 - Sleek and modern, but dead simple to use

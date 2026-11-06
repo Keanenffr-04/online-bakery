@@ -26,6 +26,13 @@ window.SB_OFFLINE = {
     },
     "featuredCount": 3,
     "menuLayout": "grid",
+    "specials": {
+      "enabled": true,
+      "items": [
+        "Today's specials: ask Becca on WhatsApp",
+        "Custom cakes for every occasion, order online"
+      ]
+    },
     "_note": "Published site settings. The admin page (src/admin.html) can export a new copy of this file."
   },
   "products": {

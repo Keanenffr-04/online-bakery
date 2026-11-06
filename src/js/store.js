@@ -2,7 +2,7 @@
    (localStorage). Inside the admin preview iframe it uses the unsaved draft instead. */
 (function () {
   const J = (s, k) => { try { return JSON.parse(s.getItem(k)); } catch (e) { return null; } };
-  const D = { theme: "classic", tagline: "", heroStyle: "logo", greeting: "Welcome in, something sweet is baking.", home: { hero: true, featured: true, cta: true }, featuredCount: 3, menuLayout: "grid" };
+  const D = { theme: "classic", tagline: "", heroStyle: "logo", greeting: "Welcome in, something sweet is baking.", home: { hero: true, featured: true, cta: true }, featuredCount: 3, menuLayout: "grid", specials: { enabled: true, items: ["Today's specials: ask Becca on WhatsApp", "Custom cakes for every occasion, order online"] } };
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const SB = window.SB = {
     esc, THEMES: [["classic", "Classic Black & White"], ["cocoa", "Cocoa & Cream"], ["pastel", "Soft Pastel"]],
@@ -18,7 +18,7 @@
         const [biz, pubSet, pubProd] = await Promise.all([get("../config/business.json", "business"), get("../config/site-settings.json", "settings"), get("data/products.json", "products")]);
         const pv = window.top !== window ? J(sessionStorage, "sb_preview") : null;
         const base = { ...D, ...(pubSet || {}) }, own = (pv && pv.settings) || J(localStorage, "sb_settings") || {};
-        const settings = { ...base, ...own, home: { ...D.home, ...(base.home || {}), ...(own.home || {}) } };
+        const settings = { ...base, ...own, home: { ...D.home, ...(base.home || {}), ...(own.home || {}) }, specials: { ...D.specials, ...(base.specials || {}), ...(own.specials || {}) } };
         const data = J(localStorage, "sb_products") || pubProd || { categories: [], products: [] };
         document.documentElement.dataset.theme = settings.theme;
         return { biz: biz || {}, settings, categories: data.categories || [], products: data.products || [], published: { settings: base, products: pubProd } };

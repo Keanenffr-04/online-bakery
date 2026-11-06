@@ -2,7 +2,7 @@
 Append-only. Never delete. Items may move to a later version (leave a note). Finished items go to `BACKLOG.md` with the version number.
 Rule: **max 1 or 2 things per version.**
 
-**Next up: v9**  (v8 done, see BACKLOG.md)
+**Next up: v10**  (v9 done, see BACKLOG.md)
 
 ---
 ## v2: Research + theme foundation (DONE, see BACKLOG.md)
@@ -65,3 +65,11 @@ Done in v5: items 1 and 2 (see BACKLOG.md). The old v5 (floating WhatsApp + them
 ## Owner change list 3 (from `Changes for next version_1.md`, added with v8)
 - v8 (DONE, see BACKLOG.md): 1. second hero (baked goods + admin greeting). 2. Menu layout List fixed.
 - The owner list's earlier items slide one more version because this list came first: **v9** = Instagram + Facebook footer section; **v10** = glass-style "Fresh from the oven" cards + admin choice of how many; **v11** = most recent + most popular section. Then floating WhatsApp button + theme switcher, then custom orders + launch prep.
+
+---
+## Owner change list 4 (from `Changes for next version.md`, added with v9)
+Owner said: do 2 things, push the rest into the roadmap.
+- v9 (DONE, see BACKLOG.md): 1. "Fresh from the oven" heading is now "Our best sellers". 2. Specials strip at the very top of every page (scrolling ticker, like lovedbychrist.co.za).
+- **v10** (pushed from owner list 4): 3. Same style of strip **at the bottom** of every page, for orders (e.g. how to order / lead time / order on WhatsApp). Owner to supply the wording; suggest admin-editable like the specials strip (reuse the `.specials` styles and the admin box pattern from v9). 4. **Remove every WhatsApp button except the one in the Contact section, and add one floating WhatsApp button** on all pages, like proverbsjewelery.co.za. Buttons to remove: header "WhatsApp us", both hero buttons on Home, "Order on WhatsApp" in the Home banner, the "Ask us on WhatsApp" buttons on About and Custom Orders, the footer WhatsApp link, and the per-product "Order" buttons on cards (decide with the owner what customers click instead, e.g. Order opens the floating WhatsApp or the Contact page). Note: proverbsjewelery.co.za blocks automated access, so ask the owner for a screenshot or description of the button (position, size, colour, label) before building. Do items 3 and 4 together: the bottom orders strip is the natural replacement for the removed buttons.
+- The earlier suggested items slide one more version because the owner's list comes first: **v11** = Instagram + Facebook footer section; **v12** = glass-style best-seller cards + admin choice of how many; **v13** = most recent + most popular section. Then theme switcher, custom orders + launch prep.
+- Ideas for later (not scheduled): make the specials strip clickable (to the Menu or a WhatsApp message), and a start/end date per special so it switches off by itself.
