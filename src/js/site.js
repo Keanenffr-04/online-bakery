@@ -75,6 +75,7 @@
       <div><h3 data-biz="name">The Sweetest Bakery</h3><p>Handmade cakes, cupcakes, cookies and bread by <span data-biz="owner">Becca</span>.</p></div>
       <div><h3>Explore</h3><ul>${NAV.slice(1).map(([l, h]) => `<li><a href="${h}">${l.replace("&", "&amp;")}</a></li>`).join("")}</ul></div>
       <div><h3>Order</h3><p>Online orders only.<br>WhatsApp: <span data-biz="phoneDisplay"></span></p></div>
+      <div class="social" data-social hidden><h3>Follow us</h3><ul class="social__list"></ul></div>
     </div>
     <small>&copy; <span id="year"></span> <span data-biz="name">The Sweetest Bakery</span> &middot; <a href="admin.html">Staff login</a></small>
   </div>
@@ -115,6 +116,21 @@
         `<a href="menu.html${id ? "?c=" + encodeURIComponent(id) : ""}"${cur === id ? ' aria-current="page"' : ""}>${SB.esc(label)}</a>`).join("");
     });
   }
+
+  // v10.5: Instagram + Facebook links in the footer. Handles come from config/business.json (instagram, facebook);
+  // an empty handle hides that link, and the whole column hides if both are empty. Accepts a handle or a full https:// link.
+  const ICONS = {
+    instagram: `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><defs><linearGradient id="ig-g" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#FEDA75"/><stop offset=".35" stop-color="#FA7E1E"/><stop offset=".62" stop-color="#D62976"/><stop offset=".85" stop-color="#962FBF"/><stop offset="1" stop-color="#4F5BD5"/></linearGradient></defs><rect x="1.5" y="1.5" width="21" height="21" rx="6" fill="url(#ig-g)"/><rect x="5.4" y="5.4" width="13.2" height="13.2" rx="4" fill="none" stroke="#fff" stroke-width="1.7"/><circle cx="12" cy="12" r="3.1" fill="none" stroke="#fff" stroke-width="1.7"/><circle cx="16.3" cy="7.7" r="1" fill="#fff"/></svg>`,
+    facebook: `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="11" fill="#1877F2"/><path fill="#fff" d="M13.3 19.5v-6.4h2.1l.4-2.6h-2.5V8.9c0-.8.3-1.3 1.4-1.3h1.2V5.3c-.2 0-1-.1-1.9-.1-2 0-3.3 1.2-3.3 3.4v1.9H8.6v2.6h2.1v6.4h2.6Z"/></svg>`
+  };
+  const socialUrl = (kind, v) => /^https?:\/\//i.test(v) ? v : `https://${kind}.com/${encodeURIComponent(v.replace(/^@/, "").replace(/\/+$/, ""))}`;
+  const social = document.querySelector("[data-social]");
+  if (social && window.SB) SB.load().then(({ biz }) => {
+    const rows = [["instagram", "Instagram"], ["facebook", "Facebook"]].map(([k, n]) => [k, n, String(biz[k] || "").trim()]).filter(r => r[2]);
+    if (!rows.length) return;
+    social.querySelector("ul").innerHTML = rows.map(([k, n, v]) => `<li><a href="${SB.esc(socialUrl(k, v))}" target="_blank" rel="noopener">${ICONS[k]}<span>${n}</span></a></li>`).join("");
+    social.hidden = false;
+  });
 
   // Business details: single source of truth is config/business.json (never hardcode them here).
   // SB.load() reads the JSON on a server, or its offline copy when the page is opened straight from disk.

@@ -8,6 +8,8 @@ SB.load().then(({ biz, settings: s, categories: cs, products }) => {
     ["featured", "cta"].forEach(k => { if (s.home[k] === false) { const e = $(`[data-section="${k}"]`); if (e) e.remove(); } });
     const g = document.getElementById("featured-grid");
     if (g) {
+      g.classList.toggle("menu--glass", s.featuredStyle !== "plain");  // v10.5: glass-style cards unless admin picks "Plain"
+      const sec = $('[data-section="featured"]'); if (sec) sec.classList.toggle("section--glass", s.featuredStyle !== "plain");
       const f = vis.filter(p => p.featured).slice(0, s.featuredCount);
       if (f.length) g.innerHTML = f.map(p => SB.card(p, biz)).join(""); else $('[data-section="featured"]').remove();
     }

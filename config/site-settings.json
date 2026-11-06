@@ -9,6 +9,7 @@
     "cta": true
   },
   "featuredCount": 3,
+  "featuredStyle": "glass",
   "menuLayout": "grid",
   "specials": {
     "enabled": true,

@@ -124,3 +124,12 @@ Tests (headless browser, file://): no tags = no filters/note; search (single, mu
 
 Notes: `products.json` and `offline-data.js` did not change. Tags are per device until published (same as all admin changes).
 
+
+## v10.5: Instagram + Facebook footer, glass best-seller cards (done, 2026-11-07)
+Owner list 6 / master plan v10.5 (two things):
+1. **Instagram + Facebook** in a new "Follow us" footer column on every page, with small coloured logos (inline SVG, no external files). Handles live in `config/business.json` (`instagram`, `facebook`), currently the PLACEHOLDER `sweetest.bakery`. A handle, an `@handle` or a full `https://` link all work; an empty value hides that link, and both empty hides the column. Opens in a new tab. Code: `src/js/site.js` (footer + `ICONS`), `src/css/site.css`.
+2. **Glass-style best-seller cards** (Home "Our best sellers"): frosted, translucent cards over soft theme-coloured blobs, a gentle zoom (1.04) on hover or keyboard focus, no zoom for reduced-motion. Admin > Theme & layout: "Best sellers shown" now offers 1 to 6 (was 2, 3, 4, 6) and a new "Best-seller card style" (Glass or Plain). Which products appear is still the "Show on home page" tick on each menu item. Setting: `featuredStyle` ("glass" default, or "plain") in `config/site-settings.json`. Code: `src/js/pages.js`, `src/js/store.js`, `src/js/admin.js`, styles at the end of `src/css/site.css`. `offline-data.js` regenerated.
+
+Tests (headless browser, file://): 8 pages x 6 widths (320, 390, 768, 859, 860, 1280): no sideways scroll, both links in the footer, no JS errors; all 3 themes viewed (glass, hover zoom, footer); Plain style and count 2 on the live page; admin select 1 to 6 + style, live preview follows, saves, exported site-settings.json carries `featuredStyle`; Add button and cart badge still work on glass cards; social link variants (both empty, `@handle` only, full URL only); every `preview.html` link resolves.
+
+Notes: the page background itself is unchanged; only the best-sellers section gets the blobs. Browsers without `backdrop-filter` get a more solid card instead of frosted. FAQ and reviews are untouched (owner list 7 in ROADMAP.md, waiting on the owner's answers).

@@ -12,7 +12,9 @@ window.SB_OFFLINE = {
     "country": "ZA",
     "currency": "ZAR",
     "mode": "online-only",
-    "_note": "Single source of truth for business details. Never hardcode these elsewhere."
+    "_note": "Single source of truth for business details. Never hardcode these elsewhere. instagram / facebook are PLACEHOLDER handles (v10.5) until the owner gives the real ones; leave one empty to hide that link.",
+    "instagram": "sweetest.bakery",
+    "facebook": "sweetest.bakery"
   },
   "settings": {
     "theme": "classic",
@@ -25,6 +27,7 @@ window.SB_OFFLINE = {
       "cta": true
     },
     "featuredCount": 3,
+    "featuredStyle": "glass",
     "menuLayout": "grid",
     "specials": {
       "enabled": true,
