@@ -1,7 +1,7 @@
 # online-bakery 🐇🍰
 Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
 
-**Current version:** see `VERSION` (v2 = research + 3 themes and a preview page; open `src/theme-preview.html` in a browser)
+**Current version:** see `VERSION` (v3 = Home page + sticky nav + clean logo; serve the repo root with `python3 -m http.server` and open `/src/index.html`)
 
 ## Goals
 - Sleek and modern, but dead simple to use
@@ -18,7 +18,7 @@ online-bakery/
 ├── docs/           BRAND.md, ARCHITECTURE.md, AI_HANDOFF.md, REFERENCES.md
 ├── config/         business.json (name, WhatsApp, etc.)
 ├── assets/logo/    logo files
-└── src/            site code: themes/ (v2), theme-preview.html
+└── src/            index.html + placeholder pages, css/, js/, themes/, theme-preview.html
 ```
 
 ## Working rules (important)

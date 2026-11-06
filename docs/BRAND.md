@@ -22,3 +22,6 @@ Source: logo image (`assets/logo/logo-original.jpeg`).
 - Get a transparent PNG/SVG of the rabbit + wordmark (current file is a photo with a dark frame)
 - Crop to remove the black border; make light and dark versions
 - The arch shape can be reused as a UI motif (image masks, section headers)
+
+## Logo files (v3)
+`logo-light.png` (dark ink, light backgrounds), `logo-dark.png` (light ink, dark backgrounds), `logo-mark.png` (arch + rabbit only, nav). Transparent, cropped from the original JPEG. Replace with a vector/original export when Becca can supply one.

@@ -12,3 +12,9 @@ Notes: The two reference repos were NOT reviewed in v1 (no internet access durin
 2. Theme system: `src/themes/base.css` + 3 token themes (`theme-classic.css`, `theme-cocoa.css`, `theme-pastel.css`) and `src/theme-preview.html` (logo, heading, buttons incl. WhatsApp, card per theme).
 
 Notes: Themes only change tokens (colours, fonts, radius, shadow, spacing), per ARCHITECTURE.md. Logo in the preview is still the original JPEG (cropped by CSS); proper transparent logo is v3. Leftover review of reference repo v2 + licence checks moved to the Ideas Parking Lot.
+
+## v3: Site skeleton and navigation (done, 2026-11-06)
+1. Logo cleanup: `assets/logo/logo-light.png` (full logo, transparent, for light backgrounds), `logo-dark.png` (light ink, for dark backgrounds), `logo-mark.png` (arch + rabbit, used in the nav). Cropped out the dark frame and the name/phone lines (those live in `config/business.json`). Original kept as `logo-original.jpeg`. Still a raster trace of a JPEG: ask Becca for the original vector/PNG when possible.
+2. Home page + sticky nav: `src/index.html` (hero, category tiles, featured placeholders, how to order, WhatsApp CTA), `src/css/site.css`, `src/js/site.js` (renders the shared header/footer from one NAV list, mobile menu, WhatsApp links from `config/business.json`). Mobile-first; hamburger below 1000px.
+
+Notes: Added "Coming soon" placeholder pages for every nav item (cakes, cupcakes, cookies, bread, custom-orders, about, contact) so no link 404s; v4 and v6 replace them. Default theme is `classic` via `data-theme` on `<body>` (switcher is v5). `site.js` fetches `../config/business.json`, so serve the repo root (`python3 -m http.server`, open `/src/`); opened straight from disk the WhatsApp buttons fall back to the Contact page. Featured items are fake samples until v4.
