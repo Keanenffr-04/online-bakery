@@ -28,4 +28,18 @@ SB.load().then(({ biz, settings: s, categories: cs, products }) => {
     chips.addEventListener("click", e => { const b = e.target.closest("[data-c]"); if (!b) return; cur = b.dataset.c; history.replaceState(null, "", cur === "all" ? "menu.html" : "?c=" + cur); draw(); });
     draw();
   }
+  // v10.3: FAQ (accordion) + reviews. Both come from config/site-settings.json (faq, reviews). Reviews stay hidden while empty.
+  const stars = n => { n = Math.max(0, Math.min(5, Math.round(Number(n) || 0))); return n ? `<span class="stars" role="img" aria-label="${n} out of 5 stars">${"\u2605".repeat(n)}${"\u2606".repeat(5 - n)}</span>` : ""; };
+  const fl = document.getElementById("faq-list");
+  if (fl) {
+    const items = (s.faq || []).filter(f => f && f.q && f.a);
+    fl.innerHTML = items.length ? items.map(f => `<details class="faq__item"><summary>${SB.esc(f.q)}</summary><div class="faq__a"><p>${SB.esc(f.a)}</p>${f.draft ? '<p class="faq__draft">Draft answer, to be confirmed by Becca</p>' : ""}</div></details>`).join("") : "<p>Questions and answers are coming soon.</p>";
+  }
+  const rg = document.getElementById("reviews-grid");
+  if (rg) {
+    const rv = (s.reviews || []).filter(r => r && r.text);
+    if (rv.length) rg.innerHTML = rv.map(r => `<figure class="review card"><div class="card__body">${stars(r.rating)}<blockquote>${SB.esc(r.text)}</blockquote><figcaption>${SB.esc(r.name || "Happy customer")}${r.date ? ' <span class="muted">&middot; ' + SB.esc(r.date) + "</span>" : ""}</figcaption></div></figure>`).join("");
+    else if ($("[data-home]")) { const e = $('[data-section="reviews"]'); if (e) e.remove(); }
+    else { rg.remove(); const em = document.getElementById("reviews-empty"); if (em) em.hidden = false; }
+  }
 });

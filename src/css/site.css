@@ -256,3 +256,20 @@ button.btn:disabled{opacity:.6;cursor:not-allowed}
 /* very small phones (320px): shrink the name a little so logo + cart + menu button share one row */
 @media(max-width:359px){.brand{font-size:.8rem;gap:.4rem;min-width:0}.brand img{height:34px}.site-header__bar{gap:.25rem .35rem}}
 .form input,.form select{min-height:46px}
+
+/* v10.3: FAQ accordion + reviews (theme tokens only) */
+.faq{display:grid;gap:.6rem;max-width:760px}
+.faq__item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);overflow:hidden}
+.faq__item summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.1rem;font:600 1rem var(--font-body);color:var(--heading)}
+.faq__item summary::-webkit-details-marker{display:none}
+.faq__item summary::after{content:"";flex:none;width:.5em;height:.5em;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg);transition:transform .15s ease}
+.faq__item[open] summary::after{transform:rotate(225deg)}
+.faq__item summary:hover,.faq__item summary:focus-visible{background:var(--surface-alt)}
+.faq__item summary:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
+.faq__a{padding:0 1.1rem 1rem}.faq__a p{margin:0 0 .5rem;max-width:62ch}
+.faq__draft{display:inline-block;font-size:.75rem;padding:.15em .7em;border-radius:var(--radius-pill);border:1px dashed var(--border);background:var(--surface-alt);opacity:.85}
+.reviews{display:grid;gap:1rem}
+@media(min-width:760px){.reviews{grid-template-columns:repeat(3,1fr)}}
+.review{margin:0}.review blockquote{margin:.4rem 0 .8rem;font-style:italic}
+.review figcaption{font-weight:600;font-size:.9rem}
+.stars{color:var(--accent);letter-spacing:.1em}

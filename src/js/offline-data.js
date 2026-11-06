@@ -40,7 +40,40 @@ window.SB_OFFLINE = {
         "Tell us what you'd like, the date you need it and any notes"
       ]
     },
-    "_note": "Published site settings. The admin page (src/admin.html) can export a new copy of this file."
+    "_note": "Published site settings. The admin page (src/admin.html) can export a new copy of this file. faq: [{q,a,draft}] (draft:true shows a 'Draft answer' tag until Becca confirms it). reviews: [{name,text,rating(1-5, optional),date(optional)}], real reviews only; the section stays hidden while the list is empty.",
+    "faq": [
+      {
+        "q": "How do I order?",
+        "a": "Add items from the menu to your cart and send the order to us on WhatsApp, or use the Custom Order form for birthdays, weddings and events. Becca replies to confirm the details.",
+        "draft": true
+      },
+      {
+        "q": "How much notice do you need?",
+        "a": "Tell us the date you need your order when you message us and Becca will confirm whether she can fit it in. For big or custom cakes, ask as early as you can.",
+        "draft": true
+      },
+      {
+        "q": "Do you cater for allergies and dietary needs?",
+        "a": "Please tell us about any allergies or dietary needs when you order, and Becca will tell you what goes into each bake and what she can or can't do. If an allergy is serious, ask before you order.",
+        "draft": true
+      },
+      {
+        "q": "Do you deliver, or is it collection only?",
+        "a": "You can say whether you'd like collection or delivery in your cart or on the Custom Order form. Becca confirms what is possible for your area, and any delivery fee, on WhatsApp.",
+        "draft": true
+      },
+      {
+        "q": "How do I pay?",
+        "a": "Becca confirms the total and how to pay when she confirms your order on WhatsApp. You don't pay anything on the website.",
+        "draft": true
+      },
+      {
+        "q": "Can I change or cancel my order?",
+        "a": "Message Becca on WhatsApp as soon as you can and she will let you know what is possible.",
+        "draft": true
+      }
+    ],
+    "reviews": []
   },
   "products": {
     "_note": "SAMPLE menu and prices. Replace with Becca's real menu (or export from the admin page).",

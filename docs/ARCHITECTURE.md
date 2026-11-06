@@ -52,3 +52,6 @@ Payments, user accounts, delivery tracking, real database.
 - **Custom Order form:** `src/custom-orders.html` + `src/js/custom-order.js` validate, then `window.open` the same kind of `wa.me` link. No data is stored or sent anywhere else.
 - **Later (v10.7+):** once there is a hosted backend, the same message data can also be saved as an order in the admin; `SBCart.lines()` / `SBCart.message()` are the seam for that.
 
+## v10.3 update: FAQ + reviews
+- `faq` and `reviews` are arrays in `config/site-settings.json` (so they also flow through the offline copy and the admin Publish export). `pages.js` renders them (`#faq-list`, `#reviews-grid`); reviews are hidden while empty. Nav has a new `FAQ` entry in `NAV` (`site.js`).
+

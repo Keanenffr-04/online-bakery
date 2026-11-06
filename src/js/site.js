@@ -6,6 +6,7 @@
     ["Home", "index.html"],
     ["Menu", "menu.html", true],
     ["Custom Orders", "custom-orders.html"],
+    ["FAQ", "faq.html"],
     ["About", "about.html"],
     ["Contact", "contact.html"]
   ];

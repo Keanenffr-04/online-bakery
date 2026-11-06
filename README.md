@@ -1,11 +1,11 @@
 # online-bakery 🐇🍰
 Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
 
-**Current version:** see `VERSION` (v10.2 = cart that sends one WhatsApp message (Add buttons, header cart icon, Cart page) + the Custom Order form; v10.1 = both strips stay pinned while scrolling + three-line menu on phones, links in the header on desktop; v10 = orders strip at the bottom of every page + one floating WhatsApp button (other WhatsApp buttons removed, Contact keeps its own); v9 = "Our best sellers" heading + scrolling specials strip at the top of every page (text and on/off in admin); v8 = second hero (baked goods + greeting, chosen in admin) + menu List layout fixed; v7 = double-click `preview.html` to browse the whole site + only "Menu" is a dropdown; v6 = clicked menu link colour + buttons invert on hover; v5 = header menu is always a dropdown with a hover highlight; v4 = Menu page with filters + decluttered home + admin page (`/src/admin.html`, default `admin` / `admin1`); to preview, double-click `preview.html`)
+**Current version:** see `VERSION` (v10.3 = FAQ page (draft answers) + reviews section (empty until real reviews are added); v10.2 = cart that sends one WhatsApp message (Add buttons, header cart icon, Cart page) + the Custom Order form; v10.1 = both strips stay pinned while scrolling + three-line menu on phones, links in the header on desktop; v10 = orders strip at the bottom of every page + one floating WhatsApp button (other WhatsApp buttons removed, Contact keeps its own); v9 = "Our best sellers" heading + scrolling specials strip at the top of every page (text and on/off in admin); v8 = second hero (baked goods + greeting, chosen in admin) + menu List layout fixed; v7 = double-click `preview.html` to browse the whole site + only "Menu" is a dropdown; v6 = clicked menu link colour + buttons invert on hover; v5 = header menu is always a dropdown with a hover highlight; v4 = Menu page with filters + decluttered home + admin page (`/src/admin.html`, default `admin` / `admin1`); to preview, double-click `preview.html`)
 
 ## Goals
 - Sleek and modern, but dead simple to use
-- Clear **sections** so nobody struggles to find things (Menu, Custom Orders, Cart, About, Contact)
+- Clear **sections** so nobody struggles to find things (Menu, Custom Orders, FAQ, Cart, About, Contact)
 - Several **themes** to choose from (switchable, pick a favourite)
 - Online only for now; customers can **WhatsApp us from any page** (one floating button), or fill a **cart** or the **Custom Order form** that sends one WhatsApp message
 

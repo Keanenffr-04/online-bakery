@@ -102,3 +102,13 @@ Tests (headless browser, file:// and http): add on Menu and Home, badge counts, 
 
 Notes: prices are still the SAMPLE prices in `products.json`, so the totals are only as real as those. The message says "Please confirm availability and the final price", and no lead times or delivery areas are claimed (owner to supply them for the FAQ in v10.3). The old per-card WhatsApp "Order" link is gone; the floating button and the Contact button are still the only other WhatsApp buttons. A custom order is not added to the cart: it is its own message. `offline-data.js` did not need regenerating (no data files changed).
 
+## v10.3: FAQ + reviews (done, 2026-11-06)
+Owner list 6, item 5 (next in the master plan):
+1. **FAQ page** (`src/faq.html`, new "FAQ" link in the header and footer). Six questions as a simple open/close list: how to order, how much notice, allergies and dietary needs, delivery or collection, how to pay, changing or cancelling. **All six answers are neutral DRAFTS** (no lead times, areas, fees, prices or payment methods were invented) and each shows a small "Draft answer, to be confirmed by Becca" tag until the owner confirms it (remove `"draft": true` for that item in `config/site-settings.json`).
+2. **Reviews section** ("What people say", on the FAQ page and on Home). It only shows real reviews: the list ships **empty**, so Home hides the section and the FAQ page shows "Reviews will appear here" with a link to Contact. Review format: `{name, text, rating 1-5 (optional), date (optional)}`; text is escaped, stars have a screen-reader label.
+Data lives in `config/site-settings.json` (`faq`, `reviews`), so the admin Publish export and `offline-data.js` already carry it (regenerated). Code: `src/js/pages.js`, `src/faq.html`, `src/index.html`, styles at the end of `src/css/site.css`, defaults in `src/js/store.js`.
+
+Tests (headless browser, file://): 6 items, drafts flagged, accordion opens, empty reviews hidden/explained, a test review rendered with HTML escaped on Home and FAQ; 7 pages at 320 to 1280px wide (no sideways scroll; from 860px the header with 6 links + cart stays one row, no overlap); crawl of all 22 URLs from `preview.html`: no dead links, broken images or errors.
+
+Notes: FAQ and reviews are not editable in the admin yet (v10.7, with the backend); edit the JSON for now. Allergen wording is deliberately cautious; the allergen tags and filters are v10.4.
+
