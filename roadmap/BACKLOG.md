@@ -24,6 +24,7 @@ Append-only. Never delete. Newest at the bottom. What is still to do is in [`ROA
 | [v10.8](#v10-8) | Decorations always move + Pause button, live preview in admin, tidy roadmap | 2026-11-07 |
 | [v10.9](#v10-9) | Automatic seasonal themes + "New and popular" section on Home | 2026-11-07 |
 | [v10.10](#v10-10) | "Sold out today" toggle + Automatic seasons dropdown | 2026-11-07 |
+| [v10.11](#v10-11) | Themes dropdown + tidier admin (+ Supabase answer, top 10, next-5 plan) | 2026-11-07 |
 
 Full details for each version follow, oldest first.
 
@@ -234,3 +235,18 @@ Owner list 11 (item 1 asked "what would you do next?", item 2 the seasons dropdo
 Tests (headless browser, date faked): dropdown lists the 7 seasons with this year's dates; the old list is gone; Valentine's / Christmas show From / to boxes, Easter and Mother's Day show the explanation and no boxes; editing a date updates the dropdown and status; 31/02 is refused and marked; unticking marks "(off)" and the status follows; the picked season survives a re-render; Preview changes only the preview (saved everyday theme stays); Try a date; Save keeps all 7 rules. Sold out: mark and unmark in the admin (tag, button, stored date); Menu card shows badge and a disabled button with no Add, other cards keep Add; Home shows it in Most popular; cart notice, badge and message wording; the next day it is back automatically; editing keeps the state; no sideways scroll at 320, 390, 768; no JS errors.
 
 Notes: like every admin change, a sold-out mark reaches customers after Publish until the backend exists (v10.12). The "New and popular" rows still show sold-out items (greyed), so customers can see them and ask about another day.
+
+<a id="v10-11"></a>
+## v10.11: Themes dropdown + tidier admin (done, 2026-11-07)
+Owner list 12 (items 1 and 2 are answers, written into `ROADMAP.md` sections 1c to 1e; items 3 and 4 are the build):
+1. **One themes dropdown** (Admin > Theme & layout > Theme). All 10 themes are in a single dropdown, grouped **Everyday themes** (Classic, Cocoa, Pastel) and **Special occasions (moving decorations)**, and each special one also ends in "(special)" so it is clear even when the dropdown is closed. A short line under it says whether the chosen theme is everyday or special. Picking a theme still only previews it until Save, still updates the live preview and the little decoration box at once, and the old theme buttons are gone. Code: `themeBox`, `isSpecial` in `src/js/admin.js` (the `theme` branch of the input handler).
+2. **Tidier admin.**
+   - A proper **tab bar** (underlined current tab, scrolls sideways on a phone) instead of a pile of buttons.
+   - **Theme & layout** was one very long column; it is now **five collapsible sections** (Theme, Automatic seasons, Home page, Top and bottom strips, Menu page), each with a one-line summary. Sections stay open or closed while you work (`state.open`), counts and options sit side by side, and **Save / Reset stay pinned at the bottom** while you scroll. On a computer the **live preview stays in view** next to the settings.
+   - **Menu items**: the form is grouped (name; section and price; description; dietary tags; "Where it shows" ticks) and each item in the list shows emoji, name, price and section on one line, its tags underneath, and the buttons on the right.
+   - Nothing was removed and no setting changed meaning; `site-settings.json`, `business.json` and `products.json` did not change, so `offline-data.js` did not need regenerating.
+3. **Answers** (no code): Supabase recommended over Firebase (free to start, pay later; Firebase needs a card earlier for server code and storage); a ranked top 10 of things to add; the plan for the next five versions. All in `ROADMAP.md` (1c, 1d, 1e). The older version-by-version plan slid back by one (menu sections + remember me is now v10.12, backend v10.13).
+
+Tests (headless browser, file://): all six tabs at 1280, 390 and 320px wide with no sideways scroll; dropdown has the two groups and 3 + 7 options with "(special)" on the 7; picking Christmas updates the saved draft, the heading summary, the "special" line, the decoration box and the live preview, picking Cocoa switches back to the "everyday" line; changing a Home setting and opening Automatic seasons keeps both sections open after redraws; Save stores the picked theme; no JS errors.
+
+Notes: "Special" means a theme with moving decorations (the 7 occasion themes). The Admins and My account tabs only got the new tab bar and spacing. If anything in the admin still feels in the wrong place, tell us which screen and we will move it.

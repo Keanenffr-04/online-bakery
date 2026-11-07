@@ -14,7 +14,7 @@
   const mk = async (u, p, extra) => { const salt = uid() + uid(); return { u, salt, h: await hash(p, salt), status: "active", ...extra }; };
   const admins = () => J("sb_admins", []), saveA = a => S("sb_admins", a);
   const find = (a, u) => a.find(x => x.u.toLowerCase() === u.toLowerCase());
-  let state = { tab: "orders", note: "", authTab: "login", edit: null, page: "index.html", draft: null, data: null };
+  let state = { open: { theme: true }, tab: "orders", note: "", authTab: "login", edit: null, page: "index.html", draft: null, data: null };
   const me = () => sessionStorage.getItem("sb_session");
   const flash = t => { state.note = t; render(); };
 
@@ -100,48 +100,62 @@
   }
 
   function menu() {
-    const d = state.data, e = d.products.find(p => p.id === state.edit) || { visible: true, category: d.categories[0]?.id, emoji: "🍰" };
-    return `<div class="adm-split"><div class="adm-card"><h2>${state.edit ? "Edit item" : "Add item"}</h2>
+    const d = state.data, e = d.products.find(p => p.id === state.edit) || { visible: true, category: d.categories[0]?.id, emoji: "🍰" }, cat = id => (d.categories.find(c => c.id === id) || {}).name || "";
+    return `<div class="adm-split"><div class="adm-card adm-form"><h2>${state.edit ? "Edit item" : "Add item"}</h2>
     <form data-form="product"><label>Name</label><input name="name" value="${esc(e.name)}" required>
-    <label>Section</label><select name="category">${d.categories.map(c => `<option value="${c.id}" ${c.id === e.category ? "selected" : ""}>${esc(c.name)}</option>`).join("")}</select>
+    <div class="adm-row"><div><label>Section</label><select name="category">${d.categories.map(c => `<option value="${c.id}" ${c.id === e.category ? "selected" : ""}>${esc(c.name)}</option>`).join("")}</select></div>
+    <div><label>Price (R)</label><input name="price" type="number" min="0" value="${esc(e.price)}" required></div></div>
+    <div class="adm-row"><div><label>Emoji</label><input name="emoji" value="${esc(e.emoji)}"></div><div></div></div>
     <label>Description</label><textarea name="description">${esc(e.description)}</textarea>
-    <div class="adm-row"><div><label>Price (R)</label><input name="price" type="number" min="0" value="${esc(e.price)}" required></div><div><label>Emoji</label><input name="emoji" value="${esc(e.emoji)}"></div></div>
-    <label>Dietary tags <span class="muted">(only tick what is definitely true)</span></label><div class="adm-tags">${SB.TAGS.map(([id, n]) => `<label class="chk"><input type="checkbox" name="tag_${id}" ${(e.tags || []).includes(id) ? "checked" : ""}>${n}</label>`).join("")}</div>
-    <label class="chk"><input type="checkbox" name="featured" ${e.featured ? "checked" : ""}>Show on home page (Our best sellers)</label>
-    <label class="chk"><input type="checkbox" name="popular" ${e.popular ? "checked" : ""}>Show in "Most popular" on the home page</label>
-    <label class="chk"><input type="checkbox" name="visible" ${e.visible !== false ? "checked" : ""}>Visible on menu</label>
+    <fieldset class="adm-fs"><legend>Dietary tags <span class="muted">(only tick what is definitely true)</span></legend><div class="adm-tags">${SB.TAGS.map(([id, n]) => `<label class="chk"><input type="checkbox" name="tag_${id}" ${(e.tags || []).includes(id) ? "checked" : ""}>${n}</label>`).join("")}</div></fieldset>
+    <fieldset class="adm-fs"><legend>Where it shows</legend>
+    <label class="chk"><input type="checkbox" name="visible" ${e.visible !== false ? "checked" : ""}>Visible on the menu</label>
+    <label class="chk"><input type="checkbox" name="featured" ${e.featured ? "checked" : ""}>Home page: Our best sellers</label>
+    <label class="chk"><input type="checkbox" name="popular" ${e.popular ? "checked" : ""}>Home page: Most popular</label></fieldset>
     <p><button class="btn btn--sm" type="submit">Save</button> ${state.edit ? '<button class="btn btn--sm btn--ghost" type="button" data-act="pcancel">Cancel</button>' : ""}</p></form></div>
-    <div class="adm-card"><h2>${d.products.length} items</h2><p class="muted">"Sold out today" greys the item out for customers and switches itself off at midnight. Like every change here it reaches customers after you Publish.</p><ul class="adm-list">${d.products.map(p => `<li><div>${esc(p.emoji)} <strong>${esc(p.name)}</strong> <span class="muted">R ${esc(p.price)}</span> ${p.featured ? '<span class="tag">home</span>' : ""} ${p.popular ? '<span class="tag">popular</span>' : ""} ${SB.isSoldOut(p) ? '<span class="tag tag--sold">sold out today</span>' : ""} ${p.visible === false ? '<span class="tag">hidden</span>' : ""} ${(p.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join(" ")}</div>
-    <div class="adm-actions"><button class="btn btn--sm ${SB.isSoldOut(p) ? "" : "btn--ghost"}" data-act="psold" data-id="${p.id}" aria-pressed="${SB.isSoldOut(p)}">${SB.isSoldOut(p) ? "Back in stock" : "Sold out today"}</button><button class="btn btn--sm btn--ghost" data-act="pedit" data-id="${p.id}">Edit</button><button class="btn btn--sm btn--ghost" data-act="pdel" data-id="${p.id}">Delete</button></div></li>`).join("")}</ul></div></div>`;
+    <div class="adm-card"><h2>${d.products.length} items</h2><p class="muted">"Sold out today" greys an item out for customers and switches itself off at midnight. Like every change here it reaches customers after you Publish.</p>
+    <ul class="adm-list">${d.products.map(p => { const so = SB.isSoldOut(p); return `<li class="item"><div class="item__main"><span class="item__e" aria-hidden="true">${esc(p.emoji)}</span><div><strong>${esc(p.name)}</strong> <span class="muted">R ${esc(p.price)} &middot; ${esc(cat(p.category))}</span>
+    <div class="item__tags">${p.featured ? '<span class="tag">home</span>' : ""}${p.popular ? '<span class="tag">popular</span>' : ""}${so ? '<span class="tag tag--sold">sold out today</span>' : ""}${p.visible === false ? '<span class="tag">hidden</span>' : ""}${(p.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div></div></div>
+    <div class="adm-actions"><button class="btn btn--sm ${so ? "" : "btn--ghost"}" data-act="psold" data-id="${p.id}" aria-pressed="${so}">${so ? "Back in stock" : "Sold out today"}</button><button class="btn btn--sm btn--ghost" data-act="pedit" data-id="${p.id}">Edit</button><button class="btn btn--sm btn--ghost" data-act="pdel" data-id="${p.id}">Delete</button></div></li>`; }).join("")}</ul></div></div>`;
   }
 
   const OFFLINE_HEAD = "/* offline-data.js: a COPY of config/business.json, config/site-settings.json and src/data/products.json.\n   Only used when the site is opened straight from disk (file://, e.g. preview.html), because browsers block\n   fetch() of local files. The live/hosted site ignores this file and reads the real JSON files.\n   KEEP IN SYNC: whenever one of those three files changes, regenerate this file (see docs/AI_HANDOFF.md). */\n";
   const draftKey = () => sessionStorage.setItem("sb_preview", JSON.stringify({ settings: state.peek ? { ...state.draft, theme: state.peek } : state.draft }));
-  function look() {
-    const s = state.draft;
-    return `<div class="adm-split"><div class="adm-card"><h2>Theme</h2><div class="themes">${SB.THEMES.map(([id, n]) => `<button class="btn btn--sm ${s.theme === id ? "" : "btn--ghost"}" data-act="theme" data-v="${id}">${n}</button>`).join("")}</div>
-    <h3 class="adm-sub">Special occasions</h3><div class="themes">${SB.OCCASION_THEMES.map(([id, n]) => `<button class="btn btn--sm ${s.theme === id ? "" : "btn--ghost"}" data-act="theme" data-v="${id}">${n}</button>`).join("")}</div>
+  // v10.11: Theme & layout is split into five tidy sections (click a heading to open / close it). Every theme is in ONE dropdown,
+  // grouped "Everyday themes" and "Special occasions", and each special one also says "(special)" so you can tell when it is closed.
+  const sec = (id, title, hint, body) => `<details class="adm-sec" data-sec="${id}" ${state.open[id] ? "open" : ""}><summary><span class="adm-sec__t">${title}</span><span class="adm-sec__h">${hint}</span></summary><div class="adm-sec__b">${body}</div></details>`;
+  const isSpecial = id => SB.OCCASION_THEMES.some(t => t[0] === id);
+  const countSel = (act, cur) => `<select data-act="${act}">${[1, 2, 3, 4, 5, 6].map(n => `<option ${n == cur ? "selected" : ""}>${n}</option>`).join("")}</select>`;
+  function themeBox(s) {
+    return `<label for="theme-pick">Everyday theme</label>
+    <select id="theme-pick" data-act="theme"><optgroup label="Everyday themes">${SB.THEMES.map(([id, n]) => `<option value="${id}" ${s.theme === id ? "selected" : ""}>${esc(n)}</option>`).join("")}</optgroup>
+    <optgroup label="Special occasions (moving decorations)">${SB.OCCASION_THEMES.map(([id, n]) => `<option value="${id}" ${s.theme === id ? "selected" : ""}>${esc(n)} (special)</option>`).join("")}</optgroup></select>
+    <p class="muted">${isSpecial(s.theme) ? "This is a special-occasion theme, so it has moving decorations." : "This is an everyday theme, calm with no moving decorations."} Picking a theme only previews it until you save.</p>
     <label class="chk"><input type="checkbox" data-act="deco" ${s.decorations !== false ? "checked" : ""}>Moving decorations (special-occasion themes only)</label>
-    <div class="deco-demo" id="deco-demo" data-theme="${esc(state.peek || s.theme)}" aria-live="polite"></div>
-    ${seasonsBox(s)}
-    <h2 style="margin-top:1.2rem">Home page</h2>${[["hero", "Hero"], ["featured", "Featured items"], ["fresh", "New and popular"], ["cta", "Order banner"]].map(([k, n]) => `<label class="chk"><input type="checkbox" data-act="home" data-k="${k}" ${s.home[k] !== false ? "checked" : ""}>${n}</label>`).join("")}
-    <label>Best sellers shown (items ticked "Show on home page")</label><select data-act="fc">${[1, 2, 3, 4, 5, 6].map(n => `<option ${n == s.featuredCount ? "selected" : ""}>${n}</option>`).join("")}</select>
-    <label>"Just added" items shown (the newest items)</label><select data-act="rc">${[1, 2, 3, 4, 5, 6].map(n => `<option ${n == (s.recentCount || 3) ? "selected" : ""}>${n}</option>`).join("")}</select>
-    <label>"Most popular" items shown (items ticked "Show in Most popular")</label><select data-act="pc">${[1, 2, 3, 4, 5, 6].map(n => `<option ${n == (s.popularCount || 3) ? "selected" : ""}>${n}</option>`).join("")}</select>
-    <label>Card style (best sellers, just added, most popular)</label><select data-act="fs"><option value="glass" ${s.featuredStyle !== "plain" ? "selected" : ""}>Glass (frosted, zooms on hover)</option><option value="plain" ${s.featuredStyle === "plain" ? "selected" : ""}>Plain</option></select>
-    <label>Hero style</label><select data-act="hs"><option value="logo" ${s.heroStyle !== "bakes" ? "selected" : ""}>Logo (rabbit)</option><option value="bakes" ${s.heroStyle === "bakes" ? "selected" : ""}>Baked goods + greeting</option></select>
-    <label>Greeting (baked goods hero)</label><input data-act="gr" maxlength="80" value="${esc(s.greeting)}">
-    <label>Hero text</label><textarea data-act="tag">${esc(s.tagline)}</textarea>
-    <h2 style="margin-top:1.2rem">Specials strip</h2>
-    <label class="chk"><input type="checkbox" data-act="spon" ${s.specials && s.specials.enabled === false ? "" : "checked"}>Show the scrolling strip at the top of every page</label>
+    <div class="deco-demo" id="deco-demo" data-theme="${esc(state.peek || s.theme)}" aria-live="polite"></div>`;
+  }
+  function look() {
+    const s = state.draft, pg = (v, n) => `<button class="btn btn--sm ${state.page === v ? "" : "btn--ghost"}" data-act="ppage" data-v="${v}">${n}</button>`;
+    const homeBox = `${[["hero", "Hero"], ["featured", "Featured items"], ["fresh", "New and popular"], ["cta", "Order banner"]].map(([k, n]) => `<label class="chk"><input type="checkbox" data-act="home" data-k="${k}" ${s.home[k] !== false ? "checked" : ""}>${n}</label>`).join("")}
+    <div class="adm-row"><div><label>Best sellers shown</label>${countSel("fc", s.featuredCount)}</div><div><label>"Just added" shown</label>${countSel("rc", s.recentCount || 3)}</div><div><label>"Most popular" shown</label>${countSel("pc", s.popularCount || 3)}</div>
+    <div><label>Card style</label><select data-act="fs"><option value="glass" ${s.featuredStyle !== "plain" ? "selected" : ""}>Glass (frosted)</option><option value="plain" ${s.featuredStyle === "plain" ? "selected" : ""}>Plain</option></select></div></div>
+    <p class="muted">Best sellers are items ticked "Show on home page"; Most popular are items ticked "Show in Most popular".</p>
+    <div class="adm-row"><div><label>Hero style</label><select data-act="hs"><option value="logo" ${s.heroStyle !== "bakes" ? "selected" : ""}>Logo (rabbit)</option><option value="bakes" ${s.heroStyle === "bakes" ? "selected" : ""}>Baked goods + greeting</option></select></div>
+    <div><label>Greeting (baked goods hero)</label><input data-act="gr" maxlength="80" value="${esc(s.greeting)}"></div></div>
+    <label>Hero text</label><textarea data-act="tag">${esc(s.tagline)}</textarea>`;
+    const stripBox = `<label class="chk"><input type="checkbox" data-act="spon" ${s.specials && s.specials.enabled === false ? "" : "checked"}><strong>Top strip</strong>&nbsp;(specials, scrolls at the top of every page)</label>
     <label>Specials (one per line, up to 6)</label><textarea data-act="sptxt" maxlength="500" placeholder="e.g. Cupcake boxes: buy 2, get 1 free this week">${esc(((s.specials || {}).items || []).join("\n"))}</textarea>
-    <h2 style="margin-top:1.2rem">Orders strip</h2>
-    <label class="chk"><input type="checkbox" data-act="oron" ${s.orders && s.orders.enabled === false ? "" : "checked"}>Show the scrolling strip at the bottom of every page</label>
-    <label>Order messages (one per line, up to 6)</label><textarea data-act="ortxt" maxlength="500" placeholder="e.g. Orders need 3 days notice">${esc(((s.orders || {}).items || []).join("\n"))}</textarea>
-    <label>Menu layout</label><select data-act="ml"><option value="grid" ${s.menuLayout === "grid" ? "selected" : ""}>Grid</option><option value="list" ${s.menuLayout === "list" ? "selected" : ""}>List</option></select>
-    <p style="margin-top:1rem"><button class="btn btn--sm" data-act="lsave">Save to this device</button> <button class="btn btn--sm btn--ghost" data-act="lreset">Reset</button></p>
-    <p class="muted">Clicking a theme only previews it until you save.</p></div>
-    <div><div class="adm-tabs"><button class="btn btn--sm ${state.page === "index.html" ? "" : "btn--ghost"}" data-act="ppage" data-v="index.html">Home</button><button class="btn btn--sm ${state.page === "menu.html" ? "" : "btn--ghost"}" data-act="ppage" data-v="menu.html">Menu</button></div>
+    <label class="chk" style="margin-top:1rem"><input type="checkbox" data-act="oron" ${s.orders && s.orders.enabled === false ? "" : "checked"}><strong>Bottom strip</strong>&nbsp;(orders, scrolls at the bottom of every page)</label>
+    <label>Order messages (one per line, up to 6)</label><textarea data-act="ortxt" maxlength="500" placeholder="e.g. Orders need 3 days notice">${esc(((s.orders || {}).items || []).join("\n"))}</textarea>`;
+    const menuBox = `<label>Menu layout</label><select data-act="ml"><option value="grid" ${s.menuLayout === "grid" ? "selected" : ""}>Grid</option><option value="list" ${s.menuLayout === "list" ? "selected" : ""}>List</option></select>`;
+    return `<div class="adm-split"><div class="adm-side">
+    ${sec("theme", "Theme", themeName(s.theme), themeBox(s))}
+    ${sec("seasons", "Automatic seasons", (s.autoTheme || {}).enabled === false ? "off" : "on", seasonsBox(s))}
+    ${sec("home", "Home page", "what shows and how many", homeBox)}
+    ${sec("strips", "Top and bottom strips", "specials and order messages", stripBox)}
+    ${sec("menu", "Menu page", s.menuLayout === "list" ? "list" : "grid", menuBox)}
+    <div class="adm-save"><button class="btn btn--sm" data-act="lsave">Save to this device</button> <button class="btn btn--sm btn--ghost" data-act="lreset">Reset</button><span class="muted">Then use Publish to make it live.</span></div></div>
+    <div class="adm-preview"><div class="adm-tabs">${pg("index.html", "Home")}${pg("menu.html", "Menu")}</div>
     <iframe title="Live preview" src="${state.page}"></iframe></div></div>`;
   }
 
@@ -166,8 +180,7 @@
   function seasonsBox(s) {
     const au = s.autoTheme || (s.autoTheme = { enabled: true, rules: JSON.parse(JSON.stringify(SB.SEASON_RULES)) }), yr = new Date().getFullYear();
     if (!(state.seasonSel >= 0 && state.seasonSel < au.rules.length)) state.seasonSel = 0;
-    return `<h2 style="margin-top:1.2rem">Automatic seasons</h2>
-    <label class="chk"><input type="checkbox" data-act="auto" ${au.enabled !== false ? "checked" : ""}>Change the theme automatically for each season</label>
+    return `<label class="chk"><input type="checkbox" data-act="auto" ${au.enabled !== false ? "checked" : ""}>Change the theme automatically for each season</label>
     <p class="muted" id="season-status" aria-live="polite"></p>
     <label for="season-pick">Season to change <span class="muted">(all seasons and their dates this year)</span></label>
     <select id="season-pick" data-act="ssel">${au.rules.map((r, i) => `<option value="${i}" ${i === state.seasonSel ? "selected" : ""}>${esc(seasonLabel(r, yr))}</option>`).join("")}</select>
@@ -236,7 +249,7 @@
     const warn = a.root && a.mustChange ? `<div class="msg msg--warn">You are still using the default password. Please change it under <strong>My account</strong>.</div>` : "";
     const body = { orders, menu, look, admins: adminsView, account, publish }[state.tab]();
     return `<div class="adm-top"><h1>Admin</h1><div class="adm-actions"><span class="muted">Hi, ${esc(a.u)}</span><a class="btn btn--sm btn--ghost" href="index.html">View site</a><button class="btn btn--sm" data-act="logout">Log out</button></div></div>
-    <div class="adm-tabs">${TABS.map(([k, n]) => `<button class="btn btn--sm ${state.tab === k ? "" : "btn--ghost"}" data-act="tab" data-v="${k}">${n}</button>`).join("")}</div>
+    <nav class="adm-nav" aria-label="Admin sections">${TABS.map(([k, n]) => `<button class="${state.tab === k ? "is-on" : ""}" ${state.tab === k ? 'aria-current="page"' : ""} data-act="tab" data-v="${k}">${n}</button>`).join("")}</nav>
     ${warn}${state.note ? `<div class="msg">${esc(state.note)}</div>` : ""}${body}`;
   }
 
@@ -278,6 +291,7 @@
 
   app.addEventListener("input", e => {
     const t = e.target, a = t.dataset.act, s = state.draft; if (!a || !s || t.tagName === "BUTTON") return;
+    if (a === "theme") { s.theme = t.value; state.peek = null; draftKey(); go("look"); const el = $("#theme-pick"); if (el) el.focus(); return; }   // v10.11: themes dropdown
     if (a === "ssel") { state.seasonSel = +t.value; drawSeasonEditor(); return; }
     if (["auto", "son", "sfrom", "sto", "sdate"].includes(a)) {
       const au = s.autoTheme || (s.autoTheme = { enabled: true, rules: JSON.parse(JSON.stringify(SB.SEASON_RULES)) }), r = au.rules[+t.dataset.i];
@@ -302,6 +316,8 @@
     }
     const fr = $("iframe"); if (fr) fr.src = state.page;
   });
+
+  app.addEventListener("toggle", e => { const d = e.target; if (d.dataset && d.dataset.sec) state.open[d.dataset.sec] = d.open; }, true);   // remember open sections across redraws
 
   app.addEventListener("change", e => {
     const t = e.target, a = t.dataset.act;

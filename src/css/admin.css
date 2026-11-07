@@ -42,3 +42,35 @@
 .season-edit [aria-invalid="true"]{outline:2px solid #B3261E;outline-offset:1px}
 .season-edit .btn{margin-left:auto}
 .tag--sold{background:var(--btn-bg);color:var(--btn-text)}
+
+/* v10.11: tidier admin. Tab bar, collapsible sections on Theme & layout, neat item rows, sticky save bar and preview. */
+.adm-nav{display:flex;gap:.25rem;overflow-x:auto;margin:0 0 1.1rem;border-bottom:1px solid var(--border);-webkit-overflow-scrolling:touch}
+.adm-nav button{flex:none;font:inherit;font-weight:600;font-size:.9rem;padding:.6rem .9rem;background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-1px;color:var(--text);opacity:.75;cursor:pointer;border-radius:0}
+.adm-nav button:hover{opacity:1}
+.adm-nav button.is-on{opacity:1;border-bottom-color:var(--btn-bg)}
+.adm-nav button:focus-visible{outline:2px solid var(--btn-bg);outline-offset:-2px}
+.adm h2{margin:0 0 .6rem}
+.adm-side{min-width:0}
+.adm-sec{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);margin-bottom:.6rem}
+.adm-sec>summary{display:flex;flex-direction:column;gap:.1rem;padding:.75rem 2.4rem .75rem 1rem;cursor:pointer;list-style:none;position:relative}
+.adm-sec>summary::-webkit-details-marker{display:none}
+.adm-sec>summary::after{content:"+";position:absolute;right:1rem;top:50%;transform:translateY(-50%);font-size:1.3rem;line-height:1}
+.adm-sec[open]>summary::after{content:"\2212"}
+.adm-sec>summary:focus-visible{outline:2px solid var(--btn-bg);outline-offset:2px;border-radius:var(--radius-card)}
+.adm-sec__t{font-weight:600}
+.adm-sec__h{font-size:.8rem;opacity:.75}
+.adm-sec__b{padding:0 1rem 1rem;border-top:1px solid var(--border)}
+.adm-sec__b>label:first-child{margin-top:.9rem}
+.adm-save{position:sticky;bottom:0;display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;padding:.7rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);box-shadow:var(--shadow)}
+.adm-save .muted{flex-basis:100%}
+.adm-fs{border:1px solid var(--border);border-radius:var(--radius-card);margin:.9rem 0 0;padding:.2rem .9rem .5rem}
+.adm-fs legend{font-size:.85rem;font-weight:600;padding:0 .3rem}
+.adm-form .adm-row>div:empty{display:none}
+.adm-list li.item{align-items:flex-start}
+.item__main{display:flex;gap:.7rem;align-items:flex-start;min-width:0;flex:1 1 220px}
+.item__e{font-size:1.6rem;line-height:1.2}
+.item__tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.3rem}
+.item__tags:empty{display:none}
+.adm-row{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.adm-sec__b .adm-row{margin-top:.2rem}
+@media(min-width:700px){.adm-form .adm-row{grid-template-columns:1fr 1fr}.adm-preview{position:sticky;top:.75rem}.adm iframe{height:calc(100vh - 7rem);min-height:480px}}
