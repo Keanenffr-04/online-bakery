@@ -107,24 +107,28 @@
     <label>Description</label><textarea name="description">${esc(e.description)}</textarea>
     <div class="adm-row"><div><label>Price (R)</label><input name="price" type="number" min="0" value="${esc(e.price)}" required></div><div><label>Emoji</label><input name="emoji" value="${esc(e.emoji)}"></div></div>
     <label>Dietary tags <span class="muted">(only tick what is definitely true)</span></label><div class="adm-tags">${SB.TAGS.map(([id, n]) => `<label class="chk"><input type="checkbox" name="tag_${id}" ${(e.tags || []).includes(id) ? "checked" : ""}>${n}</label>`).join("")}</div>
-    <label class="chk"><input type="checkbox" name="featured" ${e.featured ? "checked" : ""}>Show on home page</label>
+    <label class="chk"><input type="checkbox" name="featured" ${e.featured ? "checked" : ""}>Show on home page (Our best sellers)</label>
+    <label class="chk"><input type="checkbox" name="popular" ${e.popular ? "checked" : ""}>Show in "Most popular" on the home page</label>
     <label class="chk"><input type="checkbox" name="visible" ${e.visible !== false ? "checked" : ""}>Visible on menu</label>
     <p><button class="btn btn--sm" type="submit">Save</button> ${state.edit ? '<button class="btn btn--sm btn--ghost" type="button" data-act="pcancel">Cancel</button>' : ""}</p></form></div>
-    <div class="adm-card"><h2>${d.products.length} items</h2><ul class="adm-list">${d.products.map(p => `<li><div>${esc(p.emoji)} <strong>${esc(p.name)}</strong> <span class="muted">R ${esc(p.price)}</span> ${p.featured ? '<span class="tag">home</span>' : ""} ${p.visible === false ? '<span class="tag">hidden</span>' : ""} ${(p.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join(" ")}</div>
+    <div class="adm-card"><h2>${d.products.length} items</h2><ul class="adm-list">${d.products.map(p => `<li><div>${esc(p.emoji)} <strong>${esc(p.name)}</strong> <span class="muted">R ${esc(p.price)}</span> ${p.featured ? '<span class="tag">home</span>' : ""} ${p.popular ? '<span class="tag">popular</span>' : ""} ${p.visible === false ? '<span class="tag">hidden</span>' : ""} ${(p.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join(" ")}</div>
     <div class="adm-actions"><button class="btn btn--sm btn--ghost" data-act="pedit" data-id="${p.id}">Edit</button><button class="btn btn--sm btn--ghost" data-act="pdel" data-id="${p.id}">Delete</button></div></li>`).join("")}</ul></div></div>`;
   }
 
   const OFFLINE_HEAD = "/* offline-data.js: a COPY of config/business.json, config/site-settings.json and src/data/products.json.\n   Only used when the site is opened straight from disk (file://, e.g. preview.html), because browsers block\n   fetch() of local files. The live/hosted site ignores this file and reads the real JSON files.\n   KEEP IN SYNC: whenever one of those three files changes, regenerate this file (see docs/AI_HANDOFF.md). */\n";
-  const draftKey = () => sessionStorage.setItem("sb_preview", JSON.stringify({ settings: state.draft }));
+  const draftKey = () => sessionStorage.setItem("sb_preview", JSON.stringify({ settings: state.peek ? { ...state.draft, theme: state.peek } : state.draft }));
   function look() {
     const s = state.draft;
     return `<div class="adm-split"><div class="adm-card"><h2>Theme</h2><div class="themes">${SB.THEMES.map(([id, n]) => `<button class="btn btn--sm ${s.theme === id ? "" : "btn--ghost"}" data-act="theme" data-v="${id}">${n}</button>`).join("")}</div>
     <h3 class="adm-sub">Special occasions</h3><div class="themes">${SB.OCCASION_THEMES.map(([id, n]) => `<button class="btn btn--sm ${s.theme === id ? "" : "btn--ghost"}" data-act="theme" data-v="${id}">${n}</button>`).join("")}</div>
     <label class="chk"><input type="checkbox" data-act="deco" ${s.decorations !== false ? "checked" : ""}>Moving decorations (special-occasion themes only)</label>
-    <div class="deco-demo" id="deco-demo" data-theme="${esc(s.theme)}" aria-live="polite"></div>
-    <h2 style="margin-top:1.2rem">Home page</h2>${[["hero", "Hero"], ["featured", "Featured items"], ["cta", "Order banner"]].map(([k, n]) => `<label class="chk"><input type="checkbox" data-act="home" data-k="${k}" ${s.home[k] !== false ? "checked" : ""}>${n}</label>`).join("")}
+    <div class="deco-demo" id="deco-demo" data-theme="${esc(state.peek || s.theme)}" aria-live="polite"></div>
+    ${seasonsBox(s)}
+    <h2 style="margin-top:1.2rem">Home page</h2>${[["hero", "Hero"], ["featured", "Featured items"], ["fresh", "New and popular"], ["cta", "Order banner"]].map(([k, n]) => `<label class="chk"><input type="checkbox" data-act="home" data-k="${k}" ${s.home[k] !== false ? "checked" : ""}>${n}</label>`).join("")}
     <label>Best sellers shown (items ticked "Show on home page")</label><select data-act="fc">${[1, 2, 3, 4, 5, 6].map(n => `<option ${n == s.featuredCount ? "selected" : ""}>${n}</option>`).join("")}</select>
-    <label>Best-seller card style</label><select data-act="fs"><option value="glass" ${s.featuredStyle !== "plain" ? "selected" : ""}>Glass (frosted, zooms on hover)</option><option value="plain" ${s.featuredStyle === "plain" ? "selected" : ""}>Plain</option></select>
+    <label>"Just added" items shown (the newest items)</label><select data-act="rc">${[1, 2, 3, 4, 5, 6].map(n => `<option ${n == (s.recentCount || 3) ? "selected" : ""}>${n}</option>`).join("")}</select>
+    <label>"Most popular" items shown (items ticked "Show in Most popular")</label><select data-act="pc">${[1, 2, 3, 4, 5, 6].map(n => `<option ${n == (s.popularCount || 3) ? "selected" : ""}>${n}</option>`).join("")}</select>
+    <label>Card style (best sellers, just added, most popular)</label><select data-act="fs"><option value="glass" ${s.featuredStyle !== "plain" ? "selected" : ""}>Glass (frosted, zooms on hover)</option><option value="plain" ${s.featuredStyle === "plain" ? "selected" : ""}>Plain</option></select>
     <label>Hero style</label><select data-act="hs"><option value="logo" ${s.heroStyle !== "bakes" ? "selected" : ""}>Logo (rabbit)</option><option value="bakes" ${s.heroStyle === "bakes" ? "selected" : ""}>Baked goods + greeting</option></select>
     <label>Greeting (baked goods hero)</label><input data-act="gr" maxlength="80" value="${esc(s.greeting)}">
     <label>Hero text</label><textarea data-act="tag">${esc(s.tagline)}</textarea>
@@ -145,11 +149,36 @@
   // (no reload, no waiting for the page preview). Same code and same movement as the real site (js/decor.js).
   function drawDemo() {
     const box = $("#deco-demo"), s = state.draft; if (!box || !s) return;
-    const name = (SB.THEMES.concat(SB.OCCASION_THEMES).find(t => t[0] === s.theme) || [0, s.theme])[1];
-    box.dataset.theme = s.theme;
-    const on = window.SBDecor && SBDecor.has(s.theme) && s.decorations !== false;
-    const msg = !window.SBDecor ? "" : !SBDecor.has(s.theme) ? "This theme has no decorations. Pick one under Special occasions." : s.decorations === false ? "Decorations are switched off, so visitors will see none." : "";
-    box.innerHTML = `${on ? `<div class="deco deco--demo" aria-hidden="true">${SBDecor.html(s.theme, { scale: 0.55 })}</div>` : ""}<div class="deco-demo__label"><strong>${esc(name)}</strong><span>${esc(msg || "Live preview of the moving decorations")}</span></div>`;
+    const th = state.peek || s.theme, name = (SB.THEMES.concat(SB.OCCASION_THEMES).find(t => t[0] === th) || [0, th])[1];
+    box.dataset.theme = th;
+    const on = window.SBDecor && SBDecor.has(th) && s.decorations !== false;
+    const msg = !window.SBDecor ? "" : !SBDecor.has(th) ? "This theme has no decorations. Pick one under Special occasions." : s.decorations === false ? "Decorations are switched off, so visitors will see none." : "";
+    box.innerHTML = `${on ? `<div class="deco deco--demo" aria-hidden="true">${SBDecor.html(th, { scale: 0.55 })}</div>` : ""}<div class="deco-demo__label"><strong>${esc(name)}</strong><span>${esc(msg || "Live preview of the moving decorations")}</span></div>`;
+  }
+
+  // v10.9: Automatic seasons. The buttons above set the EVERYDAY theme (used outside every season); a season's theme switches on by date.
+  // "Preview" shows a season's theme in the preview without changing anything that gets saved.
+  const themeName = id => (SB.THEMES.concat(SB.OCCASION_THEMES).find(t => t[0] === id) || [0, id])[1];
+  const ddmm = md => { const [m, d] = md.split("-"); return d + "/" + m; };
+  function seasonsBox(s) {
+    const au = s.autoTheme || (s.autoTheme = { enabled: true, rules: JSON.parse(JSON.stringify(SB.SEASON_RULES)) }), yr = new Date().getFullYear();
+    return `<h2 style="margin-top:1.2rem">Automatic seasons</h2>
+    <label class="chk"><input type="checkbox" data-act="auto" ${au.enabled !== false ? "checked" : ""}>Change the theme automatically for each season</label>
+    <p class="muted" id="season-status" aria-live="polite"></p>
+    <ul class="season-list">${(au.rules || []).map((r, i) => `<li><label class="chk"><input type="checkbox" data-act="son" data-i="${i}" ${r.on !== false ? "checked" : ""}><strong>${esc(themeName(r.theme))}</strong></label>
+      <span class="muted">${esc(SB.seasonText(r, yr))} this year</span>
+      <div class="season-edit">${r.type === "range" ? `<label>From <input data-act="sfrom" data-i="${i}" value="${ddmm(r.from)}" size="5" maxlength="5" inputmode="numeric" aria-label="${esc(themeName(r.theme))} starts (day/month)"></label> <label>to <input data-act="sto" data-i="${i}" value="${ddmm(r.to)}" size="5" maxlength="5" inputmode="numeric" aria-label="${esc(themeName(r.theme))} ends (day/month)"></label>` : `<span class="muted">${r.type === "easter" ? `${r.before == null ? 9 : r.before} days before Easter Sunday to ${r.after == null ? 1 : r.after} day after (worked out each year)` : `The week up to the ${["first", "second", "third", "fourth"][r.n - 1] || r.n + "th"} Sunday of ${["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][r.month]} (worked out each year)`}</span>`}
+        <button type="button" class="btn btn--sm btn--ghost" data-act="speek" data-v="${esc(r.theme)}">Preview</button></div></li>`).join("")}</ul>
+    <label>Try a date <span class="muted">(see which theme the site would show)</span><input type="date" data-act="sdate" id="season-date"></label>
+    <p class="muted" id="season-try" aria-live="polite"></p>
+    <p class="muted">Outside every season the site uses your everyday theme (the one picked in the buttons above). Dates use the visitor's own calendar.</p>`;
+  }
+  function drawSeasonStatus() {
+    const s = state.draft, st = $("#season-status"); if (!s || !st) return;
+    const au = s.autoTheme || {}, now = SB.seasonTheme(au), dt = $("#season-date") && $("#season-date").value;
+    st.textContent = (state.peek ? `Previewing ${themeName(state.peek)} (not saved). Click a theme button above to go back. ` : "") + (au.enabled === false ? `Automatic seasons are off, so the site always shows ${themeName(s.theme)}.` : now ? `Today the site shows ${themeName(now)} (a season is on). Your everyday theme is ${themeName(s.theme)}.` : `No season is on today, so the site shows your everyday theme: ${themeName(s.theme)}.`);
+    const tr = $("#season-try");
+    if (tr) { const d = dt ? new Date(dt + "T12:00:00") : null; tr.textContent = !d ? "" : au.enabled === false ? "Automatic seasons are off." : `On ${d.toLocaleDateString("en-ZA", { weekday: "short", day: "numeric", month: "long", year: "numeric" })} the site shows ${themeName(SB.seasonTheme(au, d) || s.theme)}${SB.seasonTheme(au, d) ? " (season)" : " (everyday theme)"}.`; }
   }
 
   function adminsView() {
@@ -192,7 +221,7 @@
   }
 
   function render() { app.innerHTML = me() && find(admins(), me()) ? dash() : authView(); state.note = ""; }
-  const go = (t, note) => { state.tab = t; state.note = note || ""; app.innerHTML = dash(); state.note = ""; if (t === "look") drawDemo(); };
+  const go = (t, note) => { state.tab = t; state.note = note || ""; app.innerHTML = dash(); state.note = ""; if (t === "look") { drawDemo(); drawSeasonStatus(); } };
   const dl = (name, text, type) => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type: type || "application/json" })); a.download = name; a.click(); };
   const saveProducts = () => S("sb_products", { categories: state.data.categories, products: state.data.products });
 
@@ -208,9 +237,9 @@
       delete v["o-phone-cc"]; delete v["o-phone"];
       const o = J("sb_orders", []); o.unshift({ id: uid(), status: "pending", ...v, phone: ph.digits || "" }); S("sb_orders", o); return go("orders", "Order saved."); }
     if (k === "product") {
-      const p = { ...v, price: Number(v.price), featured: !!v.featured, visible: !!v.visible, tags: SB.TAGS.map(t => t[0]).filter(id => v["tag_" + id]) }, L = state.data.products;
+      const p = { ...v, price: Number(v.price), featured: !!v.featured, popular: !!v.popular, visible: !!v.visible, tags: SB.TAGS.map(t => t[0]).filter(id => v["tag_" + id]) }, L = state.data.products;
       SB.TAGS.forEach(t => delete p["tag_" + t[0]]);
-      if (state.edit) Object.assign(L.find(x => x.id === state.edit), p); else L.push({ id: "p" + uid(), ...p });
+      if (state.edit) Object.assign(L.find(x => x.id === state.edit), p); else L.push({ id: "p" + uid(), ...p, added: new Date().toISOString().slice(0, 10) });   // v10.9: the date decides "Just added"
       state.edit = null; saveProducts(); return go("menu", "Menu saved.");
     }
     if (k === "addadmin") {
@@ -229,7 +258,18 @@
 
   app.addEventListener("input", e => {
     const t = e.target, a = t.dataset.act, s = state.draft; if (!a || !s || t.tagName === "BUTTON") return;
-    if (a === "tag") s.tagline = t.value; else if (a === "gr") s.greeting = t.value; else if (a === "hs") s.heroStyle = t.value; else if (a === "fc") s.featuredCount = +t.value; else if (a === "fs") s.featuredStyle = t.value; else if (a === "deco") s.decorations = t.checked; else if (a === "ml") s.menuLayout = t.value; else if (a === "home") s.home[t.dataset.k] = t.checked; else if (a === "spon") (s.specials = s.specials || {}).enabled = t.checked; else if (a === "oron") (s.orders = s.orders || {}).enabled = t.checked; else if (a === "ortxt") (s.orders = s.orders || {}).items = t.value.split("\n").map(x => x.trim()).filter(Boolean).slice(0, 6); else if (a === "sptxt") (s.specials = s.specials || {}).items = t.value.split("\n").map(x => x.trim()).filter(Boolean).slice(0, 6); else return;
+    if (["auto", "son", "sfrom", "sto", "sdate"].includes(a)) {
+      const au = s.autoTheme || (s.autoTheme = { enabled: true, rules: JSON.parse(JSON.stringify(SB.SEASON_RULES)) }), r = au.rules[+t.dataset.i];
+      if (a === "auto") au.enabled = t.checked;
+      else if (a === "son") r.on = t.checked;
+      else if (a === "sfrom" || a === "sto") {
+        const m = /^\s*(\d{1,2})\s*[\/.\-]\s*(\d{1,2})\s*$/.exec(t.value), dd = m && +m[1], mm = m && +m[2], ok = m && mm >= 1 && mm <= 12 && dd >= 1 && new Date(2024, mm - 1, dd).getMonth() === mm - 1;   // 2024 = leap year, so 29/02 is allowed
+        t.setAttribute("aria-invalid", ok ? "false" : "true");
+        if (ok) r[a === "sfrom" ? "from" : "to"] = String(mm).padStart(2, "0") + "-" + String(dd).padStart(2, "0");
+      }
+      draftKey(); return drawSeasonStatus();
+    }
+    if (a === "tag") s.tagline = t.value; else if (a === "gr") s.greeting = t.value; else if (a === "hs") s.heroStyle = t.value; else if (a === "fc") s.featuredCount = +t.value; else if (a === "fs") s.featuredStyle = t.value; else if (a === "rc") s.recentCount = +t.value; else if (a === "pc") s.popularCount = +t.value; else if (a === "deco") s.decorations = t.checked; else if (a === "ml") s.menuLayout = t.value; else if (a === "home") s.home[t.dataset.k] = t.checked; else if (a === "spon") (s.specials = s.specials || {}).enabled = t.checked; else if (a === "oron") (s.orders = s.orders || {}).enabled = t.checked; else if (a === "ortxt") (s.orders = s.orders || {}).items = t.value.split("\n").map(x => x.trim()).filter(Boolean).slice(0, 6); else if (a === "sptxt") (s.specials = s.specials || {}).items = t.value.split("\n").map(x => x.trim()).filter(Boolean).slice(0, 6); else return;
     draftKey();
     if (a === "deco") drawDemo();   // tick box: redraw the little preview at once
     // Show the change where it can be seen: layout -> Menu preview, everything else here -> Home preview.
@@ -257,7 +297,8 @@
     if (a === "pedit") { state.edit = id; return go("menu"); }
     if (a === "pcancel") { state.edit = null; return go("menu"); }
     if (a === "pdel") { if (confirm("Delete this item?")) { state.data.products = state.data.products.filter(p => p.id !== id); saveProducts(); } return go("menu"); }
-    if (a === "theme") { state.draft.theme = v; draftKey(); return go("look"); }
+    if (a === "theme") { state.draft.theme = v; state.peek = null; draftKey(); return go("look"); }
+    if (a === "speek") { state.peek = v; draftKey(); return go("look"); }   // look at a season's theme without changing the saved one
     if (a === "ppage") { state.page = v; return go("look"); }
     if (a === "lsave") { S("sb_settings", state.draft); return go("look", "Saved on this device. Use the Publish tab to make it live for everyone."); }
     if (a === "lreset") { localStorage.removeItem("sb_settings"); await prepLook(true); return go("look", "Reset to the published settings."); }
@@ -275,7 +316,7 @@
   async function prepLook(fresh) {
     if (fresh) SB._p = null;
     state.data = await SB.load(); const s = state.data.settings;
-    state.draft = JSON.parse(JSON.stringify(s)); draftKey();
+    state.draft = JSON.parse(JSON.stringify(s)); state.peek = null; draftKey();
   }
   async function init() { SB._p = null; sessionStorage.removeItem("sb_preview"); state.data = await SB.load(); state.draft = null; }
 

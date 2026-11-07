@@ -2,7 +2,27 @@
    (localStorage). Inside the admin preview iframe it uses the unsaved draft instead. */
 (function () {
   const J = (s, k) => { try { return JSON.parse(s.getItem(k)); } catch (e) { return null; } };
-  const D = { theme: "classic", tagline: "", heroStyle: "logo", greeting: "Welcome in, something sweet is baking.", home: { hero: true, featured: true, cta: true }, featuredCount: 3, featuredStyle: "glass", decorations: true, menuLayout: "grid", faq: [], reviews: [], specials: { enabled: true, items: ["Today's specials: ask Becca on WhatsApp", "Custom cakes for every occasion, order online"] }, orders: { enabled: true, items: ["How to order: message Becca on WhatsApp", "Tell us what you'd like, the date you need it and any notes"] } };
+  // ---- v10.9: automatic seasonal themes. The site switches theme by date; outside every season it uses the owner's everyday theme.
+  // Rules live in config/site-settings.json (autoTheme.rules) and are editable in Admin > Theme & layout > Automatic seasons.
+  //   range       { from: "MM-DD", to: "MM-DD" }                       same dates every year (may cross New Year)
+  //   easter      { before, after }                                  days around Easter Sunday (worked out each year)
+  //   nthweekday  { month, n, weekday(0=Sun), before, after }        e.g. 2nd Sunday of May = Mother's Day (South Africa)
+  // The first matching rule wins. Uses the visitor's own calendar date.
+  const SEASON_RULES = [{"theme": "valentines", "type": "range", "from": "02-01", "to": "02-14", "on": true}, {"theme": "easter", "type": "easter", "before": 9, "after": 1, "on": true}, {"theme": "mothers", "type": "nthweekday", "month": 5, "n": 2, "weekday": 0, "before": 7, "after": 0, "on": true}, {"theme": "fathers", "type": "nthweekday", "month": 6, "n": 3, "weekday": 0, "before": 7, "after": 0, "on": true}, {"theme": "braai", "type": "range", "from": "09-17", "to": "09-24", "on": true}, {"theme": "halloween", "type": "range", "from": "10-24", "to": "10-31", "on": true}, {"theme": "christmas", "type": "range", "from": "12-01", "to": "12-26", "on": true}];
+  const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const dOf = (y, m, d) => new Date(y, m - 1, d);                        // local midnight (JS rolls over days past month end)
+  const shiftDay = (dt, n) => dOf(dt.getFullYear(), dt.getMonth() + 1, dt.getDate() + n);
+  const easterOf = y => { const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451), mo = Math.floor((h + l - 7 * m + 114) / 31), da = (h + l - 7 * m + 114) % 31 + 1; return dOf(y, mo, da); };
+  const nthDay = (y, mo, n, wd) => { const off = (wd - dOf(y, mo, 1).getDay() + 7) % 7; return dOf(y, mo, 1 + off + 7 * (n - 1)); };
+  const seasonWindow = (r, y) => {
+    if (r.type === "easter") { const e = easterOf(y); return [shiftDay(e, -(r.before == null ? 9 : r.before)), shiftDay(e, r.after == null ? 1 : r.after)]; }
+    if (r.type === "nthweekday") { const d = nthDay(y, r.month, r.n, r.weekday || 0); return [shiftDay(d, -(r.before == null ? 7 : r.before)), shiftDay(d, r.after || 0)]; }
+    const [fm, fd] = r.from.split("-").map(Number), [tm, td] = r.to.split("-").map(Number);
+    return [dOf(y, fm, fd), dOf(tm < fm || (tm === fm && td < fd) ? y + 1 : y, tm, td)];
+  };
+  const dayText = d => d.getDate() + " " + MON[d.getMonth()];
+
+  const D = { theme: "classic", tagline: "", heroStyle: "logo", greeting: "Welcome in, something sweet is baking.", home: { hero: true, featured: true, fresh: true, cta: true }, featuredCount: 3, featuredStyle: "glass", recentCount: 3, popularCount: 3, decorations: true, autoTheme: { enabled: true, rules: SEASON_RULES }, menuLayout: "grid", faq: [], reviews: [], specials: { enabled: true, items: ["Today's specials: ask Becca on WhatsApp", "Custom cakes for every occasion, order online"] }, orders: { enabled: true, items: ["How to order: message Becca on WhatsApp", "Tell us what you'd like, the date you need it and any notes"] } };
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const SB = window.SB = {
     esc, TAGS: [["vegan", "Vegan"], ["gluten-free", "Gluten-free"], ["nut-free", "Nut-free"], ["dairy-free", "Dairy-free"]],
@@ -32,6 +52,19 @@
       const cc = intl ? (SB.COUNTRIES.map(c => c[0]).sort((a, b) => b.length - a.length).find(c => d.startsWith(c)) || "") : sel.value;
       return { digits: d, display: cc ? "+" + cc + " " + SB.groupDigits(d.slice(cc.length)) : "+" + d };
     },
+    SEASON_RULES,
+    // Which special-occasion theme should show on this date? Returns a theme id, or null (= use the everyday theme).
+    seasonTheme(auto, date) {
+      if (!auto || auto.enabled === false) return null;
+      const dt = date || new Date(), t = dOf(dt.getFullYear(), dt.getMonth() + 1, dt.getDate()).getTime();
+      for (const r of auto.rules || []) {
+        if (r.on === false) continue;
+        for (const y of [dt.getFullYear() - 1, dt.getFullYear()]) { try { const [a, b] = seasonWindow(r, y); if (t >= a.getTime() && t <= b.getTime()) return r.theme; } catch (e) { /* bad rule: skip it */ } }
+      }
+      return null;
+    },
+    // "1 Feb to 14 Feb" for the admin table (the dates a rule covers in the given year).
+    seasonText(r, year) { try { const [a, b] = seasonWindow(r, year || new Date().getFullYear()); return dayText(a) + " to " + dayText(b); } catch (e) { return ""; } },
     load() {
       return SB._p || (SB._p = (async () => {
         // Opened from disk (file://)? Browsers block fetch() there, so read the copy in js/offline-data.js instead.
@@ -44,10 +77,14 @@
         const [biz, pubSet, pubProd] = await Promise.all([get("../config/business.json", "business"), get("../config/site-settings.json", "settings"), get("data/products.json", "products")]);
         const pv = window.top !== window ? J(sessionStorage, "sb_preview") : null;
         const base = { ...D, ...(pubSet || {}) }, own = (pv && pv.settings) || J(localStorage, "sb_settings") || {};
-        const settings = { ...base, ...own, home: { ...D.home, ...(base.home || {}), ...(own.home || {}) }, specials: { ...D.specials, ...(base.specials || {}), ...(own.specials || {}) }, orders: { ...D.orders, ...(base.orders || {}), ...(own.orders || {}) } };
+        const settings = { ...base, ...own, home: { ...D.home, ...(base.home || {}), ...(own.home || {}) }, specials: { ...D.specials, ...(base.specials || {}), ...(own.specials || {}) }, orders: { ...D.orders, ...(base.orders || {}), ...(own.orders || {}) }, autoTheme: { ...D.autoTheme, ...(base.autoTheme || {}), ...(own.autoTheme || {}) } };
         const data = J(localStorage, "sb_products") || pubProd || { categories: [], products: [] };
-        document.documentElement.dataset.theme = settings.theme;
-        return { biz: biz || {}, settings, categories: data.categories || [], products: data.products || [], published: { settings: base, products: pubProd } };
+        // v10.9: themeNow = the theme showing right now (a season's theme when one is on, else the owner's everyday theme).
+        // settings.theme is NEVER changed by the seasons, so the admin and Publish always keep the owner's own choice.
+        // Inside the admin preview (pv) we show exactly the chosen theme, so the owner can look at any theme any time of year.
+        const season = pv ? null : SB.seasonTheme(settings.autoTheme), themeNow = season || settings.theme;
+        document.documentElement.dataset.theme = themeNow;
+        return { biz: biz || {}, settings, themeNow, season, categories: data.categories || [], products: data.products || [], published: { settings: base, products: pubProd } };
       })());
     },
     // v10.2: the card button adds to the cart (SBCart, js/cart.js). One WhatsApp message is sent from the Cart page.

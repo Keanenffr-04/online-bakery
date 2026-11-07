@@ -5,13 +5,27 @@ SB.load().then(({ biz, settings: s, categories: cs, products }) => {
     // Two hero styles live in index.html; keep the chosen one (or neither if the Hero box is switched off).
     const dropHero = s.home.hero === false ? ["hero", "hero-bakes"] : [s.heroStyle === "bakes" ? "hero" : "hero-bakes"];
     dropHero.forEach(k => { const e = $(`[data-section="${k}"]`); if (e) e.remove(); });
-    ["featured", "cta"].forEach(k => { if (s.home[k] === false) { const e = $(`[data-section="${k}"]`); if (e) e.remove(); } });
+    ["featured", "fresh", "cta"].forEach(k => { if (s.home[k] === false) { const e = $(`[data-section="${k}"]`); if (e) e.remove(); } });
     const g = document.getElementById("featured-grid");
     if (g) {
       g.classList.toggle("menu--glass", s.featuredStyle !== "plain");  // v10.5: glass-style cards unless admin picks "Plain"
       const sec = $('[data-section="featured"]'); if (sec) sec.classList.toggle("section--glass", s.featuredStyle !== "plain");
       const f = vis.filter(p => p.featured).slice(0, s.featuredCount);
       if (f.length) g.innerHTML = f.map(p => SB.card(p, biz)).join(""); else $('[data-section="featured"]').remove();
+    }
+    // v10.9: "New and popular". Just added = newest items (by the date each item was added); Most popular = items the owner ticked
+    // "Show in Most popular" (automatic ranking from real orders comes with the order tools). An item is never shown twice in this
+    // section. Same card style and the same Glass / Plain choice as Our best sellers; empty rows (and an empty section) are hidden.
+    const fresh = $('[data-section="fresh"]');
+    if (fresh) {
+      const recent = vis.filter(p => p.added).sort((a, b) => b.added.localeCompare(a.added)).slice(0, s.recentCount || 3);
+      const seen = new Set(recent.map(p => p.id)), popular = vis.filter(p => p.popular && !seen.has(p.id)).slice(0, s.popularCount || 3);
+      [["recent", recent], ["popular", popular]].forEach(([k, list]) => {
+        const row = fresh.querySelector(`[data-row="${k}"]`), grid = document.getElementById(k + "-grid");
+        if (!list.length) return row.remove();
+        grid.classList.toggle("menu--glass", s.featuredStyle !== "plain"); grid.innerHTML = list.map(p => SB.card(p, biz)).join("");
+      });
+      if (!fresh.querySelector("[data-row]")) fresh.remove(); else fresh.classList.toggle("section--glass", s.featuredStyle !== "plain");
     }
     if (s.tagline) document.querySelectorAll("[data-tagline]").forEach(t => { t.textContent = s.tagline; });
     const gr = document.getElementById("bakes-greeting"); if (gr && s.greeting) gr.textContent = s.greeting;

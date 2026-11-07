@@ -1,6 +1,6 @@
 # Roadmap: what is done, what is next, what is waiting
 
-**Current version:** v10.8 &nbsp;|&nbsp; **Next up:** v10.9 (automatic seasonal themes + most recent / most popular) &nbsp;|&nbsp; Rule: **max 2 to 3 things per version.**
+**Current version:** v10.9 &nbsp;|&nbsp; **Next up:** v10.10 (admin extras: Sold out today + manage menu sections) &nbsp;|&nbsp; Rule: **max 2 to 3 things per version.**
 
 Finished work lives in [`BACKLOG.md`](BACKLOG.md). The old, long roadmap notes are kept untouched in [`ROADMAP_ARCHIVE.md`](ROADMAP_ARCHIVE.md).
 
@@ -22,11 +22,11 @@ Owner's list always comes first; older scheduled items slide back. Photos and la
 | Version | Status | What we do (max 2 to 3 things) | Why / notes |
 |---|---|---|---|
 | v10.8 | DONE | Fix: decorations always move + Pause/Play button; live preview of the decorations in admin; this tidy roadmap and backlog | Owner list 10, items 3, 5, 6 |
-| **v10.9** | **NEXT** | **Automatic seasonal themes** (theme switches by date, e.g. Christmas 1 to 26 Dec; dates editable in admin) + **"Most recent" and "Most popular" section** on Home | Owner list 10 item 4; older plan |
-| v10.10 | PLANNED | **Admin extras**: "Sold out today" toggle per product + add / rename / reorder menu sections | Older plan (Keagan inventory + categories ideas) |
+| v10.9 | DONE | **Automatic seasonal themes** (theme switches by date; dates editable in admin; Preview + "try a date") + **"New and popular" section** on Home (Just added + Most popular) | Owner list 10 item 4; older plan |
+| **v10.10** | **NEXT** | **Admin extras**: "Sold out today" toggle per product + add / rename / reorder menu sections | Older plan (Keagan inventory + categories ideas) |
 | v10.11 | BACKEND | **Hosted backend foundation**: real accounts, **sign in with Google / Apple / email**, "remember me" across devices, admin works across devices (no manual Publish), forgot-password by real email or SMS, orders saved online, automatic backup | Owner list 10 item 1 and list 6 item 7. One big item, gets a version to itself |
 | v10.12 | BACKEND | **"My account" page** (profile, saved details, past orders, order again, edit and delete my account) for customers and admins + **Privacy (POPIA) and Terms pages** | Owner list 10 item 2. Privacy page MUST ship with accounts (we store personal information) |
-| v10.13 | BACKEND | **Order tools**: statuses (New, Confirmed, Ready, Collected / Delivered, Cancelled), thank-you page, printable order slip, weekly / monthly numbers + CSV, change log | Needs v10.11 |
+| v10.13 | BACKEND | **Order tools**: statuses (New, Confirmed, Ready, Collected / Delivered, Cancelled), thank-you page, printable order slip, weekly / monthly numbers + CSV, change log; **"Most popular" ranked automatically from real orders** | Needs v10.11 |
 | v10.14 | PLANNED | **Visitor theme switcher** + more occasion themes (New Year, Women's Day, Black Friday, Diwali, Eid ...) + pick the favourite everyday theme with Becca | Older plan |
 | When photos exist | WAITING | **Real product photos** instead of emoji (set in admin; emoji stays as fallback) | Owner decides when; tip: same light and background for every photo |
 | LAST (v11) | WAITING | **Get it online**: hosting (GitHub Pages or Netlify), favicon, SEO + page titles, share image for WhatsApp / Facebook, custom domain, launch checklist | Only when the owner says "I'm happy with everything" |
@@ -39,7 +39,7 @@ Newest list first. "List" is the order the owner's change lists arrived in.
 | 10 | 1 | Sign in so it remembers people (admins and customers); Google, Apple, etc. | BACKEND | v10.11 |
 | 10 | 2 | Full account page: whole account, past orders, customise, all info | BACKEND | v10.12 |
 | 10 | 3 | Preview of the moving effects when changing theme or ticking the box | DONE | v10.8 |
-| 10 | 4 | Theme changes automatically for every season | NEXT | v10.9 |
+| 10 | 4 | Theme changes automatically for every season | DONE | v10.9 |
 | 10 | 5 | Neat roadmap + backlog with a table of contents | DONE | v10.8 (this file) |
 | 10 | 6 | Emojis not moving when the theme changes: fix | DONE | v10.8 |
 | 9 | 1 | Father's Day + moving decorations on occasion themes only | DONE | v10.7 (made to always move in v10.8) |
@@ -57,7 +57,9 @@ Newest list first. "List" is the order the owner's change lists arrived in.
 | 6 | 7 | Admin that works across devices | BACKEND | v10.11 |
 | 5 | 1 | Instagram + Facebook in the footer | DONE (needs real handles) | v10.5 |
 | 5 | 2 | Glass-style best-seller cards + choose how many | DONE | v10.5 |
-| 5 | 3 | Most recent + most popular section | NEXT | v10.9 |
+| 5 | 3 | Most recent + most popular section | DONE (popular = owner ticks it for now; automatic ranking in v10.13) | v10.9 |
+
+The owner re-sent the list 10 file once more with the same six items and no new requests (so nothing new was added); items 3, 4, 5, 6 are now all DONE, items 1 and 2 wait for the backend.
 
 Older lists (1 to 5) are all finished; see `ROADMAP_ARCHIVE.md` and `BACKLOG.md`.
 
@@ -92,6 +94,9 @@ Not scheduled. Tell us which to pull into a version.
 - Privacy-friendly analytics
 - Specials with start and end dates; clickable specials; seasonal specials banner per occasion
 - Owner-chosen decoration emoji per theme in admin
+- A "New" badge on items added in the last 2 weeks
+- Seasonal greeting / specials text that changes with the season theme
+- Let the owner edit the Easter / Mother's Day / Father's Day windows (today only the fixed-date seasons have editable dates; those three are worked out from the calendar)
 - Reserve space for the two strips so the page does not jump on first load
 - Customer accounts only if repeat-order history is wanted (it is now, see v10.12)
 - Finish the reference review of `online_bakery_marketplace_v2` and verify licences

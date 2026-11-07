@@ -6,11 +6,74 @@
   "home": {
     "hero": true,
     "featured": true,
-    "cta": true
+    "cta": true,
+    "fresh": true
   },
   "featuredCount": 3,
   "featuredStyle": "glass",
+  "recentCount": 3,
+  "popularCount": 3,
   "decorations": true,
+  "autoTheme": {
+    "enabled": true,
+    "rules": [
+      {
+        "theme": "valentines",
+        "type": "range",
+        "from": "02-01",
+        "to": "02-14",
+        "on": true
+      },
+      {
+        "theme": "easter",
+        "type": "easter",
+        "before": 9,
+        "after": 1,
+        "on": true
+      },
+      {
+        "theme": "mothers",
+        "type": "nthweekday",
+        "month": 5,
+        "n": 2,
+        "weekday": 0,
+        "before": 7,
+        "after": 0,
+        "on": true
+      },
+      {
+        "theme": "fathers",
+        "type": "nthweekday",
+        "month": 6,
+        "n": 3,
+        "weekday": 0,
+        "before": 7,
+        "after": 0,
+        "on": true
+      },
+      {
+        "theme": "braai",
+        "type": "range",
+        "from": "09-17",
+        "to": "09-24",
+        "on": true
+      },
+      {
+        "theme": "halloween",
+        "type": "range",
+        "from": "10-24",
+        "to": "10-31",
+        "on": true
+      },
+      {
+        "theme": "christmas",
+        "type": "range",
+        "from": "12-01",
+        "to": "12-26",
+        "on": true
+      }
+    ]
+  },
   "menuLayout": "grid",
   "specials": {
     "enabled": true,

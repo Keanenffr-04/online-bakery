@@ -24,11 +24,74 @@ window.SB_OFFLINE = {
     "home": {
       "hero": true,
       "featured": true,
-      "cta": true
+      "cta": true,
+      "fresh": true
     },
     "featuredCount": 3,
     "featuredStyle": "glass",
+    "recentCount": 3,
+    "popularCount": 3,
     "decorations": true,
+    "autoTheme": {
+      "enabled": true,
+      "rules": [
+        {
+          "theme": "valentines",
+          "type": "range",
+          "from": "02-01",
+          "to": "02-14",
+          "on": true
+        },
+        {
+          "theme": "easter",
+          "type": "easter",
+          "before": 9,
+          "after": 1,
+          "on": true
+        },
+        {
+          "theme": "mothers",
+          "type": "nthweekday",
+          "month": 5,
+          "n": 2,
+          "weekday": 0,
+          "before": 7,
+          "after": 0,
+          "on": true
+        },
+        {
+          "theme": "fathers",
+          "type": "nthweekday",
+          "month": 6,
+          "n": 3,
+          "weekday": 0,
+          "before": 7,
+          "after": 0,
+          "on": true
+        },
+        {
+          "theme": "braai",
+          "type": "range",
+          "from": "09-17",
+          "to": "09-24",
+          "on": true
+        },
+        {
+          "theme": "halloween",
+          "type": "range",
+          "from": "10-24",
+          "to": "10-31",
+          "on": true
+        },
+        {
+          "theme": "christmas",
+          "type": "range",
+          "from": "12-01",
+          "to": "12-26",
+          "on": true
+        }
+      ]
+    },
     "menuLayout": "grid",
     "specials": {
       "enabled": true,
@@ -107,7 +170,8 @@ window.SB_OFFLINE = {
         "price": 450,
         "emoji": "🍰",
         "featured": true,
-        "visible": true
+        "visible": true,
+        "added": "2026-08-01"
       },
       {
         "id": "p2",
@@ -117,7 +181,9 @@ window.SB_OFFLINE = {
         "price": 420,
         "emoji": "🎂",
         "featured": false,
-        "visible": true
+        "visible": true,
+        "added": "2026-08-20",
+        "popular": true
       },
       {
         "id": "p3",
@@ -127,7 +193,9 @@ window.SB_OFFLINE = {
         "price": 380,
         "emoji": "🥕",
         "featured": false,
-        "visible": true
+        "visible": true,
+        "added": "2026-09-10",
+        "popular": true
       },
       {
         "id": "p4",
@@ -137,7 +205,9 @@ window.SB_OFFLINE = {
         "price": 180,
         "emoji": "🧁",
         "featured": true,
-        "visible": true
+        "visible": true,
+        "added": "2026-09-25",
+        "popular": true
       },
       {
         "id": "p5",
@@ -147,7 +217,8 @@ window.SB_OFFLINE = {
         "price": 90,
         "emoji": "🍪",
         "featured": false,
-        "visible": true
+        "visible": true,
+        "added": "2026-10-12"
       },
       {
         "id": "p6",
@@ -157,7 +228,8 @@ window.SB_OFFLINE = {
         "price": 120,
         "emoji": "🥐",
         "featured": false,
-        "visible": true
+        "visible": true,
+        "added": "2026-10-28"
       },
       {
         "id": "p7",
@@ -167,7 +239,8 @@ window.SB_OFFLINE = {
         "price": 65,
         "emoji": "🍞",
         "featured": true,
-        "visible": true
+        "visible": true,
+        "added": "2026-09-01"
       },
       {
         "id": "p8",
@@ -177,7 +250,8 @@ window.SB_OFFLINE = {
         "price": 60,
         "emoji": "🌾",
         "featured": false,
-        "visible": true
+        "visible": true,
+        "added": "2026-11-03"
       }
     ]
   }

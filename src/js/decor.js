@@ -42,11 +42,12 @@
   const ICON = { pause: '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="currentColor" d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>', play: '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8 5.5v13l11-6.5z"/></svg>' };
 
   if (document.body && document.body.hasAttribute("data-no-deco")) return;   // admin page: it only uses SBDecor.html for its preview box
-  window.SB && SB.load().then(({ settings: s }) => {
-    if (!SETS[s.theme] || s.decorations === false || document.querySelector(".deco")) return;
+  window.SB && SB.load().then(({ settings: s, themeNow }) => {
+    const theme = themeNow || s.theme;
+    if (!SETS[theme] || s.decorations === false || document.querySelector(".deco")) return;
     const layer = document.createElement("div");
     layer.className = "deco"; layer.setAttribute("aria-hidden", "true");
-    layer.innerHTML = html(s.theme, { phone: matchMedia("(max-width:859px)").matches });
+    layer.innerHTML = html(theme, { phone: matchMedia("(max-width:859px)").matches });
     document.body.append(layer);
     const btn = document.createElement("button");
     btn.type = "button"; btn.className = "deco-toggle";
