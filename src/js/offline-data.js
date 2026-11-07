@@ -28,6 +28,7 @@ window.SB_OFFLINE = {
     },
     "featuredCount": 3,
     "featuredStyle": "glass",
+    "decorations": true,
     "menuLayout": "grid",
     "specials": {
       "enabled": true,

@@ -2,7 +2,7 @@
 Append-only. Never delete. Items may move to a later version (leave a note). Finished items go to `BACKLOG.md` with the version number.
 Rule: **max 1 or 2 things per version.**
 
-**Next up: v10.7**  (v10.6 done, see BACKLOG.md; v10.5 done, see BACKLOG.md; v10.4 done, see BACKLOG.md; v10.3 done, see BACKLOG.md; v10.2 done, see BACKLOG.md; numbering is v10.1, v10.2, ... The current plan is the "MASTER PLAN" at the bottom of this file; older notes above are kept for history and are superseded by it.)
+**Next up: v10.8**  (v10.7 done, see BACKLOG.md; v10.6 done, see BACKLOG.md; v10.5 done, see BACKLOG.md; v10.4 done, see BACKLOG.md; v10.3 done, see BACKLOG.md; v10.2 done, see BACKLOG.md; numbering is v10.1, v10.2, ... The current plan is the "MASTER PLAN" at the bottom of this file; older notes above are kept for history and are superseded by it.)
 
 ---
 ## v2: Research + theme foundation (DONE, see BACKLOG.md)
@@ -176,3 +176,9 @@ Owner list comes first, so it took the v10.6 slot and **everything in the master
 - v10.6 (DONE, see BACKLOG.md): all three, in a form that works on a static site.
 - **Still to do with the backend (v10.8):** the forgot-password step becomes a real emailed link or SMS code (today an admin hands the code to the person), and the same applies if customers ever get accounts (today only admin accounts exist).
 - **Ideas for later:** automatic theme by date (e.g. Christmas theme switches on 1 Dec, off 27 Dec; Valentine's 1 to 15 Feb; Braai Day around 24 Sept) so Becca doesn't have to remember; more occasion themes (New Year, Father's Day, Women's Day, Black Friday, Diwali, Eid); seasonal greeting/specials text per theme.
+
+---
+## Owner change list 9 (from `Changes for next version_6ebecf.md`, added with v10.7)
+1. Add Father's Day, and on every special-occasion theme add small decorations around the whole page and the background, moving around. Special-occasion themes only.
+- v10.7 (DONE, see BACKLOG.md). Owner list first again, so the master plan slides one more: **v10.8** = most recent + most popular section + admin extras (Sold out today, manage menu sections); **v10.9** = admin that works across devices (backend, also real email/SMS for forgot password); **v10.10** = order tools; **v10.11** = Privacy (POPIA) + Terms + visitor theme switcher. Photos and launch stay LAST.
+- Ideas for later: switch the occasion theme on and off by date automatically (Father's Day = third Sunday of June, Mother's Day = second Sunday of May, Braai Day = 24 Sept); owner-chosen decoration emoji per theme in admin; matching specials text per occasion.

@@ -2,13 +2,13 @@
    (localStorage). Inside the admin preview iframe it uses the unsaved draft instead. */
 (function () {
   const J = (s, k) => { try { return JSON.parse(s.getItem(k)); } catch (e) { return null; } };
-  const D = { theme: "classic", tagline: "", heroStyle: "logo", greeting: "Welcome in, something sweet is baking.", home: { hero: true, featured: true, cta: true }, featuredCount: 3, featuredStyle: "glass", menuLayout: "grid", faq: [], reviews: [], specials: { enabled: true, items: ["Today's specials: ask Becca on WhatsApp", "Custom cakes for every occasion, order online"] }, orders: { enabled: true, items: ["How to order: message Becca on WhatsApp", "Tell us what you'd like, the date you need it and any notes"] } };
+  const D = { theme: "classic", tagline: "", heroStyle: "logo", greeting: "Welcome in, something sweet is baking.", home: { hero: true, featured: true, cta: true }, featuredCount: 3, featuredStyle: "glass", decorations: true, menuLayout: "grid", faq: [], reviews: [], specials: { enabled: true, items: ["Today's specials: ask Becca on WhatsApp", "Custom cakes for every occasion, order online"] }, orders: { enabled: true, items: ["How to order: message Becca on WhatsApp", "Tell us what you'd like, the date you need it and any notes"] } };
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const SB = window.SB = {
     esc, TAGS: [["vegan", "Vegan"], ["gluten-free", "Gluten-free"], ["nut-free", "Nut-free"], ["dairy-free", "Dairy-free"]],
     THEMES: [["classic", "Classic Black & White"], ["cocoa", "Cocoa & Cream"], ["pastel", "Soft Pastel"]],
     // Special-occasion themes (v10.6): tokens live in themes/theme-seasonal.css. The admin shows them as a second group.
-    OCCASION_THEMES: [["christmas", "Christmas"], ["valentines", "Valentine's Day"], ["easter", "Easter"], ["halloween", "Halloween"], ["braai", "Braai Day (Heritage Day)"], ["mothers", "Mother's Day"]],
+    OCCASION_THEMES: [["christmas", "Christmas"], ["valentines", "Valentine's Day"], ["easter", "Easter"], ["halloween", "Halloween"], ["braai", "Braai Day (Heritage Day)"], ["mothers", "Mother's Day"], ["fathers", "Father's Day"]],
     // v10.6: phone numbers. A country-code dropdown (South Africa +27 first and the default) next to the number box.
     // SB.phoneField() draws it, SB.phoneRead() turns what was typed into one clean number (digits only, e.g. 27833413166).
     COUNTRIES: [["27", "South Africa"], ["264", "Namibia"], ["267", "Botswana"], ["263", "Zimbabwe"], ["258", "Mozambique"], ["266", "Lesotho"], ["268", "Eswatini"], ["260", "Zambia"], ["265", "Malawi"], ["244", "Angola"], ["254", "Kenya"], ["234", "Nigeria"], ["233", "Ghana"], ["44", "United Kingdom"], ["353", "Ireland"], ["1", "USA / Canada"], ["61", "Australia"], ["64", "New Zealand"], ["49", "Germany"], ["31", "Netherlands"], ["33", "France"], ["34", "Spain"], ["351", "Portugal"], ["39", "Italy"], ["971", "United Arab Emirates"], ["91", "India"], ["86", "China"]],

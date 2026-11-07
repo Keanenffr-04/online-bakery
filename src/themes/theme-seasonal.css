@@ -72,3 +72,15 @@
   --shadow:0 8px 22px rgba(123,58,166,.13);
   --space-3:1.25rem; --space-5:4rem;
 }
+/* Father's Day: navy, steel blue and cool grey */
+[data-theme="fathers"]{
+  --bg:#F6F8FB; --surface:#FFFFFF; --surface-alt:#E3EAF3; --border:#CBD7E6;
+  --text:#243247; --heading:#14233C; --accent:#1A5490;
+  --btn-bg:#1B3A5F; --btn-text:#FFFFFF; --whatsapp:#1FA855;
+  --link:#1A5490; --btn-invert-text:#1B3A5F;
+  --font-heading:"Bodoni Moda","Playfair Display",Georgia,serif; --font-body:"Inter",system-ui,sans-serif;
+  --heading-weight:600;
+  --radius-card:10px; --radius-pill:8px; --radius-arch:999px;
+  --shadow:0 6px 18px rgba(27,58,95,.14);
+  --space-3:1.25rem; --space-5:4rem;
+}

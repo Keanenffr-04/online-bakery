@@ -311,3 +311,21 @@ button.btn:disabled{opacity:.6;cursor:not-allowed}
 .phone select{text-overflow:ellipsis}
 .form__error--inline{margin:.5rem 0 0;font-size:.85rem}
 @media(max-width:359px){.phone{grid-template-columns:1fr}}
+
+/* v10.7: moving decorations for special-occasion themes (js/decor.js). One fixed layer, click-through, under the header and strips.
+   Only transform + opacity are animated. Reduced motion = they stay still. */
+.deco{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:45}
+.deco__i{position:absolute;left:var(--x);top:0;font-size:var(--s);line-height:1;opacity:var(--o);user-select:none;will-change:transform;
+  transform:translate3d(0,var(--yv),0);animation-duration:var(--t);animation-delay:var(--d);animation-iteration-count:infinite;animation-timing-function:linear;
+  font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
+.deco__i--fall{animation-name:deco-fall}
+.deco__i--rise{animation-name:deco-rise}
+.deco__i--wander{animation-name:deco-wander;animation-timing-function:ease-in-out}
+@keyframes deco-fall{0%{transform:translate3d(0,-14vh,0) rotate(0);opacity:0}8%{opacity:var(--o)}50%{transform:translate3d(var(--sw),48vh,0) rotate(calc(var(--rot) / 2))}92%{opacity:var(--o)}100%{transform:translate3d(calc(var(--sw) * -1),112vh,0) rotate(var(--rot));opacity:0}}
+@keyframes deco-rise{0%{transform:translate3d(0,112vh,0) rotate(0);opacity:0}8%{opacity:var(--o)}50%{transform:translate3d(var(--sw),48vh,0) rotate(calc(var(--rot) / 6))}92%{opacity:var(--o)}100%{transform:translate3d(calc(var(--sw) * -1),-14vh,0) rotate(calc(var(--rot) / 3));opacity:0}}
+@keyframes deco-wander{0%,100%{transform:translate3d(0,var(--yv),0) rotate(-6deg)}
+  25%{transform:translate3d(var(--dx1),calc(var(--yv) + var(--dy1)),0) rotate(8deg)}
+  50%{transform:translate3d(var(--dx2),calc(var(--yv) + var(--dy2)),0) rotate(-8deg)}
+  75%{transform:translate3d(var(--dx3),calc(var(--yv) + var(--dy3)),0) rotate(6deg)}}
+@media(prefers-reduced-motion:reduce){.deco__i{animation:none;opacity:calc(var(--o) * .8)}}
+@media print{.deco{display:none}}
