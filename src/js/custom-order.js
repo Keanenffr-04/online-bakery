@@ -2,6 +2,7 @@
    with the whole request already typed in. Business number comes from config/business.json via SB.load(). */
 SB.load().then(({ biz }) => {
   const f = document.getElementById("co-form"), err = document.getElementById("co-error"); if (!f) return;
+  document.getElementById("co-phone-wrap").innerHTML = SB.phoneField("co-phone", { label: "Your phone number" });
   const date = f.elements.date; date.min = new Date().toISOString().slice(0, 10);
   const nice = iso => new Date(iso + "T12:00").toLocaleDateString("en-ZA", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   const show = (msg, el) => { err.textContent = msg; err.hidden = !msg; if (el) el.focus(); };
@@ -15,9 +16,10 @@ SB.load().then(({ biz }) => {
     if (v("date") < date.min) return show("Please choose a date from today onwards.", date);
     const s = Number(v("servings")); if (!(s >= 1 && s <= 1000)) return show("Servings should be a number between 1 and 1000.", f.elements.servings);
 
+    const ph = SB.phoneRead("co-phone"); if (ph.error) return show(ph.error, document.getElementById("co-phone"));
     const owner = (biz.owner || "").split(" ")[0] || "there", L = [];
     L.push(`Hi ${owner}! I'd like to ask about a custom order from ${biz.name || "The Sweetest Bakery"}:`, "");
-    L.push(`Name: ${v("name")}`, `Occasion: ${v("occasion")}`, `Date needed: ${nice(v("date"))}`, `What: ${v("what")}`, `Servings: ${s}`);
+    L.push(`Name: ${v("name")}`, ...(ph.display ? [`Phone: ${ph.display}`] : []), `Occasion: ${v("occasion")}`, `Date needed: ${nice(v("date"))}`, `What: ${v("what")}`, `Servings: ${s}`);
     if (v("method") !== "Not sure yet") L.push(`Collection or delivery: ${v("method")}`);
     if (v("flavours")) L.push(`Flavours: ${v("flavours")}`);
     if (v("diet")) L.push(`Allergies or dietary needs: ${v("diet")}`);

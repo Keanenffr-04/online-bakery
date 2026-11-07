@@ -2,7 +2,7 @@
 Append-only. Never delete. Items may move to a later version (leave a note). Finished items go to `BACKLOG.md` with the version number.
 Rule: **max 1 or 2 things per version.**
 
-**Next up: v10.6**  (v10.5 done, see BACKLOG.md; v10.4 done, see BACKLOG.md; v10.3 done, see BACKLOG.md; v10.2 done, see BACKLOG.md; numbering is v10.1, v10.2, ... The current plan is the "MASTER PLAN" at the bottom of this file; older notes above are kept for history and are superseded by it.)
+**Next up: v10.7**  (v10.6 done, see BACKLOG.md; v10.5 done, see BACKLOG.md; v10.4 done, see BACKLOG.md; v10.3 done, see BACKLOG.md; v10.2 done, see BACKLOG.md; numbering is v10.1, v10.2, ... The current plan is the "MASTER PLAN" at the bottom of this file; older notes above are kept for history and are superseded by it.)
 
 ---
 ## v2: Research + theme foundation (DONE, see BACKLOG.md)
@@ -166,3 +166,13 @@ Both items are waiting on the owner's info, so they are NOT built yet (owner: "I
 1. Rewrite or confirm the six FAQ answers (notice needed, allergens, delivery area and fees, payment). Drop a draft tag by removing `"draft": true` for that item in `config/site-settings.json`.
 2. Send real reviews (name, text, optional rating and date), added in the same file.
 Nothing to build until the owner sends the wording; when they do, edit `config/site-settings.json` and regenerate `src/js/offline-data.js`.
+
+---
+## Owner change list 8 (from `Changes for next version_1.md`, added with v10.6)
+Owner list comes first, so it took the v10.6 slot and **everything in the master plan slides one version**: v10.7 = most recent + most popular section + admin extras (Sold out today, manage menu sections); v10.8 = admin that works across devices (backend); v10.9 = order tools; v10.10 = Privacy (POPIA) + Terms pages + visitor theme switcher. Photos and launch stay LAST.
+1. Forgot password for people who create accounts (link/verification code so nobody uses someone else's account).
+2. Country-code dropdown on phone numbers, default South Africa +27.
+3. More themes for special occasions (Christmas, Valentine's Day, Braai Day, and so on).
+- v10.6 (DONE, see BACKLOG.md): all three, in a form that works on a static site.
+- **Still to do with the backend (v10.8):** the forgot-password step becomes a real emailed link or SMS code (today an admin hands the code to the person), and the same applies if customers ever get accounts (today only admin accounts exist).
+- **Ideas for later:** automatic theme by date (e.g. Christmas theme switches on 1 Dec, off 27 Dec; Valentine's 1 to 15 Feb; Braai Day around 24 Sept) so Becca doesn't have to remember; more occasion themes (New Year, Father's Day, Women's Day, Black Friday, Diwali, Eid); seasonal greeting/specials text per theme.

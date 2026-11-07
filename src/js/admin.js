@@ -35,7 +35,40 @@
     state.authTab = "login"; flash("Sign-up sent. An existing admin must approve it before you can log in.");
   }
 
+  // v10.6: forgot password. There is no email/SMS on a static site, so the proof of identity is a one-time 6-digit code that
+  // a logged-in admin sees under Admins > "Password reset requests" and passes on to the person (WhatsApp, a call, in person).
+  // Codes last 15 minutes and are blocked after 5 wrong tries. Real email/SMS links come with the backend (v10.7).
+  const RK = "sb_resets", RMIN = 15;
+  const resets = () => J(RK, []).filter(r => r.exp > Date.now()), saveR = r => S(RK, r);
+  const newCode = () => String(crypto.getRandomValues(new Uint32Array(1))[0] % 1000000).padStart(6, "0");
+  function requestReset(u) {
+    const a = find(admins(), u); state.resetUser = u;
+    if (a && a.status === "active") { const all = resets().filter(r => r.u !== a.u); all.push({ u: a.u, code: newCode(), exp: Date.now() + RMIN * 60000, tries: 0 }); saveR(all); }
+    state.authTab = "reset";   // same answer whether or not the account exists, so nobody can use this to find usernames
+    flash(`If that account exists, a reset code was created. Ask an admin for it (it shows on their Admins tab). It works for ${RMIN} minutes.`);
+  }
+  async function useReset(u, code, p) {
+    const all = resets(), r = all.find(x => x.u.toLowerCase() === u.toLowerCase());
+    if (p.length < 6) return flash("New password must be at least 6 characters.");
+    if (!r) return flash("That code is wrong or has expired. Request a new one.");
+    if (r.tries >= 5) { saveR(all.filter(x => x !== r)); return flash("Too many wrong tries. Request a new code."); }
+    if (String(code).trim() !== r.code) { r.tries++; saveR(all); return flash(`That code is wrong. ${5 - r.tries} ${5 - r.tries === 1 ? "try" : "tries"} left.`); }
+    const rest = admins(), a = find(rest, r.u); a.salt = uid() + uid(); a.h = await hash(p, a.salt); delete a.mustChange; saveA(rest);
+    saveR(all.filter(x => x !== r)); state.authTab = "login"; flash("Password changed. You can log in now.");
+  }
+  function recoverView() {
+    const f = state.authTab === "forgot";
+    return `<div class="adm-card adm-login"><h1>${f ? "Forgot password" : "Enter your reset code"}</h1>
+    <p class="muted">${f ? "Enter your username. A one-time code is created, and an admin gives it to you, so we know it is really you." : "Type the 6-digit code an admin gave you, then choose a new password."}</p>
+    ${state.note ? `<div class="msg">${esc(state.note)}</div>` : ""}
+    <form data-form="${f ? "forgot" : "reset"}"><label>Username</label><input name="u" autocomplete="username" value="${esc(state.resetUser || "")}" required>
+    ${f ? "" : `<label>Reset code</label><input name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required><label>New password</label><input name="p" type="password" autocomplete="new-password" minlength="6" required>`}
+    <p style="margin-top:1rem"><button class="btn" type="submit">${f ? "Get a reset code" : "Change password"}</button></p></form>
+    <p class="muted">${f ? '<button type="button" class="linkbtn" data-act="auth" data-v="reset">I already have a code</button> &middot; ' : '<button type="button" class="linkbtn" data-act="auth" data-v="forgot">Get a new code</button> &middot; '}<button type="button" class="linkbtn" data-act="auth" data-v="login">Back to log in</button></p></div>`;
+  }
+
   function authView() {
+    if (state.authTab === "forgot" || state.authTab === "reset") return recoverView();
     const l = state.authTab === "login";
     return `<div class="adm-card adm-login"><h1>${l ? "Admin login" : "Admin sign-up"}</h1>
     <div class="adm-tabs"><button class="btn btn--sm ${l ? "" : "btn--ghost"}" data-act="auth" data-v="login">Log in</button><button class="btn btn--sm ${l ? "btn--ghost" : ""}" data-act="auth" data-v="signup">Sign up</button></div>
@@ -43,6 +76,7 @@
     <form data-form="${l ? "login" : "signup"}"><label>Username</label><input name="u" autocomplete="username" required>
     <label>Password</label><input name="p" type="password" autocomplete="${l ? "current-password" : "new-password"}" required>
     <p style="margin-top:1rem"><button class="btn" type="submit">${l ? "Log in" : "Request access"}</button></p></form>
+    ${l ? '<p class="muted"><button type="button" class="linkbtn" data-act="auth" data-v="forgot">Forgot your password?</button></p>' : ""}
     <p class="muted"><a href="index.html">Back to the website</a></p></div>`;
   }
 
@@ -53,7 +87,7 @@
     const o = J("sb_orders", []), f = state.filter || "pending", list = o.filter(x => f === "all" || x.status === f);
     const st = ["pending", "confirmed", "ready", "completed", "cancelled"];
     return `<div class="adm-split"><div class="adm-card"><h2>Add an order</h2>
-    <form data-form="order"><label>Customer</label><input name="name" required><label>Phone (with country code)</label><input name="phone" placeholder="27831234567">
+    <form data-form="order"><label>Customer</label><input name="name" required>${SB.phoneField("o-phone", { label: "Phone" })}
     <label>What they ordered</label><textarea name="items" required></textarea><div class="adm-row"><div><label>Needed on</label><input name="date" type="date"></div><div><label>Total (R)</label><input name="total" type="number" min="0"></div></div>
     <p><button class="btn btn--sm" type="submit">Save order</button></p></form></div>
     <div class="adm-card"><div class="adm-top"><h2>${list.length} ${f === "all" ? "" : f} order${list.length === 1 ? "" : "s"}</h2>
@@ -85,6 +119,7 @@
   function look() {
     const s = state.draft;
     return `<div class="adm-split"><div class="adm-card"><h2>Theme</h2><div class="themes">${SB.THEMES.map(([id, n]) => `<button class="btn btn--sm ${s.theme === id ? "" : "btn--ghost"}" data-act="theme" data-v="${id}">${n}</button>`).join("")}</div>
+    <h3 class="adm-sub">Special occasions</h3><div class="themes">${SB.OCCASION_THEMES.map(([id, n]) => `<button class="btn btn--sm ${s.theme === id ? "" : "btn--ghost"}" data-act="theme" data-v="${id}">${n}</button>`).join("")}</div>
     <h2 style="margin-top:1.2rem">Home page</h2>${[["hero", "Hero"], ["featured", "Featured items"], ["cta", "Order banner"]].map(([k, n]) => `<label class="chk"><input type="checkbox" data-act="home" data-k="${k}" ${s.home[k] !== false ? "checked" : ""}>${n}</label>`).join("")}
     <label>Best sellers shown (items ticked "Show on home page")</label><select data-act="fc">${[1, 2, 3, 4, 5, 6].map(n => `<option ${n == s.featuredCount ? "selected" : ""}>${n}</option>`).join("")}</select>
     <label>Best-seller card style</label><select data-act="fs"><option value="glass" ${s.featuredStyle !== "plain" ? "selected" : ""}>Glass (frosted, zooms on hover)</option><option value="plain" ${s.featuredStyle === "plain" ? "selected" : ""}>Plain</option></select>
@@ -105,9 +140,12 @@
   }
 
   function adminsView() {
-    const a = admins();
-    return `<div class="adm-split"><div class="adm-card"><h2>Add an admin</h2><form data-form="addadmin"><label>Username</label><input name="u" required><label>Password</label><input name="p" type="password" required>
-    <p><button class="btn btn--sm" type="submit">Add admin</button></p></form><p class="muted">The root admin is always "admin" (password can change, account can't be removed).</p></div>
+    const a = admins(), rq = resets();
+    const reqs = rq.length ? `<div class="adm-card"><h2>Password reset requests</h2><p class="muted">Someone asked to reset their password. Only give them the code if you are sure it is really them (call or WhatsApp them). It cannot be used after it expires.</p>
+    <ul class="adm-list">${rq.map(r => `<li><div><strong>${esc(r.u)}</strong> &middot; code <strong class="adm-code">${esc(r.code)}</strong><br><span class="muted">expires in ${Math.max(1, Math.ceil((r.exp - Date.now()) / 60000))} min</span></div>
+    <div class="adm-actions"><button class="btn btn--sm btn--ghost" data-act="rcancel" data-u="${esc(r.u)}">Cancel</button></div></li>`).join("")}</ul></div>` : "";
+    return `${reqs}<div class="adm-split"><div class="adm-card"><h2>Add an admin</h2><form data-form="addadmin"><label>Username</label><input name="u" required><label>Password</label><input name="p" type="password" required>
+    <p><button class="btn btn--sm" type="submit">Add admin</button></p></form><p class="muted">The root admin is always "admin" (password can change, account can't be removed). If an admin forgets their password they can use "Forgot your password?" on the login page; the code shows here.</p></div>
     <div class="adm-card"><h2>Admins</h2><ul class="adm-list">${a.map(x => `<li><div><strong>${esc(x.u)}</strong> ${x.root ? '<span class="tag">root</span>' : ""} ${x.status === "pending" ? '<span class="tag">waiting</span>' : ""}</div>
     <div class="adm-actions">${x.status === "pending" ? `<button class="btn btn--sm" data-act="aok" data-u="${esc(x.u)}">Approve</button>` : ""}
     ${x.root ? "" : `<button class="btn btn--sm btn--ghost" data-act="areset" data-u="${esc(x.u)}">New password</button>`}${x.root ? "" : `<button class="btn btn--sm btn--ghost" data-act="adel" data-u="${esc(x.u)}">${x.status === "pending" ? "Decline" : "Remove"}</button>`}</div></li>`).join("")}</ul></div></div>`;
@@ -150,7 +188,12 @@
     e.preventDefault(); const f = e.target, v = Object.fromEntries(new FormData(f)), k = f.dataset.form;
     if (k === "login") return login(v.u.trim(), v.p);
     if (k === "signup") return signup(v.u.trim(), v.p);
-    if (k === "order") { const o = J("sb_orders", []); o.unshift({ id: uid(), status: "pending", ...v }); S("sb_orders", o); return go("orders", "Order saved."); }
+    if (k === "forgot") return requestReset(v.u.trim());
+    if (k === "reset") { state.resetUser = v.u.trim(); return useReset(v.u.trim(), v.code, v.p); }
+    if (k === "order") {
+      const ph = SB.phoneRead("o-phone"); if (ph.error) return go("orders", ph.error);
+      delete v["o-phone-cc"]; delete v["o-phone"];
+      const o = J("sb_orders", []); o.unshift({ id: uid(), status: "pending", ...v, phone: ph.digits || "" }); S("sb_orders", o); return go("orders", "Order saved."); }
     if (k === "product") {
       const p = { ...v, price: Number(v.price), featured: !!v.featured, visible: !!v.visible, tags: SB.TAGS.map(t => t[0]).filter(id => v["tag_" + id]) }, L = state.data.products;
       SB.TAGS.forEach(t => delete p["tag_" + t[0]]);
@@ -193,7 +236,7 @@
 
   app.addEventListener("click", async e => {
     const b = e.target.closest("button[data-act]"); if (!b) return; const a = b.dataset.act, v = b.dataset.v, id = b.dataset.id, u = b.dataset.u;
-    if (a === "auth") { state.authTab = v; return render(); }
+    if (a === "auth") { state.authTab = v; state.note = ""; return render(); }
     if (a === "logout") { sessionStorage.removeItem("sb_session"); sessionStorage.removeItem("sb_preview"); return render(); }
     if (a === "tab") { state.tab = v; if (v === "look") await prepLook(); if (v === "menu") state.edit = null; if (v !== "look") sessionStorage.removeItem("sb_preview"); return go(v); }
     if (a === "odel") { S("sb_orders", J("sb_orders", []).filter(x => x.id !== id)); return go("orders"); }
@@ -204,6 +247,7 @@
     if (a === "ppage") { state.page = v; return go("look"); }
     if (a === "lsave") { S("sb_settings", state.draft); return go("look", "Saved on this device. Use the Publish tab to make it live for everyone."); }
     if (a === "lreset") { localStorage.removeItem("sb_settings"); await prepLook(true); return go("look", "Reset to the published settings."); }
+    if (a === "rcancel") { saveR(resets().filter(r => r.u !== u)); return go("admins", "Reset request cancelled."); }
     if (a === "aok") { const all = admins(); find(all, u).status = "active"; saveA(all); return go("admins", u + " approved."); }
     if (a === "adel") { if (confirm("Remove " + u + "?")) saveA(admins().filter(x => x.u !== u || x.root)); return go("admins"); }
     if (a === "areset") { const p = prompt("New password for " + u + " (6+ characters):"); if (p && p.length >= 6) { const all = admins(), x = find(all, u); x.salt = uid() + uid(); x.h = await hash(p, x.salt); saveA(all); return go("admins", "Password changed."); } return; }

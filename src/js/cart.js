@@ -37,6 +37,7 @@
       lines.forEach(l => out.push(`${l.q} x ${l.p.name} (${money(price(l.p))} each) = ${money(l.sub)}`));
       out.push("", `Total: ${money(total)}`, "");
       if (meta.name) out.push(`Name: ${meta.name}`);
+      if (meta.phone) out.push(`Phone: ${meta.phone}`);
       if (meta.date) out.push(`Date needed: ${meta.date}`);
       if (meta.method && meta.method !== "Not sure yet") out.push(`Collection or delivery: ${meta.method}`);
       if (meta.notes) out.push(`Notes: ${meta.notes}`);

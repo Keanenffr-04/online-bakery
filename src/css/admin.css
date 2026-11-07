@@ -23,3 +23,6 @@
 .adm iframe{width:100%;height:560px;border:1px solid var(--border);border-radius:var(--radius-card);background:#fff}
 .muted{opacity:.75;font-size:.85rem}
 .adm-tags{display:flex;flex-wrap:wrap;gap:.2rem 1rem;margin:.25rem 0 .5rem}
+.adm-sub{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;opacity:.75;margin:1rem 0 .5rem}
+.adm-code{font:700 1.15rem ui-monospace,Consolas,monospace;letter-spacing:.2em}
+.adm .linkbtn{background:none;border:0;padding:0;font:inherit;color:var(--link);text-decoration:underline;cursor:pointer}

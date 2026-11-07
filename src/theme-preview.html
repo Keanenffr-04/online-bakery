@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="themes/theme-classic.css">
 <link rel="stylesheet" href="themes/theme-cocoa.css">
 <link rel="stylesheet" href="themes/theme-pastel.css">
+<link rel="stylesheet" href="themes/theme-seasonal.css">
 <style>
   body{background:#EEE;font-family:system-ui,sans-serif}
   .page-head{padding:2rem 0 0;text-align:center;color:#333}
@@ -31,7 +32,7 @@
 <div id="themes"></div>
 <script>
 // Config comes from one place: edit the list below to add/remove themes.
-const THEMES=[["classic","Classic Black & White"],["cocoa","Cocoa & Cream"],["pastel","Soft Pastel"]];
+const THEMES=[["classic","Classic Black & White"],["cocoa","Cocoa & Cream"],["pastel","Soft Pastel"],["christmas","Christmas"],["valentines","Valentine's Day"],["easter","Easter"],["halloween","Halloween"],["braai","Braai Day (Heritage Day)"],["mothers","Mother's Day"]];
 const WA="https://wa.me/27833413166"; // matches config/business.json
 document.getElementById("themes").innerHTML=THEMES.map(([id,name])=>`
 <section class="theme-block" data-theme="${id}">

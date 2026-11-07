@@ -7,6 +7,31 @@
   const SB = window.SB = {
     esc, TAGS: [["vegan", "Vegan"], ["gluten-free", "Gluten-free"], ["nut-free", "Nut-free"], ["dairy-free", "Dairy-free"]],
     THEMES: [["classic", "Classic Black & White"], ["cocoa", "Cocoa & Cream"], ["pastel", "Soft Pastel"]],
+    // Special-occasion themes (v10.6): tokens live in themes/theme-seasonal.css. The admin shows them as a second group.
+    OCCASION_THEMES: [["christmas", "Christmas"], ["valentines", "Valentine's Day"], ["easter", "Easter"], ["halloween", "Halloween"], ["braai", "Braai Day (Heritage Day)"], ["mothers", "Mother's Day"]],
+    // v10.6: phone numbers. A country-code dropdown (South Africa +27 first and the default) next to the number box.
+    // SB.phoneField() draws it, SB.phoneRead() turns what was typed into one clean number (digits only, e.g. 27833413166).
+    COUNTRIES: [["27", "South Africa"], ["264", "Namibia"], ["267", "Botswana"], ["263", "Zimbabwe"], ["258", "Mozambique"], ["266", "Lesotho"], ["268", "Eswatini"], ["260", "Zambia"], ["265", "Malawi"], ["244", "Angola"], ["254", "Kenya"], ["234", "Nigeria"], ["233", "Ghana"], ["44", "United Kingdom"], ["353", "Ireland"], ["1", "USA / Canada"], ["61", "Australia"], ["64", "New Zealand"], ["49", "Germany"], ["31", "Netherlands"], ["33", "France"], ["34", "Spain"], ["351", "Portugal"], ["39", "Italy"], ["971", "United Arab Emirates"], ["91", "India"], ["86", "China"]],
+    phoneField(id, { required, label, value } = {}) {
+      let cc = "27"; try { cc = localStorage.getItem("sb_cc") || "27"; } catch (e) { /* ignore */ }
+      if (!SB.COUNTRIES.some(c => c[0] === cc)) cc = "27";
+      return `<label for="${id}">${label || "Phone number"} ${required ? '<span class="req" aria-hidden="true">*</span>' : '<span class="muted">(optional)</span>'}</label>
+      <div class="phone"><select id="${id}-cc" aria-label="Country code" autocomplete="tel-country-code">${SB.COUNTRIES.map(([c, n]) => `<option value="${c}"${c === cc ? " selected" : ""}>+${c} ${SB.esc(n)}</option>`).join("")}</select>
+      <input id="${id}" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="${cc === "27" ? "83 341 3166" : "Phone number"}" value="${SB.esc(value || "")}"${required ? " required" : ""}></div>`;
+    },
+    groupDigits: n => n.length === 9 ? `${n.slice(0, 2)} ${n.slice(2, 5)} ${n.slice(5)}` : n.length >= 7 ? `${n.slice(0, 3)} ${n.slice(3, 6)} ${n.slice(6)}`.trim() : n,
+    // Returns { empty } if nothing typed, { error } if it can't be right, else { digits: "27833413166", display: "+27 83 341 3166" }.
+    // A number typed with + or 00 in front is taken as already international; a leading 0 is dropped (083... = +27 83...).
+    phoneRead(id) {
+      const num = document.getElementById(id), sel = document.getElementById(id + "-cc"); if (!num || !sel) return { empty: true };
+      const raw = num.value.trim(); if (!raw) return { empty: true };
+      try { localStorage.setItem("sb_cc", sel.value); } catch (e) { /* ignore */ }
+      let d = raw.replace(/\D/g, ""), intl = /^\s*(\+|00)/.test(raw);
+      if (intl) { d = d.replace(/^00/, ""); } else { d = d.replace(/^0+/, ""); if (!d.startsWith(sel.value) || d.length < sel.value.length + 7) d = sel.value + d; }
+      if (d.length < 8 || d.length > 15) return { error: "That phone number doesn't look right. Check it and try again." };
+      const cc = intl ? (SB.COUNTRIES.map(c => c[0]).sort((a, b) => b.length - a.length).find(c => d.startsWith(c)) || "") : sel.value;
+      return { digits: d, display: cc ? "+" + cc + " " + SB.groupDigits(d.slice(cc.length)) : "+" + d };
+    },
     load() {
       return SB._p || (SB._p = (async () => {
         // Opened from disk (file://)? Browsers block fetch() there, so read the copy in js/offline-data.js instead.

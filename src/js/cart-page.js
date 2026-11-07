@@ -30,6 +30,7 @@ SB.load().then(async ({ biz }) => {
         <p class="muted small">Prices are as listed. We confirm availability and the final price on WhatsApp.</p>
         <div class="form">
           <label for="c-name">Your name</label><input id="c-name" autocomplete="name" value="${E(m.name || "")}">
+          ${SB.phoneField("c-phone", { label: "Your phone number", value: m.phoneRaw })}<p class="form__error form__error--inline" id="c-phone-err" role="alert" hidden></p>
           <label for="c-date">Date you need it <span class="muted">(optional)</span></label><input id="c-date" type="date" min="${today}" value="${E(m.dateISO || "")}">
           <label for="c-method">Collection or delivery</label>
           <select id="c-method">${["Not sure yet", "Collection", "Delivery"].map(o => `<option${(m.method || "Not sure yet") === o ? " selected" : ""}>${o}</option>`).join("")}</select>
@@ -48,8 +49,10 @@ SB.load().then(async ({ biz }) => {
     const a = document.getElementById("cart-send"); if (!a) return;
     const v = id => (document.getElementById(id) || {}).value || "";
     const dISO = v("c-date"), date = dISO ? new Date(dISO + "T12:00").toLocaleDateString("en-ZA", { weekday: "short", day: "numeric", month: "long", year: "numeric" }) : "";
-    const meta = { name: v("c-name").trim(), date, method: v("c-method"), notes: v("c-notes").trim() };
-    C.meta({ name: meta.name, dateISO: dISO, method: meta.method, notes: meta.notes });
+    const ph = SB.phoneRead("c-phone"), bad = document.getElementById("c-phone-err");
+    if (bad) { bad.textContent = ph.error || ""; bad.hidden = !ph.error; }
+    const meta = { name: v("c-name").trim(), date, method: v("c-method"), notes: v("c-notes").trim(), phone: ph.display || "" };
+    C.meta({ name: meta.name, dateISO: dISO, method: meta.method, notes: meta.notes, phoneRaw: v("c-phone") });
     if (!biz.whatsappLink) { a.href = "contact.html"; a.removeAttribute("target"); return; }
     a.href = biz.whatsappLink + "?text=" + encodeURIComponent(C.message(state.lines, state.total, biz, meta));
   };

@@ -305,3 +305,9 @@ button.btn:disabled{opacity:.6;cursor:not-allowed}
 .menu--glass .card__media{background:color-mix(in srgb,var(--surface-alt) 60%,transparent)}
 .menu--glass .card:hover,.menu--glass .card:focus-within{transform:scale(1.04);box-shadow:0 18px 40px color-mix(in srgb,var(--heading) 20%,transparent),inset 0 1px 0 color-mix(in srgb,#fff 70%,transparent);position:relative;z-index:1}
 @media(prefers-reduced-motion:reduce){.menu--glass .card{transition:none}.menu--glass .card:hover,.menu--glass .card:focus-within{transform:none}}
+
+/* v10.6: phone field = country-code dropdown + number box on one row */
+.phone{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.2fr);gap:.5rem}
+.phone select{text-overflow:ellipsis}
+.form__error--inline{margin:.5rem 0 0;font-size:.85rem}
+@media(max-width:359px){.phone{grid-template-columns:1fr}}

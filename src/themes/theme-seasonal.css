@@ -1,0 +1,74 @@
+/* Seasonal / special-occasion themes (v10.6). Tokens only, same names as theme-classic/cocoa/pastel. Layout never changes.
+   To add one: copy a block, change the id and colours, add it to SB.THEMES in js/store.js (and to THEMES in theme-preview.html). */
+/* Christmas: Holly green, berry red, snow white */
+[data-theme="christmas"]{
+  --bg:#FBF8F2; --surface:#FFFFFF; --surface-alt:#E8F1E9; --border:#D2E0D5;
+  --text:#2A3A2E; --heading:#16402A; --accent:#A81C2B;
+  --btn-bg:#1B5E3B; --btn-text:#FFFFFF; --whatsapp:#1FA855;
+  --link:#A81C2B; --btn-invert-text:#1B5E3B;
+  --font-heading:"Playfair Display",Georgia,serif; --font-body:"Montserrat",system-ui,sans-serif;
+  --heading-weight:700;
+  --radius-card:14px; --radius-pill:999px; --radius-arch:999px;
+  --shadow:0 6px 18px rgba(27,94,59,.12);
+  --space-3:1.25rem; --space-5:4rem;
+}
+/* Valentine's Day: Rose pink and deep red */
+[data-theme="valentines"]{
+  --bg:#FFF6F7; --surface:#FFFFFF; --surface-alt:#FFE1E7; --border:#F6C4CF;
+  --text:#4D2530; --heading:#7A0F2C; --accent:#B3123F;
+  --btn-bg:#B3123F; --btn-text:#FFFFFF; --whatsapp:#1FA855;
+  --link:#A30F38; --btn-invert-text:#A30F38;
+  --font-heading:"Playfair Display",Georgia,serif; --font-body:"Montserrat",system-ui,sans-serif;
+  --heading-weight:600;
+  --radius-card:22px; --radius-pill:999px; --radius-arch:999px;
+  --shadow:0 8px 22px rgba(179,18,63,.14);
+  --space-3:1.25rem; --space-5:4rem;
+}
+/* Easter: Spring mint, lilac and butter yellow */
+[data-theme="easter"]{
+  --bg:#FEFCF3; --surface:#FFFFFF; --surface-alt:#E9F4E3; --border:#D3E6CB;
+  --text:#3B4A3A; --heading:#3A2D63; --accent:#5B3FA0;
+  --btn-bg:#5B3FA0; --btn-text:#FFFFFF; --whatsapp:#1FA855;
+  --link:#5B3FA0; --btn-invert-text:#5B3FA0;
+  --font-heading:"Playfair Display",Georgia,serif; --font-body:"Inter",system-ui,sans-serif;
+  --heading-weight:600;
+  --radius-card:22px; --radius-pill:999px; --radius-arch:999px;
+  --shadow:0 8px 22px rgba(91,63,160,.12);
+  --space-3:1.25rem; --space-5:4rem;
+}
+/* Halloween: Pumpkin orange and midnight purple */
+[data-theme="halloween"]{
+  --bg:#FFF5E8; --surface:#FFFFFF; --surface-alt:#EFE0F5; --border:#DCC4E8;
+  --text:#2E2038; --heading:#2A1240; --accent:#9E4208;
+  --btn-bg:#2A1240; --btn-text:#FFB454; --whatsapp:#1FA855;
+  --link:#A8460A; --btn-invert-text:#2A1240;
+  --font-heading:"Bodoni Moda","Playfair Display",Georgia,serif; --font-body:"Inter",system-ui,sans-serif;
+  --heading-weight:600;
+  --radius-card:10px; --radius-pill:999px; --radius-arch:999px;
+  --shadow:0 6px 18px rgba(42,18,64,.16);
+  --space-3:1.25rem; --space-5:4rem;
+}
+/* Braai Day (Heritage Day): Charcoal, fire orange and veld sand */
+[data-theme="braai"]{
+  --bg:#FAF3E7; --surface:#FFFBF2; --surface-alt:#EBDCC4; --border:#D9C4A4;
+  --text:#3A2A1E; --heading:#231710; --accent:#A03A08;
+  --btn-bg:#2D2926; --btn-text:#FFFFFF; --whatsapp:#1FA855;
+  --link:#A33B08; --btn-invert-text:#2D2926;
+  --font-heading:"Bodoni Moda","Playfair Display",Georgia,serif; --font-body:"Montserrat",system-ui,sans-serif;
+  --heading-weight:600;
+  --radius-card:8px; --radius-pill:6px; --radius-arch:999px;
+  --shadow:0 6px 16px rgba(45,41,38,.14);
+  --space-3:1.25rem; --space-5:4rem;
+}
+/* Mother's Day: Lavender and peach */
+[data-theme="mothers"]{
+  --bg:#FCF8FD; --surface:#FFFFFF; --surface-alt:#F1E6F7; --border:#DFCDEC;
+  --text:#45385A; --heading:#2F2343; --accent:#8A3FB5;
+  --btn-bg:#7B3AA6; --btn-text:#FFFFFF; --whatsapp:#1FA855;
+  --link:#7B3AA6; --btn-invert-text:#7B3AA6;
+  --font-heading:"Playfair Display",Georgia,serif; --font-body:"Montserrat",system-ui,sans-serif;
+  --heading-weight:600;
+  --radius-card:22px; --radius-pill:999px; --radius-arch:999px;
+  --shadow:0 8px 22px rgba(123,58,166,.13);
+  --space-3:1.25rem; --space-5:4rem;
+}
