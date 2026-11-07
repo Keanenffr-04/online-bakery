@@ -353,3 +353,19 @@ button.btn:disabled{opacity:.6;cursor:not-allowed}
 .pcard--sold .card__media{opacity:.45;filter:grayscale(1)}
 .badge--sold{display:inline-block;margin-left:.35rem;padding:.1rem .5rem;border-radius:var(--radius-pill);background:var(--btn-bg);color:var(--btn-text);font:600 .7rem/1.4 var(--font-body);letter-spacing:.03em;vertical-align:middle;white-space:nowrap}
 .pcard .btn[disabled]{opacity:.6;cursor:not-allowed;pointer-events:none}
+
+/* v10.12: Home "Shop by treat" tiles + "How ordering works" steps */
+.tiles{display:grid;gap:.9rem;grid-template-columns:repeat(2,1fr)}
+@media(min-width:760px){.tiles{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}}
+.tile-link{display:grid;justify-items:center;gap:.25rem;padding:1.2rem .8rem;text-align:center;text-decoration:none;color:var(--text);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card);box-shadow:var(--shadow);transition:border-color .15s ease,transform .15s ease}
+.tile-link:hover,.tile-link:focus-visible{border-color:var(--btn-bg);transform:translateY(-2px)}
+.tile-link__e{font-size:2.2rem;line-height:1.1}
+.tile-link strong{font:var(--heading-weight) 1.05rem var(--font-heading);color:var(--heading)}
+.tile-link__s{font-size:.85rem;opacity:.8}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:1.2rem;counter-reset:step}
+@media(min-width:760px){.steps{grid-template-columns:repeat(3,1fr);gap:2rem}}
+.steps li{display:grid;gap:.3rem;counter-increment:step;padding-left:3.2rem;position:relative}
+.steps li::before{content:counter(step);position:absolute;left:0;top:0;width:2.4rem;height:2.4rem;border-radius:50%;display:grid;place-items:center;background:var(--btn-bg);color:var(--btn-text);font:600 1.05rem var(--font-body)}
+.steps strong{font:var(--heading-weight) 1.15rem var(--font-heading);color:var(--heading)}
+.steps span{max-width:34ch}
+@media(prefers-reduced-motion:reduce){.tile-link{transition:none}.tile-link:hover,.tile-link:focus-visible{transform:none}}

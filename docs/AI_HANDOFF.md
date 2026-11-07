@@ -13,4 +13,4 @@ You are continuing the build of **The Sweetest Bakery** website (repo: online-ba
 10. **Test before you hand over.** Open `preview.html` over `file://` in a headless browser, click through every link, and make sure nothing is dead, empty or erroring (v7 did this).
 11. **Follow the plan table in `roadmap/ROADMAP.md`**; it supersedes version numbers in the old notes (kept in `roadmap/ROADMAP_ARCHIVE.md`). New owner requests: add them to the tracker (section 2) and to a version in the plan, max 2 to 3 per version; anything needing logins / email / accounts goes under BACKEND. Photos and launch/hosting are deliberately LAST and only when the owner says so.
 12. The cart (`js/cart.js`) and forms are WhatsApp-only by design until the backend version. Product cards use `data-add`, not a WhatsApp link. Test the cart, the Custom Order message text and the header at 320px (cart icon + menu button must share the row).
-
+13. **Owner rules (list 13):** visitors never choose the theme (only the owner and the automatic seasons); never link to `admin.html` from a public page and keep admin sign-up closed (admins are added by an admin); Supabase is the chosen backend (v10.15).

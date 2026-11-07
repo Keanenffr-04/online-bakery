@@ -77,7 +77,7 @@
       <div><h3>Order</h3><p>Online orders only.<br>WhatsApp: <span data-biz="phoneDisplay"></span></p></div>
       <div class="social" data-social hidden><h3>Follow us</h3><ul class="social__list"></ul></div>
     </div>
-    <small>&copy; <span id="year"></span> <span data-biz="name">The Sweetest Bakery</span> &middot; <a href="admin.html">Staff login</a></small>
+    <small>&copy; <span id="year"></span> <span data-biz="name">The Sweetest Bakery</span></small>
   </div>
 </footer>`;
 

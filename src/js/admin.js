@@ -67,16 +67,16 @@
     <p class="muted">${f ? '<button type="button" class="linkbtn" data-act="auth" data-v="reset">I already have a code</button> &middot; ' : '<button type="button" class="linkbtn" data-act="auth" data-v="forgot">Get a new code</button> &middot; '}<button type="button" class="linkbtn" data-act="auth" data-v="login">Back to log in</button></p></div>`;
   }
 
+  // v10.12: only admins use this page. There is no public link to it (the footer "Staff login" link was removed) and no public sign-up:
+  // new admins are added by an existing admin under Admins > Add an admin. (A real server-side lock arrives with the Supabase version.)
   function authView() {
     if (state.authTab === "forgot" || state.authTab === "reset") return recoverView();
-    const l = state.authTab === "login";
-    return `<div class="adm-card adm-login"><h1>${l ? "Admin login" : "Admin sign-up"}</h1>
-    <div class="adm-tabs"><button class="btn btn--sm ${l ? "" : "btn--ghost"}" data-act="auth" data-v="login">Log in</button><button class="btn btn--sm ${l ? "btn--ghost" : ""}" data-act="auth" data-v="signup">Sign up</button></div>
+    return `<div class="adm-card adm-login"><h1>Admin login</h1><p class="muted">For the bakery team only.</p>
     ${state.note ? `<div class="msg">${esc(state.note)}</div>` : ""}
-    <form data-form="${l ? "login" : "signup"}"><label>Username</label><input name="u" autocomplete="username" required>
-    <label>Password</label><input name="p" type="password" autocomplete="${l ? "current-password" : "new-password"}" required>
-    <p style="margin-top:1rem"><button class="btn" type="submit">${l ? "Log in" : "Request access"}</button></p></form>
-    ${l ? '<p class="muted"><button type="button" class="linkbtn" data-act="auth" data-v="forgot">Forgot your password?</button></p>' : ""}
+    <form data-form="login"><label>Username</label><input name="u" autocomplete="username" required>
+    <label>Password</label><input name="p" type="password" autocomplete="current-password" required>
+    <p style="margin-top:1rem"><button class="btn" type="submit">Log in</button></p></form>
+    <p class="muted"><button type="button" class="linkbtn" data-act="auth" data-v="forgot">Forgot your password?</button></p>
     <p class="muted"><a href="index.html">Back to the website</a></p></div>`;
   }
 
@@ -136,7 +136,7 @@
   }
   function look() {
     const s = state.draft, pg = (v, n) => `<button class="btn btn--sm ${state.page === v ? "" : "btn--ghost"}" data-act="ppage" data-v="${v}">${n}</button>`;
-    const homeBox = `${[["hero", "Hero"], ["featured", "Featured items"], ["fresh", "New and popular"], ["cta", "Order banner"]].map(([k, n]) => `<label class="chk"><input type="checkbox" data-act="home" data-k="${k}" ${s.home[k] !== false ? "checked" : ""}>${n}</label>`).join("")}
+    const homeBox = `${[["hero", "Hero"], ["shop", "Shop by treat (section tiles)"], ["featured", "Featured items"], ["fresh", "New and popular"], ["steps", "How ordering works"], ["cta", "Order banner"]].map(([k, n]) => `<label class="chk"><input type="checkbox" data-act="home" data-k="${k}" ${s.home[k] !== false ? "checked" : ""}>${n}</label>`).join("")}
     <div class="adm-row"><div><label>Best sellers shown</label>${countSel("fc", s.featuredCount)}</div><div><label>"Just added" shown</label>${countSel("rc", s.recentCount || 3)}</div><div><label>"Most popular" shown</label>${countSel("pc", s.popularCount || 3)}</div>
     <div><label>Card style</label><select data-act="fs"><option value="glass" ${s.featuredStyle !== "plain" ? "selected" : ""}>Glass (frosted)</option><option value="plain" ${s.featuredStyle === "plain" ? "selected" : ""}>Plain</option></select></div></div>
     <p class="muted">Best sellers are items ticked "Show on home page"; Most popular are items ticked "Show in Most popular".</p>

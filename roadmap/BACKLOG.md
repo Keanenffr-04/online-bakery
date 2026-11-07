@@ -25,6 +25,7 @@ Append-only. Never delete. Newest at the bottom. What is still to do is in [`ROA
 | [v10.9](#v10-9) | Automatic seasonal themes + "New and popular" section on Home | 2026-11-07 |
 | [v10.10](#v10-10) | "Sold out today" toggle + Automatic seasons dropdown | 2026-11-07 |
 | [v10.11](#v10-11) | Themes dropdown + tidier admin (+ Supabase answer, top 10, next-5 plan) | 2026-11-07 |
+| [v10.12](#v10-12) | Home page tiles + steps, admin hidden from customers (+ roadmap: Supabase decided, top 10 scheduled, no visitor theme switching) | 2026-11-07 |
 
 Full details for each version follow, oldest first.
 
@@ -250,3 +251,17 @@ Owner list 12 (items 1 and 2 are answers, written into `ROADMAP.md` sections 1c 
 Tests (headless browser, file://): all six tabs at 1280, 390 and 320px wide with no sideways scroll; dropdown has the two groups and 3 + 7 options with "(special)" on the 7; picking Christmas updates the saved draft, the heading summary, the "special" line, the decoration box and the live preview, picking Cocoa switches back to the "everyday" line; changing a Home setting and opening Automatic seasons keeps both sections open after redraws; Save stores the picked theme; no JS errors.
 
 Notes: "Special" means a theme with moving decorations (the 7 occasion themes). The Admins and My account tabs only got the new tab bar and spacing. If anything in the admin still feels in the wrong place, tell us which screen and we will move it.
+
+<a id="v10-12"></a>
+## v10.12: Home page first round + admin hidden from customers (done, 2026-11-07)
+Owner list 13 (items 1, 2 and 4 are roadmap changes; items 3 and 5 are the build):
+1. **Admin for admins only (first part).** The footer "Staff login" link that every customer could see on every page is **removed**, and the admin login no longer has a public **Sign up** (new admins are added by an existing admin under Admins > Add an admin; the "Request access" flow is gone from the screen). The admin page keeps `noindex`, so search engines skip it. Honest limit: on a static site the page address still exists, and the login only checks this browser, so this is "no door visible and no way to ask for a key", not a real lock. **The real lock (server-side admin role, customers cannot get in at all) comes with Supabase in v10.15.** Code: footer in `src/js/site.js`, `authView` in `src/js/admin.js`.
+2. **Home page, first round.** Two new sections, both switchable in Admin > Theme & layout > Home page:
+   - **Shop by treat**: right under the hero, one tile per menu section that has visible items (emoji, name, item count) plus a **Custom cake** tile. A section tile opens the Menu already on that section; the Custom cake tile opens the Custom Order form. Built from the menu data, so it follows menu changes by itself.
+   - **How ordering works**: Choose, Send, Confirm (the copy matches what the cart really does: one WhatsApp message, then Becca confirms availability and the final price). Placed above the "Ready to order?" banner.
+   Settings `home.shop` and `home.steps` (default on) added to `config/site-settings.json`, `store.js` defaults and `offline-data.js` (regenerated). Code: `src/index.html`, `src/js/pages.js`, end of `src/css/site.css`, `homeBox` in `admin.js`. Works in every theme (colours come from the theme).
+3. **Roadmap** (`ROADMAP.md`): rule added that **visitors never switch themes** (the visitor theme switcher was removed from the plan; more occasion themes stay, v10.18); Supabase recorded as decided (owner creates the free account before v10.15); all 10 suggestions scheduled across v10.18 to v10.23, photos and launch; home page recommendations (section 1f); next five versions rewritten (1c). Menu sections moved to v10.14 and the backend to v10.15 because the home page now comes first.
+
+Tests (headless browser, file://): tiles show Cakes (3), Small Treats (3), Bread (2) and Custom cake; a tile opens the Menu on that section; Custom cake opens the order form; no link to the admin on any of 7 public pages; admin login shows only Log in (no Sign up / Request access); the two new ticks appear in the admin, unticking removes the section from the live preview and re-ticking brings it back, other sections unaffected; no sideways scroll at 320, 390, 1280px; no JS errors.
+
+Notes: the sample products leave nothing empty; a menu section with no visible items gets no tile. Existing admin accounts and pending sign-ups are untouched. If an admin needs the page address: `src/admin.html` (bookmark it).

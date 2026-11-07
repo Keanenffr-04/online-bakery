@@ -23,9 +23,11 @@ window.SB_OFFLINE = {
     "greeting": "Welcome in, something sweet is baking.",
     "home": {
       "hero": true,
+      "shop": true,
       "featured": true,
-      "cta": true,
-      "fresh": true
+      "fresh": true,
+      "steps": true,
+      "cta": true
     },
     "featuredCount": 3,
     "featuredStyle": "glass",

@@ -5,7 +5,7 @@ SB.load().then(({ biz, settings: s, categories: cs, products }) => {
     // Two hero styles live in index.html; keep the chosen one (or neither if the Hero box is switched off).
     const dropHero = s.home.hero === false ? ["hero", "hero-bakes"] : [s.heroStyle === "bakes" ? "hero" : "hero-bakes"];
     dropHero.forEach(k => { const e = $(`[data-section="${k}"]`); if (e) e.remove(); });
-    ["featured", "fresh", "cta"].forEach(k => { if (s.home[k] === false) { const e = $(`[data-section="${k}"]`); if (e) e.remove(); } });
+    ["shop", "featured", "fresh", "steps", "cta"].forEach(k => { if (s.home[k] === false) { const e = $(`[data-section="${k}"]`); if (e) e.remove(); } });
     const g = document.getElementById("featured-grid");
     if (g) {
       g.classList.toggle("menu--glass", s.featuredStyle !== "plain");  // v10.5: glass-style cards unless admin picks "Plain"
@@ -26,6 +26,12 @@ SB.load().then(({ biz, settings: s, categories: cs, products }) => {
         grid.classList.toggle("menu--glass", s.featuredStyle !== "plain"); grid.innerHTML = list.map(p => SB.card(p, biz)).join("");
       });
       if (!fresh.querySelector("[data-row]")) fresh.remove(); else fresh.classList.toggle("section--glass", s.featuredStyle !== "plain");
+    }
+    // v10.12: "Shop by treat": one tile per menu section that has visible items (link opens the Menu on that section) + a Custom cake tile.
+    const sh = document.getElementById("shop-tiles");
+    if (sh) {
+      const tile = (href, e, name, sub) => `<a class="tile-link" href="${href}"><span class="tile-link__e" aria-hidden="true">${SB.esc(e)}</span><strong>${SB.esc(name)}</strong><span class="tile-link__s">${SB.esc(sub)}</span></a>`;
+      sh.innerHTML = cs.map(c => { const n = vis.filter(p => p.category === c.id).length; return n ? tile("menu.html?c=" + encodeURIComponent(c.id), c.icon || "🍰", c.name, n + (n === 1 ? " item" : " items")) : ""; }).join("") + tile("custom-orders.html", "🎂", "Custom cake", "Tell us your idea");
     }
     if (s.tagline) document.querySelectorAll("[data-tagline]").forEach(t => { t.textContent = s.tagline; });
     const gr = document.getElementById("bakes-greeting"); if (gr && s.greeting) gr.textContent = s.greeting;
