@@ -27,14 +27,14 @@
     async lines() {
       const { products } = await SB.load(), vis = products.filter(p => p.visible !== false);
       const lines = [], gone = [];
-      read().items.forEach(i => { const p = vis.find(x => x.id === i.id); if (p) lines.push({ p, q: i.q, sub: price(p) * i.q }); else gone.push(i.id); });
+      read().items.forEach(i => { const p = vis.find(x => x.id === i.id); if (p) lines.push({ p, q: i.q, sub: price(p) * i.q, soldOut: SB.isSoldOut(p) }); else gone.push(i.id); });
       return { lines, gone, total: lines.reduce((s, l) => s + l.sub, 0) };
     },
     // The one WhatsApp message. Plain text so it reads well in the chat.
     message(lines, total, biz, meta) {
       const owner = (biz.owner || "").split(" ")[0] || "there", out = [];
       out.push(`Hi ${owner}! I'd like to order from ${biz.name || "The Sweetest Bakery"}:`, "");
-      lines.forEach(l => out.push(`${l.q} x ${l.p.name} (${money(price(l.p))} each) = ${money(l.sub)}`));
+      lines.forEach(l => out.push(`${l.q} x ${l.p.name} (${money(price(l.p))} each) = ${money(l.sub)}${l.soldOut ? " [marked sold out today, please confirm]" : ""}`));
       out.push("", `Total: ${money(total)}`, "");
       if (meta.name) out.push(`Name: ${meta.name}`);
       if (meta.phone) out.push(`Phone: ${meta.phone}`);

@@ -111,8 +111,8 @@
     <label class="chk"><input type="checkbox" name="popular" ${e.popular ? "checked" : ""}>Show in "Most popular" on the home page</label>
     <label class="chk"><input type="checkbox" name="visible" ${e.visible !== false ? "checked" : ""}>Visible on menu</label>
     <p><button class="btn btn--sm" type="submit">Save</button> ${state.edit ? '<button class="btn btn--sm btn--ghost" type="button" data-act="pcancel">Cancel</button>' : ""}</p></form></div>
-    <div class="adm-card"><h2>${d.products.length} items</h2><ul class="adm-list">${d.products.map(p => `<li><div>${esc(p.emoji)} <strong>${esc(p.name)}</strong> <span class="muted">R ${esc(p.price)}</span> ${p.featured ? '<span class="tag">home</span>' : ""} ${p.popular ? '<span class="tag">popular</span>' : ""} ${p.visible === false ? '<span class="tag">hidden</span>' : ""} ${(p.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join(" ")}</div>
-    <div class="adm-actions"><button class="btn btn--sm btn--ghost" data-act="pedit" data-id="${p.id}">Edit</button><button class="btn btn--sm btn--ghost" data-act="pdel" data-id="${p.id}">Delete</button></div></li>`).join("")}</ul></div></div>`;
+    <div class="adm-card"><h2>${d.products.length} items</h2><p class="muted">"Sold out today" greys the item out for customers and switches itself off at midnight. Like every change here it reaches customers after you Publish.</p><ul class="adm-list">${d.products.map(p => `<li><div>${esc(p.emoji)} <strong>${esc(p.name)}</strong> <span class="muted">R ${esc(p.price)}</span> ${p.featured ? '<span class="tag">home</span>' : ""} ${p.popular ? '<span class="tag">popular</span>' : ""} ${SB.isSoldOut(p) ? '<span class="tag tag--sold">sold out today</span>' : ""} ${p.visible === false ? '<span class="tag">hidden</span>' : ""} ${(p.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join(" ")}</div>
+    <div class="adm-actions"><button class="btn btn--sm ${SB.isSoldOut(p) ? "" : "btn--ghost"}" data-act="psold" data-id="${p.id}" aria-pressed="${SB.isSoldOut(p)}">${SB.isSoldOut(p) ? "Back in stock" : "Sold out today"}</button><button class="btn btn--sm btn--ghost" data-act="pedit" data-id="${p.id}">Edit</button><button class="btn btn--sm btn--ghost" data-act="pdel" data-id="${p.id}">Delete</button></div></li>`).join("")}</ul></div></div>`;
   }
 
   const OFFLINE_HEAD = "/* offline-data.js: a COPY of config/business.json, config/site-settings.json and src/data/products.json.\n   Only used when the site is opened straight from disk (file://, e.g. preview.html), because browsers block\n   fetch() of local files. The live/hosted site ignores this file and reads the real JSON files.\n   KEEP IN SYNC: whenever one of those three files changes, regenerate this file (see docs/AI_HANDOFF.md). */\n";
@@ -160,18 +160,38 @@
   // "Preview" shows a season's theme in the preview without changing anything that gets saved.
   const themeName = id => (SB.THEMES.concat(SB.OCCASION_THEMES).find(t => t[0] === id) || [0, id])[1];
   const ddmm = md => { const [m, d] = md.split("-"); return d + "/" + m; };
+  const MONTHS = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const seasonLabel = (r, yr) => `${themeName(r.theme)}: ${SB.seasonText(r, yr)}${r.on === false ? " (off)" : ""}`;
+  // One section for every season: a dropdown lists them all with their dates, and the editor below changes just the one picked.
   function seasonsBox(s) {
     const au = s.autoTheme || (s.autoTheme = { enabled: true, rules: JSON.parse(JSON.stringify(SB.SEASON_RULES)) }), yr = new Date().getFullYear();
+    if (!(state.seasonSel >= 0 && state.seasonSel < au.rules.length)) state.seasonSel = 0;
     return `<h2 style="margin-top:1.2rem">Automatic seasons</h2>
     <label class="chk"><input type="checkbox" data-act="auto" ${au.enabled !== false ? "checked" : ""}>Change the theme automatically for each season</label>
     <p class="muted" id="season-status" aria-live="polite"></p>
-    <ul class="season-list">${(au.rules || []).map((r, i) => `<li><label class="chk"><input type="checkbox" data-act="son" data-i="${i}" ${r.on !== false ? "checked" : ""}><strong>${esc(themeName(r.theme))}</strong></label>
-      <span class="muted">${esc(SB.seasonText(r, yr))} this year</span>
-      <div class="season-edit">${r.type === "range" ? `<label>From <input data-act="sfrom" data-i="${i}" value="${ddmm(r.from)}" size="5" maxlength="5" inputmode="numeric" aria-label="${esc(themeName(r.theme))} starts (day/month)"></label> <label>to <input data-act="sto" data-i="${i}" value="${ddmm(r.to)}" size="5" maxlength="5" inputmode="numeric" aria-label="${esc(themeName(r.theme))} ends (day/month)"></label>` : `<span class="muted">${r.type === "easter" ? `${r.before == null ? 9 : r.before} days before Easter Sunday to ${r.after == null ? 1 : r.after} day after (worked out each year)` : `The week up to the ${["first", "second", "third", "fourth"][r.n - 1] || r.n + "th"} Sunday of ${["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][r.month]} (worked out each year)`}</span>`}
-        <button type="button" class="btn btn--sm btn--ghost" data-act="speek" data-v="${esc(r.theme)}">Preview</button></div></li>`).join("")}</ul>
+    <label for="season-pick">Season to change <span class="muted">(all seasons and their dates this year)</span></label>
+    <select id="season-pick" data-act="ssel">${au.rules.map((r, i) => `<option value="${i}" ${i === state.seasonSel ? "selected" : ""}>${esc(seasonLabel(r, yr))}</option>`).join("")}</select>
+    <div class="season-card" id="season-editor"></div>
     <label>Try a date <span class="muted">(see which theme the site would show)</span><input type="date" data-act="sdate" id="season-date"></label>
     <p class="muted" id="season-try" aria-live="polite"></p>
     <p class="muted">Outside every season the site uses your everyday theme (the one picked in the buttons above). Dates use the visitor's own calendar.</p>`;
+  }
+  // The editor for the season picked in the dropdown above.
+  function drawSeasonEditor() {
+    const box = $("#season-editor"), s = state.draft; if (!box || !s || !s.autoTheme) return;
+    const r = s.autoTheme.rules[state.seasonSel || 0], yr = new Date().getFullYear(), i = state.seasonSel || 0, nm = esc(themeName(r.theme));
+    box.innerHTML = `<label class="chk"><input type="checkbox" data-act="son" data-i="${i}" ${r.on !== false ? "checked" : ""}>Use the ${nm} season</label>
+    <p class="muted" id="season-dates">${esc(SB.seasonText(r, yr))} this year</p>
+    <div class="season-edit">${r.type === "range"
+      ? `<label>From <input data-act="sfrom" data-i="${i}" value="${ddmm(r.from)}" size="5" maxlength="5" inputmode="numeric" aria-label="${nm} starts (day/month)"></label> <label>to <input data-act="sto" data-i="${i}" value="${ddmm(r.to)}" size="5" maxlength="5" inputmode="numeric" aria-label="${nm} ends (day/month)"></label>`
+      : `<span class="muted">${r.type === "easter" ? `${r.before == null ? 9 : r.before} days before Easter Sunday to ${r.after == null ? 1 : r.after} day after (worked out each year, nothing to edit)` : `The week up to the ${["first", "second", "third", "fourth"][r.n - 1] || r.n + "th"} Sunday of ${MONTHS[r.month]} (worked out each year, nothing to edit)`}</span>`}
+      <button type="button" class="btn btn--sm btn--ghost" data-act="speek" data-v="${esc(r.theme)}">Preview ${nm}</button></div>`;
+  }
+  // After a change, refresh the dropdown wording and the dates line without rebuilding the editor (keeps focus while typing).
+  function refreshSeasonLabels() {
+    const s = state.draft, pick = $("#season-pick"); if (!s || !pick) return;
+    const yr = new Date().getFullYear(); s.autoTheme.rules.forEach((r, i) => { if (pick.options[i]) pick.options[i].textContent = seasonLabel(r, yr); });
+    const d = $("#season-dates"); if (d) d.textContent = SB.seasonText(s.autoTheme.rules[state.seasonSel || 0], yr) + " this year";
   }
   function drawSeasonStatus() {
     const s = state.draft, st = $("#season-status"); if (!s || !st) return;
@@ -221,7 +241,7 @@
   }
 
   function render() { app.innerHTML = me() && find(admins(), me()) ? dash() : authView(); state.note = ""; }
-  const go = (t, note) => { state.tab = t; state.note = note || ""; app.innerHTML = dash(); state.note = ""; if (t === "look") { drawDemo(); drawSeasonStatus(); } };
+  const go = (t, note) => { state.tab = t; state.note = note || ""; app.innerHTML = dash(); state.note = ""; if (t === "look") { drawDemo(); drawSeasonEditor(); drawSeasonStatus(); } };
   const dl = (name, text, type) => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type: type || "application/json" })); a.download = name; a.click(); };
   const saveProducts = () => S("sb_products", { categories: state.data.categories, products: state.data.products });
 
@@ -239,7 +259,7 @@
     if (k === "product") {
       const p = { ...v, price: Number(v.price), featured: !!v.featured, popular: !!v.popular, visible: !!v.visible, tags: SB.TAGS.map(t => t[0]).filter(id => v["tag_" + id]) }, L = state.data.products;
       SB.TAGS.forEach(t => delete p["tag_" + t[0]]);
-      if (state.edit) Object.assign(L.find(x => x.id === state.edit), p); else L.push({ id: "p" + uid(), ...p, added: new Date().toISOString().slice(0, 10) });   // v10.9: the date decides "Just added"
+      if (state.edit) Object.assign(L.find(x => x.id === state.edit), p); else L.push({ id: "p" + uid(), ...p, added: SB.today() });   // v10.9: the date decides "Just added"
       state.edit = null; saveProducts(); return go("menu", "Menu saved.");
     }
     if (k === "addadmin") {
@@ -258,6 +278,7 @@
 
   app.addEventListener("input", e => {
     const t = e.target, a = t.dataset.act, s = state.draft; if (!a || !s || t.tagName === "BUTTON") return;
+    if (a === "ssel") { state.seasonSel = +t.value; drawSeasonEditor(); return; }
     if (["auto", "son", "sfrom", "sto", "sdate"].includes(a)) {
       const au = s.autoTheme || (s.autoTheme = { enabled: true, rules: JSON.parse(JSON.stringify(SB.SEASON_RULES)) }), r = au.rules[+t.dataset.i];
       if (a === "auto") au.enabled = t.checked;
@@ -267,7 +288,7 @@
         t.setAttribute("aria-invalid", ok ? "false" : "true");
         if (ok) r[a === "sfrom" ? "from" : "to"] = String(mm).padStart(2, "0") + "-" + String(dd).padStart(2, "0");
       }
-      draftKey(); return drawSeasonStatus();
+      draftKey(); refreshSeasonLabels(); return drawSeasonStatus();
     }
     if (a === "tag") s.tagline = t.value; else if (a === "gr") s.greeting = t.value; else if (a === "hs") s.heroStyle = t.value; else if (a === "fc") s.featuredCount = +t.value; else if (a === "fs") s.featuredStyle = t.value; else if (a === "rc") s.recentCount = +t.value; else if (a === "pc") s.popularCount = +t.value; else if (a === "deco") s.decorations = t.checked; else if (a === "ml") s.menuLayout = t.value; else if (a === "home") s.home[t.dataset.k] = t.checked; else if (a === "spon") (s.specials = s.specials || {}).enabled = t.checked; else if (a === "oron") (s.orders = s.orders || {}).enabled = t.checked; else if (a === "ortxt") (s.orders = s.orders || {}).items = t.value.split("\n").map(x => x.trim()).filter(Boolean).slice(0, 6); else if (a === "sptxt") (s.specials = s.specials || {}).items = t.value.split("\n").map(x => x.trim()).filter(Boolean).slice(0, 6); else return;
     draftKey();
@@ -292,6 +313,7 @@
     const b = e.target.closest("button[data-act]"); if (!b) return; const a = b.dataset.act, v = b.dataset.v, id = b.dataset.id, u = b.dataset.u;
     if (a === "auth") { state.authTab = v; state.note = ""; return render(); }
     if (a === "logout") { sessionStorage.removeItem("sb_session"); sessionStorage.removeItem("sb_preview"); return render(); }
+    if (a === "psold") { const p = state.data.products.find(x => x.id === id); if (SB.isSoldOut(p)) delete p.soldOut; else p.soldOut = SB.today(); saveProducts(); return go("menu", p.name + (p.soldOut ? " is marked sold out for today." : " is back in stock.")); }
     if (a === "tab") { state.tab = v; if (v === "look") await prepLook(); if (v === "menu") state.edit = null; if (v !== "look") sessionStorage.removeItem("sb_preview"); return go(v); }
     if (a === "odel") { S("sb_orders", J("sb_orders", []).filter(x => x.id !== id)); return go("orders"); }
     if (a === "pedit") { state.edit = id; return go("menu"); }

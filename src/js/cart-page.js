@@ -6,7 +6,7 @@ SB.load().then(async ({ biz }) => {
   const empty = () => `<div class="cart-empty"><p>Your cart is empty.</p><a class="btn" href="menu.html">Browse the menu</a></div>`;
   const row = ({ p, q, sub }) => `<li class="cart-row" data-id="${E(p.id)}">
     <div class="cart-row__img" aria-hidden="true">${E(p.emoji || "🍰")}</div>
-    <div class="cart-row__info"><h3>${E(p.name)}</h3><span class="muted">${C.money(C.price(p))} each</span></div>
+    <div class="cart-row__info"><h3>${E(p.name)}</h3><span class="muted">${C.money(C.price(p))} each</span>${SB.isSoldOut(p) ? ' <span class="badge badge--sold">Sold out today</span>' : ""}</div>
     <div class="qty" role="group" aria-label="Quantity of ${E(p.name)}">
       <button type="button" data-q="-1" aria-label="One less ${E(p.name)}">&minus;</button>
       <output>${q}</output>
@@ -19,8 +19,9 @@ SB.load().then(async ({ biz }) => {
   const draw = () => {
     const keepFocus = document.activeElement && document.activeElement.closest && document.activeElement.closest(".cart-row") ? document.activeElement.closest(".cart-row").dataset.id + "|" + (document.activeElement.dataset.q || (document.activeElement.hasAttribute("data-rm") ? "rm" : "")) : "";
     if (!state.lines.length) { root.innerHTML = empty(); return; }
-    const m = C.meta(), today = new Date().toISOString().slice(0, 10);
+    const m = C.meta(), today = SB.today();
     root.innerHTML = `
+    ${state.lines.some(l => l.soldOut) ? `<p class="notice">Some items in your cart are sold out today. You can still send the order and ask us about another day, or remove them.</p>` : ""}
     ${state.gone.length ? `<p class="notice">Some items in your cart are no longer on the menu and were left out.</p>` : ""}
     <div class="cart">
       <ul class="cart-list">${state.lines.map(row).join("")}</ul>

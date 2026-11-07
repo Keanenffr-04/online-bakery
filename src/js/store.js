@@ -52,6 +52,12 @@
       const cc = intl ? (SB.COUNTRIES.map(c => c[0]).sort((a, b) => b.length - a.length).find(c => d.startsWith(c)) || "") : sel.value;
       return { digits: d, display: cc ? "+" + cc + " " + SB.groupDigits(d.slice(cc.length)) : "+" + d };
     },
+    // v10.10: today's date in the visitor's own time zone (YYYY-MM-DD). toISOString() is UTC and shows "yesterday" in South Africa
+    // between 00:00 and 02:00, so every "today" in the site uses this instead.
+    today() { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); },
+    // "Sold out today": the item carries the DATE it was marked (p.soldOut = "2026-11-08"). It only counts on that day, so it switches itself
+    // off at midnight, even on a published site nobody touches.
+    isSoldOut(p) { return !!p && p.soldOut === SB.today(); },
     SEASON_RULES,
     // Which special-occasion theme should show on this date? Returns a theme id, or null (= use the everyday theme).
     seasonTheme(auto, date) {
@@ -90,7 +96,8 @@
     // v10.2: the card button adds to the cart (SBCart, js/cart.js). One WhatsApp message is sent from the Cart page.
     card(p, biz) {
       const tg = (p.tags || []).map(id => (SB.TAGS.find(t => t[0] === id) || [])[1]).filter(Boolean);
-      return `<article class="card pcard"><div class="card__media" aria-hidden="true">${esc(p.emoji || "🍰")}</div><div class="card__body"><h3>${esc(p.name)}</h3><p class="pcard__desc">${esc(p.description)}</p>${tg.length ? `<p class="pcard__tags" aria-label="Dietary tags">${tg.map(t => `<span class="badge">${esc(t)}</span>`).join("")}</p>` : ""}<div class="pcard__foot"><span class="card__price">R ${esc(p.price)}</span><button type="button" class="btn btn--sm" data-add="${esc(p.id)}" data-name="${esc(p.name)}" aria-label="Add ${esc(p.name)} to cart">Add</button></div></div></article>`;
+      const so = SB.isSoldOut(p);
+      return `<article class="card pcard${so ? " pcard--sold" : ""}"><div class="card__media" aria-hidden="true">${esc(p.emoji || "🍰")}</div><div class="card__body"><h3>${esc(p.name)}${so ? ' <span class="badge badge--sold">Sold out today</span>' : ""}</h3><p class="pcard__desc">${esc(p.description)}</p>${tg.length ? `<p class="pcard__tags" aria-label="Dietary tags">${tg.map(t => `<span class="badge">${esc(t)}</span>`).join("")}</p>` : ""}<div class="pcard__foot"><span class="card__price">R ${esc(p.price)}</span>${so ? `<button type="button" class="btn btn--sm" disabled aria-label="${esc(p.name)} is sold out today">Sold out</button>` : `<button type="button" class="btn btn--sm" data-add="${esc(p.id)}" data-name="${esc(p.name)}" aria-label="Add ${esc(p.name)} to cart">Add</button>`}</div></div></article>`;
     }
   };
 })();

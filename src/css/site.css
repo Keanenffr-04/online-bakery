@@ -348,3 +348,8 @@ button.btn:disabled{opacity:.6;cursor:not-allowed}
 [data-section="fresh"] [data-row] + [data-row]{margin-top:1.75rem}
 [data-section="fresh"].section--glass{background:radial-gradient(60% 70% at 88% 18%,color-mix(in srgb,var(--accent) 20%,transparent),transparent 70%),
   radial-gradient(55% 70% at 8% 88%,color-mix(in srgb,var(--btn-bg) 14%,transparent),transparent 70%),var(--bg)}
+
+/* v10.10: "Sold out today" (js/store.js SB.isSoldOut). Only the emoji is dimmed so all text keeps full contrast; the badge and the disabled button say it. */
+.pcard--sold .card__media{opacity:.45;filter:grayscale(1)}
+.badge--sold{display:inline-block;margin-left:.35rem;padding:.1rem .5rem;border-radius:var(--radius-pill);background:var(--btn-bg);color:var(--btn-text);font:600 .7rem/1.4 var(--font-body);letter-spacing:.03em;vertical-align:middle;white-space:nowrap}
+.pcard .btn[disabled]{opacity:.6;cursor:not-allowed;pointer-events:none}

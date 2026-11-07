@@ -3,7 +3,7 @@
 SB.load().then(({ biz }) => {
   const f = document.getElementById("co-form"), err = document.getElementById("co-error"); if (!f) return;
   document.getElementById("co-phone-wrap").innerHTML = SB.phoneField("co-phone", { label: "Your phone number" });
-  const date = f.elements.date; date.min = new Date().toISOString().slice(0, 10);
+  const date = f.elements.date; date.min = SB.today();
   const nice = iso => new Date(iso + "T12:00").toLocaleDateString("en-ZA", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   const show = (msg, el) => { err.textContent = msg; err.hidden = !msg; if (el) el.focus(); };
 
