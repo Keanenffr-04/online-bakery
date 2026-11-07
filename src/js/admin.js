@@ -121,6 +121,7 @@
     return `<div class="adm-split"><div class="adm-card"><h2>Theme</h2><div class="themes">${SB.THEMES.map(([id, n]) => `<button class="btn btn--sm ${s.theme === id ? "" : "btn--ghost"}" data-act="theme" data-v="${id}">${n}</button>`).join("")}</div>
     <h3 class="adm-sub">Special occasions</h3><div class="themes">${SB.OCCASION_THEMES.map(([id, n]) => `<button class="btn btn--sm ${s.theme === id ? "" : "btn--ghost"}" data-act="theme" data-v="${id}">${n}</button>`).join("")}</div>
     <label class="chk"><input type="checkbox" data-act="deco" ${s.decorations !== false ? "checked" : ""}>Moving decorations (special-occasion themes only)</label>
+    <div class="deco-demo" id="deco-demo" data-theme="${esc(s.theme)}" aria-live="polite"></div>
     <h2 style="margin-top:1.2rem">Home page</h2>${[["hero", "Hero"], ["featured", "Featured items"], ["cta", "Order banner"]].map(([k, n]) => `<label class="chk"><input type="checkbox" data-act="home" data-k="${k}" ${s.home[k] !== false ? "checked" : ""}>${n}</label>`).join("")}
     <label>Best sellers shown (items ticked "Show on home page")</label><select data-act="fc">${[1, 2, 3, 4, 5, 6].map(n => `<option ${n == s.featuredCount ? "selected" : ""}>${n}</option>`).join("")}</select>
     <label>Best-seller card style</label><select data-act="fs"><option value="glass" ${s.featuredStyle !== "plain" ? "selected" : ""}>Glass (frosted, zooms on hover)</option><option value="plain" ${s.featuredStyle === "plain" ? "selected" : ""}>Plain</option></select>
@@ -138,6 +139,17 @@
     <p class="muted">Clicking a theme only previews it until you save.</p></div>
     <div><div class="adm-tabs"><button class="btn btn--sm ${state.page === "index.html" ? "" : "btn--ghost"}" data-act="ppage" data-v="index.html">Home</button><button class="btn btn--sm ${state.page === "menu.html" ? "" : "btn--ghost"}" data-act="ppage" data-v="menu.html">Menu</button></div>
     <iframe title="Live preview" src="${state.page}"></iframe></div></div>`;
+  }
+
+  // v10.8: the little live preview of the moving decorations. It redraws straight away when the theme is clicked or the tick box changes
+  // (no reload, no waiting for the page preview). Same code and same movement as the real site (js/decor.js).
+  function drawDemo() {
+    const box = $("#deco-demo"), s = state.draft; if (!box || !s) return;
+    const name = (SB.THEMES.concat(SB.OCCASION_THEMES).find(t => t[0] === s.theme) || [0, s.theme])[1];
+    box.dataset.theme = s.theme;
+    const on = window.SBDecor && SBDecor.has(s.theme) && s.decorations !== false;
+    const msg = !window.SBDecor ? "" : !SBDecor.has(s.theme) ? "This theme has no decorations. Pick one under Special occasions." : s.decorations === false ? "Decorations are switched off, so visitors will see none." : "";
+    box.innerHTML = `${on ? `<div class="deco deco--demo" aria-hidden="true">${SBDecor.html(s.theme, { scale: 0.55 })}</div>` : ""}<div class="deco-demo__label"><strong>${esc(name)}</strong><span>${esc(msg || "Live preview of the moving decorations")}</span></div>`;
   }
 
   function adminsView() {
@@ -180,7 +192,7 @@
   }
 
   function render() { app.innerHTML = me() && find(admins(), me()) ? dash() : authView(); state.note = ""; }
-  const go = (t, note) => { state.tab = t; state.note = note || ""; app.innerHTML = dash(); state.note = ""; };
+  const go = (t, note) => { state.tab = t; state.note = note || ""; app.innerHTML = dash(); state.note = ""; if (t === "look") drawDemo(); };
   const dl = (name, text, type) => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type: type || "application/json" })); a.download = name; a.click(); };
   const saveProducts = () => S("sb_products", { categories: state.data.categories, products: state.data.products });
 
@@ -219,6 +231,7 @@
     const t = e.target, a = t.dataset.act, s = state.draft; if (!a || !s || t.tagName === "BUTTON") return;
     if (a === "tag") s.tagline = t.value; else if (a === "gr") s.greeting = t.value; else if (a === "hs") s.heroStyle = t.value; else if (a === "fc") s.featuredCount = +t.value; else if (a === "fs") s.featuredStyle = t.value; else if (a === "deco") s.decorations = t.checked; else if (a === "ml") s.menuLayout = t.value; else if (a === "home") s.home[t.dataset.k] = t.checked; else if (a === "spon") (s.specials = s.specials || {}).enabled = t.checked; else if (a === "oron") (s.orders = s.orders || {}).enabled = t.checked; else if (a === "ortxt") (s.orders = s.orders || {}).items = t.value.split("\n").map(x => x.trim()).filter(Boolean).slice(0, 6); else if (a === "sptxt") (s.specials = s.specials || {}).items = t.value.split("\n").map(x => x.trim()).filter(Boolean).slice(0, 6); else return;
     draftKey();
+    if (a === "deco") drawDemo();   // tick box: redraw the little preview at once
     // Show the change where it can be seen: layout -> Menu preview, everything else here -> Home preview.
     const want = a === "ml" ? "menu.html" : a === "spon" || a === "sptxt" || a === "oron" || a === "ortxt" ? state.page : "index.html";
     if (state.page !== want) {

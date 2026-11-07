@@ -26,3 +26,9 @@
 .adm-sub{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;opacity:.75;margin:1rem 0 .5rem}
 .adm-code{font:700 1.15rem ui-monospace,Consolas,monospace;letter-spacing:.2em}
 .adm .linkbtn{background:none;border:0;padding:0;font:inherit;color:var(--link);text-decoration:underline;cursor:pointer}
+
+/* v10.8: live preview box for the moving decorations (uses the chosen theme's colours via data-theme on the box itself) */
+.deco-demo{position:relative;container-type:size;height:170px;overflow:hidden;margin:.6rem 0 1rem;border:1px solid var(--border);border-radius:var(--radius-card);background:var(--bg);color:var(--text);display:grid;place-items:center;text-align:center}
+.deco-demo__label{position:relative;display:grid;gap:.2rem;padding:0 1rem}
+.deco-demo__label strong{font:var(--heading-weight) 1.35rem var(--font-heading);color:var(--heading)}
+.deco-demo__label span{font:400 .8rem var(--font-body);opacity:.85}

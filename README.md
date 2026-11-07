@@ -1,7 +1,7 @@
 # online-bakery 🐇🍰
 Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
 
-**Current version:** see `VERSION` (v10.7 = Father's Day theme + small moving decorations on every special-occasion theme (admin can switch them off); v10.6 = forgot-password with a one-time code (admin login) + country-code dropdown on phone numbers (default +27) + 6 special-occasion themes (Christmas, Valentine's, Easter, Halloween, Braai Day, Mother's Day); v10.5 = Instagram + Facebook links in the footer (placeholder handle `sweetest.bakery`, set in `config/business.json`) + glass-style best-seller cards with admin choice of how many and Glass/Plain style; v10.4 = dietary tags + filters and search on the Menu (no items tagged yet); v10.3 = FAQ page (draft answers) + reviews section (empty until real reviews are added); v10.2 = cart that sends one WhatsApp message (Add buttons, header cart icon, Cart page) + the Custom Order form; v10.1 = both strips stay pinned while scrolling + three-line menu on phones, links in the header on desktop; v10 = orders strip at the bottom of every page + one floating WhatsApp button (other WhatsApp buttons removed, Contact keeps its own); v9 = "Our best sellers" heading + scrolling specials strip at the top of every page (text and on/off in admin); v8 = second hero (baked goods + greeting, chosen in admin) + menu List layout fixed; v7 = double-click `preview.html` to browse the whole site + only "Menu" is a dropdown; v6 = clicked menu link colour + buttons invert on hover; v5 = header menu is always a dropdown with a hover highlight; v4 = Menu page with filters + decluttered home + admin page (`/src/admin.html`, default `admin` / `admin1`); to preview, double-click `preview.html`)
+**Current version:** see `VERSION` (v10.8 = decorations always move + Pause button, live preview of the effects in admin, tidy roadmap/backlog with contents; v10.7 = Father's Day theme + small moving decorations on every special-occasion theme (admin can switch them off); v10.6 = forgot-password with a one-time code (admin login) + country-code dropdown on phone numbers (default +27) + 6 special-occasion themes (Christmas, Valentine's, Easter, Halloween, Braai Day, Mother's Day); v10.5 = Instagram + Facebook links in the footer (placeholder handle `sweetest.bakery`, set in `config/business.json`) + glass-style best-seller cards with admin choice of how many and Glass/Plain style; v10.4 = dietary tags + filters and search on the Menu (no items tagged yet); v10.3 = FAQ page (draft answers) + reviews section (empty until real reviews are added); v10.2 = cart that sends one WhatsApp message (Add buttons, header cart icon, Cart page) + the Custom Order form; v10.1 = both strips stay pinned while scrolling + three-line menu on phones, links in the header on desktop; v10 = orders strip at the bottom of every page + one floating WhatsApp button (other WhatsApp buttons removed, Contact keeps its own); v9 = "Our best sellers" heading + scrolling specials strip at the top of every page (text and on/off in admin); v8 = second hero (baked goods + greeting, chosen in admin) + menu List layout fixed; v7 = double-click `preview.html` to browse the whole site + only "Menu" is a dropdown; v6 = clicked menu link colour + buttons invert on hover; v5 = header menu is always a dropdown with a hover highlight; v4 = Menu page with filters + decluttered home + admin page (`/src/admin.html`, default `admin` / `admin1`); to preview, double-click `preview.html`)
 
 ## Goals
 - Sleek and modern, but dead simple to use
@@ -14,7 +14,7 @@ Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
 online-bakery/
 ├── README.md
 ├── VERSION
-├── roadmap/        ROADMAP.md (what's next) + BACKLOG.md (what's done). Never delete, only add.
+├── roadmap/        ROADMAP.md (tidy plan + status tracker) + BACKLOG.md (what's done, with contents) + ROADMAP_ARCHIVE.md (old notes). Never delete.
 ├── docs/           BRAND.md, ARCHITECTURE.md, AI_HANDOFF.md, REFERENCES.md
 ├── preview.html    double-click to browse every page locally (no install, no server)
 ├── config/         business.json (name, WhatsApp, etc.)
@@ -23,7 +23,7 @@ online-bakery/
 ```
 
 ## Working rules (important)
-1. 1 or 2 things per version. No more. **Versions after v10 are numbered v10.1, v10.2, v10.3 ... (owner's choice, v10.1).** The zip is named `online-bakery-v10.1.zip` etc.
+1. 2 to 3 things per version. No more. **Versions after v10 are numbered v10.1, v10.2, v10.3 ... (owner's choice, v10.1).** The zip is named `online-bakery-v10.1.zip` etc.
 2. Roadmap and backlog are **append-only**. Never delete. Versions may be pushed forward.
 3. Finished work moves to the backlog tagged with its version number.
 4. New ideas go in the roadmap "Ideas Parking Lot" (or a specific version if it fits).
