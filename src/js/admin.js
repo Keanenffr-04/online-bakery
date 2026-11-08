@@ -48,25 +48,35 @@
     render();
   }
 
+  // v10.17.1: Supabase's built-in email sender only emails the project's own team and only ~2 a month-hour, so mail often never arrives.
+  // Say so plainly and point to the way that needs no email (create the login in the Supabase dashboard).
+  const DASH = " Easiest fix: an admin creates your login in the Supabase dashboard (Authentication > Users > Add user, tick Auto Confirm User). No email needed.";
+  const mailErr = e => /rate limit|over_email|not authorized|sending|smtp|email address/i.test((e && (e.message + " " + (e.code || ""))) || "") ? "Supabase could not send the email (its free built-in sender only emails the project team, about 2 an hour)." + DASH : "Could not send the email: " + ((e && e.message) || "unknown error") + "." + DASH;
+
   async function login(email, p, remember) {
+    state.lastEmail = email;   // keep what was typed after a wrong password
     localStorage.setItem("sb_keep", remember ? "1" : "0"); if (remember) localStorage.setItem("sb_admin_u", email); else localStorage.removeItem("sb_admin_u");
     const { error } = await sb.auth.signInWithPassword({ email, password: p });
-    if (error) return flash(/confirm/i.test(error.message) ? "Please confirm your email first (check your inbox, then log in)." : "Wrong email or password.");
+    if (error) return flash(/confirm/i.test(error.message) ? "This login is not confirmed yet, and the confirm email may never arrive." + DASH : "Wrong email or password. No login yet? Use First time here?, or have one created in the Supabase dashboard (no email needed).");
     state.note = ""; await enter();
   }
   async function signup(email, p) {
     if (!ok(email)) return flash("Type a valid email address."); if (p.length < 6) return flash("Password must be at least 6 characters.");
     localStorage.setItem("sb_keep", "0");
-    const { error } = await sb.auth.signUp({ email, password: p, options: { emailRedirectTo: HERE() } });
-    state.authTab = "login"; flash(error ? "Could not create the login: " + error.message : "Check your email and click the confirm link, then log in here. (Only emails on the admin list can enter.)");
+    const opts = WEB() ? { emailRedirectTo: HERE() } : {};   // a double-clicked file has no web address to come back to, so send none
+    const { data, error } = await sb.auth.signUp({ email, password: p, options: opts });
+    if (error) { state.authTab = "first"; return flash(mailErr(error)); }
+    if (data && data.session) { state.note = ""; return enter(); }   // confirmation is switched off: already signed in
+    if (data && data.user && data.user.identities && !data.user.identities.length) { state.authTab = "login"; return flash("That email already has a login. Log in, or use Forgot password."); }
+    state.authTab = "login"; flash("Login created. Now confirm the email if one arrives, then log in. If no email comes within a few minutes, it is not coming (free Supabase sender limits):" + DASH);
   }
   async function google(remember) {
     localStorage.setItem("sb_keep", remember ? "1" : "0");
     const { error } = await sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: HERE() } }); if (error) flash("Google sign-in is not switched on yet: " + error.message);
   }
   async function requestReset(email) {
-    if (ok(email)) await sb.auth.resetPasswordForEmail(email, { redirectTo: HERE() });
-    state.authTab = "login"; flash("If that email has a login, a reset link is on its way. Open it on this device.");   // same answer either way
+    if (ok(email)) { const { error } = await sb.auth.resetPasswordForEmail(email, WEB() ? { redirectTo: HERE() } : {}); if (error && /rate limit|over_email|not authorized|sending|smtp/i.test(error.message + " " + (error.code || ""))) { state.authTab = "login"; return flash(mailErr(error) + " To set a new password, delete the user in the dashboard and add it again with the password you want."); } }
+    state.authTab = "login"; flash("If that email has a login, a reset link may be on its way (free Supabase sender: it can fail to arrive). Open it on this device. No email? Ask an admin to reset it in the Supabase dashboard.");   // same answer either way
   }
   async function newPassword(p) {
     if (p.length < 6) return flash("New password must be at least 6 characters.");
@@ -89,7 +99,7 @@
     if (state.noDb) return `<div class="adm-card adm-login"><h1>Admin login</h1><div class="msg msg--warn">${esc(state.noDb)}</div><p class="muted"><a href="index.html">Back to the website</a></p></div>`;
     if (!sb) return `<div class="adm-card adm-login"><h1>Admin login</h1><p class="muted">Loading...</p></div>`;
     if (state.authTab === "forgot" || state.authTab === "newpw") return recoverView();
-    const first = state.authTab === "first", em = esc(localStorage.getItem("sb_admin_u") || "");
+    const first = state.authTab === "first", em = esc(state.lastEmail || localStorage.getItem("sb_admin_u") || "");
     return `<div class="adm-card adm-login"><h1>${first ? "Create my login" : "Admin login"}</h1><p class="muted">${first ? "First time? Use the email that is on the admin list, choose a password, then confirm the email we send you." : "For the bakery team only."}</p>
     ${state.note ? `<div class="msg">${esc(state.note)}</div>` : ""}
     <form data-form="${first ? "signup" : "login"}"><label>Email</label><input name="u" type="email" autocomplete="email" value="${em}" required>
@@ -98,6 +108,7 @@
     <p style="margin-top:1rem"><button class="btn" type="submit">${first ? "Create my login" : "Log in"}</button></p></form>
     ${first ? "" : (WEB() ? `<p><button type="button" class="btn btn--ghost btn--block" data-act="google">Sign in with Google</button></p>` : `<p class="muted">Sign in with Google works once the site is online (https).</p>`)}
     <p class="muted">${first ? '<button type="button" class="linkbtn" data-act="auth" data-v="login">I already have a login</button>' : '<button type="button" class="linkbtn" data-act="auth" data-v="forgot">Forgot your password?</button> &middot; <button type="button" class="linkbtn" data-act="auth" data-v="first">First time here?</button>'}</p>
+    <details class="adm-help"><summary>No email arriving? Log in without email</summary><ol class="muted"><li>Open your project in the Supabase dashboard.</li><li>Authentication > Users > <strong>Add user</strong> > Create new user.</li><li>Type the admin email and a password, and tick <strong>Auto Confirm User</strong>.</li><li>Come back here and log in with that email and password.</li></ol><p class="muted">The email must be on the Admins list (Becca and Keanen already are).</p></details>
     <p class="muted"><a href="index.html">Back to the website</a></p></div>`;
   }
 

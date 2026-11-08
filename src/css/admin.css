@@ -84,3 +84,8 @@
 .adm-actions .btn[disabled]{opacity:.35;cursor:not-allowed}
 .sec-add{margin-top:.9rem;padding-top:.9rem;border-top:1px solid var(--border)}
 .sec-add label{display:block;margin-bottom:.3rem}
+
+/* v10.17.1: "No email arriving?" help on the login card */
+.adm-help{margin-top:1rem;border-top:1px solid var(--line,rgba(0,0,0,.12));padding-top:.75rem}
+.adm-help summary{cursor:pointer;font-weight:600}
+.adm-help ol{margin:.5rem 0 .25rem 1.1rem;padding:0}
