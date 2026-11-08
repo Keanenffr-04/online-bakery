@@ -49,6 +49,7 @@ SB.load().then(async ({ biz, settings }) => {
           <select id="c-method">${["Not sure yet", "Collection", "Delivery"].map(o => `<option${(m.method || "Not sure yet") === o ? " selected" : ""}>${o}</option>`).join("")}</select>
           <div id="c-area-wrap" hidden><label for="c-area">Delivery area</label><select id="c-area"><option value="">Choose your area&hellip;</option>${(dl.areas || []).map(a => `<option value="${E(a.name)}"${m.area === a.name ? " selected" : ""}>${E(a.name)} (${C.money(a.fee)})</option>`).join("")}</select></div>
           <p class="muted small" id="c-method-note" hidden></p>
+          ${SB.spam.field()}
           <label for="c-notes">Notes <span class="muted">(optional)</span></label><textarea id="c-notes" rows="3" placeholder="Allergies, message on the cake, anything we should know">${E(m.notes || "")}</textarea>
         </div>
         ${SB.me.box("c-remember")}

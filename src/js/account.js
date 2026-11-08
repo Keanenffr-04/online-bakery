@@ -50,7 +50,7 @@
     const up = state.tab === "signup";
     return `<div class="acct__card"><div class="acct__tabs"><button type="button" class="btn btn--sm ${up ? "btn--ghost" : ""}" data-act="tab" data-v="login">Log in</button><button type="button" class="btn btn--sm ${up ? "" : "btn--ghost"}" data-act="tab" data-v="signup">Create account</button></div>
     <p class="muted">${up ? "An account is optional. It lets you see your past orders and order the same things again." : "Welcome back."}</p>
-    <form data-form="${up ? "signup" : "login"}"><label for="a-em">Email</label><input id="a-em" name="u" type="email" autocomplete="email" value="${esc(state.email || "")}" required>
+    <form data-form="${up ? "signup" : "login"}">${up ? SB.spam.field() : ""}<label for="a-em">Email</label><input id="a-em" name="u" type="email" autocomplete="email" value="${esc(state.email || "")}" required>
     <label for="a-pw">Password</label><input id="a-pw" name="p" type="password" autocomplete="${up ? "new-password" : "current-password"}" ${up ? 'minlength="6"' : ""} required>
     ${up ? `<label class="chk"><input type="checkbox" name="agree" required> <span>I have read the <a href="privacy.html" target="_blank" rel="noopener">privacy policy</a> and the <a href="terms.html" target="_blank" rel="noopener">terms</a>.</span></label>` : ""}
     <p class="acct__row"><button class="btn" type="submit">${up ? "Create my account" : "Log in"}</button> <button type="button" class="btn btn--ghost" data-act="google">Continue with Google</button></p></form>
@@ -105,7 +105,8 @@
     state.note = ""; await refresh();
   }
   async function signup(email, p) {
-    state.email = email; if (!ok(email)) return flash("Type a valid email address."); if (p.length < 6) return flash("Password must be at least 6 characters.");
+    state.email = email; if (SB.spam.bot()) { state.tab = "login"; return flash("Account created. Open the confirm email we sent you, then log in."); }   // v10.23: bots get a pretend success, nothing is created
+     if (!ok(email)) return flash("Type a valid email address."); if (p.length < 6) return flash("Password must be at least 6 characters.");
     const { data, error } = await sb.auth.signUp({ email, password: p, options: WEB() ? { emailRedirectTo: HERE() } : {} });
     if (error) { state.tab = "signup"; return flash(mailErr(error)); }
     if (data && data.session) { state.note = ""; return refresh(); }

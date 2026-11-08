@@ -414,8 +414,82 @@
     <p><button class="btn btn--sm" type="submit">Change password</button></p></form><p class="muted">Signed in with Google? Then there is no password to change here.</p></div>`;
   }
 
+  // v10.23: "Live check" = the real-world test (roadmap idea 46) as a button. It talks to the REAL online database, so it can only run from
+  // the live site or from a computer with internet (not from a double-clicked file). Everything it adds is removed again.
+  const SETUP_VERSION = "10.23", TEST_NAME = "TEST ORDER - safe to delete";
+  async function liveCheck() {
+    const c = (state.data.biz || {}).supabase, R = [], add = (s, t, d) => R.push({ s, t, d: d || "" });
+    if (!c || !c.url || !c.key) { add("bad", "The online database is not set up", "config/business.json has no Supabase address."); return R; }
+    const raw = (path, method, body) => fetch(c.url + path, { method: method || "GET", headers: { apikey: c.key, "Content-Type": "application/json", Prefer: "return=minimal" }, body: body ? JSON.stringify(body) : undefined });
+    const msgOf = async r => { try { const j = await r.json(); return j.message || j.error_description || j.hint || ""; } catch (e) { return ""; } };
+    const step = async (label, fn) => { try { await fn(); } catch (e) { add("bad", label, "This check could not run: " + ((e && e.message) || e)); } };
+    let current = false;
+
+    await step("The online database answers", async () => {
+      const r = await sb.from("site_data").select("key");
+      if (r.error) return add("bad", "The online database does not answer", r.error.message + ". Open supabase.com and check the project is not paused. If it was never set up, run supabase/setup.sql.");
+      const k = (r.data || []).map(x => x.key); add("ok", "The online database answers");
+      add(k.includes("products") && k.includes("settings") ? "ok" : "warn", "Menu and settings are saved online", k.includes("products") && k.includes("settings") ? "" : "One of them is missing. Open Theme & layout and press Save once, and Menu items and save once.");
+    });
+    add(state.isAdmin ? "ok" : "bad", state.isAdmin ? "You are recognised as an admin" : "You are not recognised as an admin");
+    await step("Database setup", async () => {
+      const r = await sb.rpc("setup_version");
+      if (r.error) return add("warn", "The database setup is out of date", "Run the newest supabase/setup.sql (roadmap 2c). Until then the spam guard and some extras stay off.");
+      current = r.data === SETUP_VERSION;
+      add(current ? "ok" : "warn", current ? "The database setup is up to date (version " + r.data + ")" : "The database setup is older (" + r.data + ")", current ? "" : "Run the newest supabase/setup.sql (roadmap 2c).");
+    });
+    await step("Orders", async () => {
+      const o = await sb.from("orders").select("id", { count: "exact", head: true }), l = await sb.from("order_log").select("id", { count: "exact", head: true });
+      add(o.error ? "bad" : "ok", o.error ? "Orders cannot be read" : "Orders can be read (" + (o.count || 0) + " so far)", o.error ? o.error.message : "");
+      add(l.error ? "warn" : "ok", l.error ? "The order change log cannot be read" : "The order change log works", l.error ? "Run the newest setup.sql (roadmap 2c)." : "");
+    });
+    await step("Most popular", async () => {
+      const r = await sb.rpc("popular_items", { days: 90, max_items: 12 });
+      add(r.error ? "warn" : "ok", r.error ? "Most popular cannot be worked out" : "Most popular works (" + (r.data || []).length + " items counted)", r.error ? "Run the newest setup.sql (roadmap 2c)." : "");
+    });
+    await step("Order calendar", async () => {
+      const r = await sb.rpc("booked_dates");
+      add(r.error ? "warn" : "ok", r.error ? "The order calendar cannot count booked days" : "The order calendar works (" + (r.data || []).length + " busy dates)", r.error ? "Run the newest setup.sql (roadmap 2c)." : "");
+    });
+
+    // The locks, tried the way a stranger would try them (no sign-in).
+    await step("Locks", async () => {
+      const r = await raw("/rest/v1/orders?select=id&limit=1");
+      let rows = []; if (r.ok) { try { rows = await r.json(); } catch (e) { rows = []; } }
+      add(Array.isArray(rows) && rows.length === 0 ? "ok" : "bad", Array.isArray(rows) && rows.length === 0 ? "Strangers cannot read orders" : "Strangers CAN read orders", Array.isArray(rows) && rows.length === 0 ? "" : "Run the newest setup.sql now (roadmap 2c) and run this check again.");
+      const f = await raw("/rest/v1/orders", "POST", { source: "cart", status: "confirmed", name: TEST_NAME, items: "1 x Lock test" });
+      add(f.ok ? "bad" : "ok", f.ok ? "A stranger could add an order that is already confirmed" : "Strangers cannot confirm their own orders", f.ok ? "Run the newest setup.sql now (roadmap 2c) and run this check again." : "");
+    });
+    // A real customer order, then the spam guard.
+    await step("Test order", async () => {
+      const r = await raw("/rest/v1/orders", "POST", { source: "cart", name: TEST_NAME, phone: "", items: "1 x Test item (live check)", total: 0, details: { test: true } });
+      if (!r.ok) { const m = await msgOf(r); return add(/too many/i.test(m) ? "warn" : "bad", /too many/i.test(m) ? "The spam guard paused the test order" : "A customer could not send an order", (m || "The database refused it") + (/too many/i.test(m) ? " (wait an hour, or this is a real flood)." : ". Run the newest setup.sql (roadmap 2c).")); }
+      const f = await sb.from("orders").select("id").eq("name", TEST_NAME);
+      add(f.error || !(f.data || []).length ? "bad" : "ok", f.error || !(f.data || []).length ? "The test order was accepted but did not show in Orders" : "A customer can send an order, and it arrives in Orders", "The test order is removed again straight away.");
+      if (current) {
+        const g = await raw("/rest/v1/orders", "POST", { source: "cart", name: TEST_NAME, items: "x" });
+        add(g.ok ? "bad" : "ok", g.ok ? "The spam guard did not refuse an empty order" : "The spam guard is on (an empty order was refused)", g.ok ? "Run the newest setup.sql (roadmap 2c)." : "");
+      }
+    });
+    await sb.from("orders").delete().eq("name", TEST_NAME);   // always tidy up (admins may delete)
+    await step("Sign-up", async () => {
+      const r = await fetch(c.url + "/auth/v1/settings", { headers: { apikey: c.key } }); if (!r.ok) return;
+      const j = await r.json(), g = j.external && j.external.google;
+      add("info", "Customer sign-up is " + (j.disable_signup ? "switched OFF" : "on"), (g ? "Continue with Google is on. " : "Continue with Google is off. ") + (j.mailer_autoconfirm ? "Email confirmation is off." : "Customers must confirm by email, which needs your own email sender first (roadmap guide 5c)."));
+    });
+    await loadAdminData();
+    add("info", "Still to try by hand", "Sign up as a customer, send a real order from your phone, change its status, delete that account. The steps are in roadmap guide 5e.");
+    return R;
+  }
+  function liveCard() {
+    const L = state.live, ic = { ok: "✅", warn: "⚠️", bad: "❌", info: "ℹ️" };
+    return `<div class="adm-card"><h2>Live check</h2><p>Tries the real online database in about 10 seconds: the menu, orders, the locks, the newest setup, and a <strong>test order</strong> that is removed again straight away. Press it after any update and before you go online.</p>
+    <p><button class="btn btn--sm" data-act="live"${L === "running" ? " disabled" : ""}>${L === "running" ? "Checking…" : "Run the live check"}</button></p>
+    ${Array.isArray(L) ? `<ul class="live">${L.map(r => `<li class="live--${r.s}"><span aria-hidden="true">${ic[r.s]}</span> <strong>${esc(r.t)}</strong>${r.d ? `<br><span class="muted small">${esc(r.d)}</span>` : ""}</li>`).join("")}</ul>` : ""}</div>`;
+  }
+
   function publish() {
-    return `<div class="adm-card"><h2>Backup</h2>
+    return liveCard() + `<div class="adm-card"><h2>Backup</h2>
     <p>Menu and settings are saved online as soon as you press Save, so there is nothing to publish any more. The free Supabase plan has no automatic backups, so download one now and then (it holds the menu, settings, orders and admin list).</p>
     <p><button class="btn btn--sm" data-act="dl-backup">Download a backup (JSON)</button> <button class="btn btn--sm btn--ghost" data-act="dl-ord">Download orders (CSV)</button></p></div>
     <div class="adm-card"><h2>Project files (advanced)</h2><p class="muted">Only needed to keep the project folder and the double-click <code>preview.html</code> in step with the online copy.</p>
@@ -592,6 +666,7 @@
     if (a === "lsave") { if (!await dbSave("settings", state.draft)) return; await prepLook(true); return go("look", "Saved. It is live for everyone now."); }
     if (a === "lreset") { await prepLook(true); return go("look", "Reset to the saved settings."); }
     if (a === "adel") { if (confirm("Remove " + u + " from the admins?")) { const r = await sb.from("admins").delete().eq("email", u); await loadAdminData(); return go("admins", r.error ? "Could not remove: " + r.error.message : u + " removed."); } return; }
+    if (a === "live") { if (state.live === "running") return; state.live = "running"; go("publish"); try { state.live = await liveCheck(); } catch (err) { state.live = [{ s: "bad", t: "The live check stopped", d: String(err && err.message || err) }]; } return go("publish"); }   // v10.23
     if (a === "dl-set") return dl("site-settings.json", JSON.stringify(state.draft || state.data.settings, null, 2));
     if (a === "dl-off") return dl("offline-data.js", OFFLINE_HEAD + "window.SB_OFFLINE = " + JSON.stringify({ business: state.data.biz, settings: state.draft || state.data.settings, products: { categories: state.data.categories, products: state.data.products } }, null, 2) + ";\n", "text/javascript");
     if (a === "dl-prod") return dl("products.json", JSON.stringify({ categories: state.data.categories, products: state.data.products }, null, 2));

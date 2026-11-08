@@ -1,13 +1,13 @@
 # 🗺️ Roadmap: what's next and what we need from you
 
-**Where we are:** v10.22 &nbsp;|&nbsp; **Next up:** v10.23 (real-world test + spam protection) &nbsp;|&nbsp; **Rule:** 2 things per version.
+**Where we are:** v10.23 &nbsp;|&nbsp; **Next up:** v10.24 (bake sheet + new-order alert) &nbsp;|&nbsp; **Rule:** 2 things per version.
 
 *This page is written for Becca. No website or coding knowledge needed. Words you might not know are explained in the "Words explained" list in the [README](../README.md). Finished work is in [`BACKLOG.md`](BACKLOG.md).*
 
 ## In one minute
 - ✅ **The shop works.** Menu, cart, custom orders, WhatsApp, customer accounts, the admin, themes, order calendar and delivery fees are all built.
-- ✅ **New in v10.22:** the cake price guide on the Custom Orders page and "Order the same again" on the thank-you page. The sizes and prices are **samples** until you set yours.
-- ⏭️ **Next:** v10.23, a real-world test of the live site with you (about 20 minutes) plus spam protection. The build order for all 60 ideas is in section 1.
+- ✅ **New in v10.23:** a **Live check** button in the admin that tests the real online database for you (it even sends and removes a test order), **spam protection** on orders and sign-up that real customers never notice, and a **keep-alive** so the free database never pauses. You need to run the newest `setup.sql` once (section 2c).
+- ⏭️ **Next:** v10.24, a bake sheet ("what to make for Saturday") and a new-order alert. The build order for all 60 ideas is in section 1.
 - ⏳ **Waiting on you:** real prices, FAQ answers, reviews, your story, Instagram / Facebook names and photos. The full checklist is in section 2.
 - 🚀 **Last step:** putting the website online, only when you say "I'm happy with everything".
 
@@ -25,12 +25,11 @@
 
 <a id="plan"></a>
 ## 1. What is still to build (the plan)
-Your change lists always go **first**, so the versions below may slide back by one when you send a list. **The order below is the one you agreed in v10.22:** safe and real first (v10.23), then things that save you time, then trust, then money, then launch. Done: **v10.22** (price guide + Order again). Photos and going online are deliberately **last**. Everything already built is listed in [`BACKLOG.md`](BACKLOG.md) (start with "What the website can do today").
+Your change lists always go **first**, so the versions below may slide back by one when you send a list. **The order below is the one you agreed in v10.22:** safe and real first (v10.23), then things that save you time, then trust, then money, then launch. Done: **v10.22** (price guide + Order again) and **v10.23** (Live check + spam protection + keep-alive). Photos and going online are deliberately **last**. Everything already built is listed in [`BACKLOG.md`](BACKLOG.md) (start with "What the website can do today").
 
 | Version | Status | What you will get | What we need from you |
 |---|---|---|---|
-| **v10.23** | ⏭️ Next | **A real-world test + spam protection** (ideas 46 and 48): we walk through the live site with you (place an order, change its status, sign up, delete an account, check Most popular), then add spam protection on orders and sign-up and a keep-alive so the free database never pauses. | About 20 minutes of your time. Update the online database (2c) first |
-| v10.24 | 📅 Planned | **Bake sheet + new-order alert** (36 and 35): "what to make for Saturday" totalled across all orders and printable, and a sound or phone notice when an order arrives. | Nothing new |
+| **v10.24** | ⏭️ Next | **Bake sheet + new-order alert** (36 and 35): "what to make for Saturday" totalled across all orders and printable, and a sound or phone notice when an order arrives. | Nothing new |
 | v10.25 | 📅 Planned | **Review link + inspiration photo upload** (1 and 13): a link to a short review form you approve, and customers can attach a photo to a custom order. | Nothing new |
 | v10.26 | 📅 Planned | **EFT / SnapScan / Capitec Pay details with "upload proof of payment"** + **install on the home screen like an app** (27 and 47). | Your payment details (account or QR) |
 | v10.27 | 📅 Planned | **Shop status banner** ("on holiday until 3 Jan", pauses orders) + the **old "Publish" wording fixed** in the admin (4 and 45). | Nothing new |
@@ -48,7 +47,7 @@ Your change lists always go **first**, so the versions below may slide back by o
 Nothing here can be built or guessed by us. Send things whenever you have them (in your next change list is fine).
 
 ### 2a. Your to-do list
-- [ ] **Update the online database** with the newest `supabase/setup.sql` (steps in 2c). Latest change: v10.21 (v10.22 needs nothing new).
+- [ ] **Update the online database** with the newest `supabase/setup.sql` (steps in 2c). Latest change: **v10.23** (it adds the spam guard; until you run it, spam protection is only half on).
 - [ ] **Replace the placeholder numbers** in Admin > Theme & layout > **Order calendar & delivery**: days of notice, orders per day, days off, delivery areas and fees. Today they are samples.
 - [ ] **Real prices and product list.** Today the menu prices are samples (Admin > Menu items).
 - [ ] **Real cake sizes, servings, flavours and prices** for the price guide (Admin > Theme & layout > **Cake price guide**). Until you change them customers see a "Sample prices" tag.
@@ -56,7 +55,9 @@ Nothing here can be built or guessed by us. Send things whenever you have them (
 - [ ] **Read the Privacy and Terms pages** and fix anything that is not true for your bakery. They are drafts.
 - [ ] **Which items are vegan, gluten-free, nut-free, dairy-free** (only what is definitely true).
 - [ ] **Email sender for customers** (guide 5c). Easiest once you own a web address.
-- [ ] **A payment account** before v10.24.
+- [ ] **Run the Live check** (Admin > Backup & files) after updating the database, and do the short hand-test in guide 5e (about 20 minutes).
+- [ ] **Switch on the keep-alive** (guide 5f, two minutes) so the free database never pauses.
+- [ ] **A payment account** before v10.26.
 - [ ] **Photos** when you have them.
 - [ ] **Tell us when you are happy** and we will put the website online.
 
@@ -100,6 +101,7 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 
 | List | # | Request (short) | Status | Where |
 |---|---|---|---|---|
+| - | - | (Owner said "start next v/patch" with no change list, so the version marked NEXT was built: a Live check for the real database (idea 46), spam protection and a keep-alive (idea 48). The hand-test with Becca is guide 5e) | DONE | v10.23 |
 | - | - | (Owner said "lets do it your way, start next v/patch": the first version of the agreed order was built, the cake price guide + "Order the same again" on the thank-you page. The new build order for all 60 ideas is in the plan, section 1) | DONE | v10.22 |
 | - | - | (Change list: give me a list of everything we should still add to make the website better than the others, and I will say what I like. Only 2 changes per patch, the rest to the backlog. The list is in section 4c; nothing was built) | DONE | v10.21.2 |
 | - | - | (Change list: tidy the roadmap and backlog so Becca can read them; add what is useful to the README. Two changes, ideas for later collected in section 4b) | DONE | v10.21.1 |
@@ -236,6 +238,13 @@ Every version leaves a few "good idea, but not now" notes. They used to be sprea
 - Count how many requests used the guide, in Numbers (v10.22)
 - Different prices for cupcake and cookie boxes in the same guide (v10.22)
 
+**Spam protection, Live check and keep-alive (v10.23)**
+- A CAPTCHA on sign-up (Cloudflare Turnstile is free; needs a free account and two keys) (v10.23)
+- An email or WhatsApp to Becca when the spam guard refuses a burst of orders (v10.23)
+- A warning bar in the admin when the database setup is older than the website, so Becca never has to remember to run the Live check (v10.23)
+- Keep a history of Live check results, and run it by itself once a week (v10.23)
+- A Live check step that tests customer sign-up and delete-my-account with a throw-away address (v10.23)
+
 **Helping Becca (new in v10.21.1)**
 - A one-page printable cheat sheet for the day-to-day admin jobs
 - Screenshots in the README next to each admin job
@@ -300,9 +309,9 @@ You asked for everything we think the website could still add. Nothing here is b
 45. **Fix the old "Publish" and "Save to this device" wording in the admin** (already on the to-fix list). *S*
 
 **F. Safe, fast and dependable**
-46. ⭐ **A proper test against your real online database.** Everything so far was tested against a pretend database because our workshop has no internet. We would walk through it with you (about 20 minutes): place an order, change its status, sign up as a customer, delete an account, check "Most popular". Do this before launch. *S*
+46. ✅ *tool built in v10.23 (admin Live check); the hand-test with Becca is guide 5e)* ⭐ **A proper test against your real online database.** Everything so far was tested against a pretend database because our workshop has no internet. We would walk through it with you (about 20 minutes): place an order, change its status, sign up as a customer, delete an account, check "Most popular". Do this before launch. *S*
 47. **Install on the home screen like an app,** and keep the menu and cart working when the internet is flaky or during load shedding. *M*
-48. **Spam protection** on orders and sign-up, plus a keep-alive so the free online database never pauses. *M*
+48. ✅ *built in v10.23 (a CAPTCHA is the optional extra, see 4b)* **Spam protection** on orders and sign-up, plus a keep-alive so the free online database never pauses. *M*
 49. **Backup reminder** (or a weekly backup file) because the free plan has no automatic backups. *S*
 50. **Screen-reader, keyboard and small-phone check.** *M*
 51. **Afrikaans version** with a language switch. ⏳ needs translations. *L*
@@ -388,6 +397,24 @@ Also nice but smaller: "Order again" button, birthday reminders, a "New" badge o
 **Safety and privacy (POPIA).** We store as little as possible (name, phone, email, orders), never card details (payments come later, through Yoco / PayFast, which handle the card themselves), and customers can delete their account (v10.18). We will tell you the region the data sits in so the Privacy page can say so truthfully.
 
 **What could go wrong, and the answer.** Project paused: click restore (or upgrade). Free limits reached: upgrade to Pro. Supabase changes its plans: the data can be exported at any time, so you are never locked in. You lose the admin email: we add a second admin first.
+
+### 5e. The real-world test, step by step (v10.23, about 20 minutes)
+Everything since v10.17 was built in a workshop with no internet, so it was only tried against a pretend database. This is the test with the real one. Do it once now and once more just before you go online.
+1. Run the newest `supabase/setup.sql` (section 2c).
+2. Open the admin on a computer with internet, go to **Backup & files** and press **Run the live check**. Every line should show a green tick. A yellow warning says what to do; a red cross means stop and send us the screen. (The check sends a test order and removes it again, so your orders list stays clean.)
+3. **Send a real order from your phone** on the Cart or Custom Order page. Check it appears in **Orders** (it is marked pending).
+4. Press **Confirm**, then the green **WhatsApp** button, and check the message looks right. Then **Mark ready** and **Mark done**. Open the order's change log to see each step.
+5. **Create a customer account** with a second email (or Continue with Google). Place an order while signed in and check it shows under **My account**. If the confirm email never arrives that is expected until the email sender is set up (guide 5c).
+6. On the signed-in customer account, press **Delete my account** and type DELETE. Back in Orders, that order should now have no name or phone, but still be there.
+7. Place two or three more small orders, wait a minute and reload the Home page: **Most popular** appears once at least 5 items have been ordered.
+8. Delete the practice orders (Orders > Delete) and tell us what looked wrong, with the page name.
+
+### 5f. Keep the free database awake (v10.23, two minutes)
+Free Supabase projects pause after about 7 days with nobody using them. The project folder now holds a tiny scheduled job (`.github/workflows/keep-alive.yml`) that asks the database for one row every 3 days. It only works when the project is on GitHub, which yours already is.
+1. Open the project's page on **github.com** and click **Actions**. If it asks, click **I understand my workflows, enable them**.
+2. Click **Keep database awake** on the left, then **Run workflow** once to try it. A green tick means it works.
+3. After that nothing else is needed. (GitHub switches scheduled jobs off after 60 days with no changes to the project; if that happens, press **Run workflow** again. Using the admin also counts as activity.)
+4. If a run ever shows a red cross, the database is probably paused: open supabase.com and click **Restore**.
 
 ---
 

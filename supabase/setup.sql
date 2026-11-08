@@ -1,4 +1,4 @@
--- The Sweetest Bakery, v10.21: online database setup (sections 1 to 9).
+-- The Sweetest Bakery, v10.23: online database setup (sections 1 to 10).
 -- Run ONCE: Supabase dashboard > SQL Editor > New query > paste this whole file > Run.
 -- Safe to run again (it never deletes your data).
 
@@ -172,3 +172,42 @@ language sql stable security definer set search_path = public as $$
 $$;
 revoke all on function public.booked_dates() from public;
 grant execute on function public.booked_dates() to anon, authenticated;
+
+-- 10. (v10.23) Spam guard on orders + a version stamp. Re-runnable; nothing is deleted.
+-- Anyone may add an order (that is how the Cart and Custom Order forms save a copy), so a bot could try to flood the table.
+-- This guard runs inside the database, so it cannot be skipped by going around the website. Admins are never limited.
+-- Real customers will not notice it: the limits are far above what one bakery customer does.
+create index if not exists orders_created_idx on public.orders (created_at desc);
+create index if not exists orders_phone_idx   on public.orders (phone, created_at desc);
+
+create or replace function public.orders_guard() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if public.is_admin() then return new; end if;
+  if char_length(btrim(coalesce(new.items, ''))) < 3 then
+    raise exception 'An order needs some items.';
+  end if;
+  -- everyone together: at most 40 new online orders in 10 minutes
+  if (select count(*) from public.orders where source in ('cart', 'custom') and created_at > now() - interval '10 minutes') >= 40 then
+    raise exception 'Too many orders are arriving at once. Please message us on WhatsApp.';
+  end if;
+  -- one phone number: at most 6 an hour
+  if coalesce(new.phone, '') <> '' and (select count(*) from public.orders where phone = new.phone and created_at > now() - interval '1 hour') >= 6 then
+    raise exception 'Too many orders from this phone number. Please message us on WhatsApp.';
+  end if;
+  -- one signed-in customer: at most 10 an hour
+  if new.user_id is not null and (select count(*) from public.orders where user_id = new.user_id and created_at > now() - interval '1 hour') >= 10 then
+    raise exception 'Too many orders from this account. Please message us on WhatsApp.';
+  end if;
+  return new;
+end $$;
+revoke all on function public.orders_guard() from public, anon, authenticated;
+
+drop trigger if exists orders_guard_trg on public.orders;
+create trigger orders_guard_trg before insert on public.orders for each row execute function public.orders_guard();
+
+-- The admin's "Live check" asks this to see whether the database has the newest setup.sql.
+create or replace function public.setup_version() returns text
+language sql immutable as $$ select '10.23'::text $$;
+revoke all on function public.setup_version() from public;
+grant execute on function public.setup_version() to anon, authenticated;

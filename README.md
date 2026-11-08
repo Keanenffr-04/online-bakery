@@ -1,10 +1,10 @@
 # online-bakery 🐇🍰
 Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
 
-**Current version:** v10.22. The latest three versions:
+**Current version:** v10.23. The latest three versions:
+- **v10.23:** a **Live check** button in the admin that tests the real online database, **spam protection** on orders and sign-up, and a **keep-alive** so the free database never pauses. Run the newest `setup.sql` once.
 - **v10.22:** a **cake price guide** on the Custom Orders page and **Order the same again** on the thank-you page. The sizes and prices are samples until you set yours.
 - **v10.21.2** (patch): a list of 60 ideas to make the website better than the others (roadmap section 4c). Nothing on the website itself changed.
-- **v10.21.1** (patch): a plain-English roadmap, backlog and this README.
 
 Every version, in plain English, is in [`roadmap/BACKLOG.md`](roadmap/BACKLOG.md).
 
@@ -46,6 +46,7 @@ When you press **Save**, the change is live for everyone straight away. *(Some w
 | Change cake sizes, flavours or prices in the price guide | Admin > **Theme & layout** > **Cake price guide** |
 | Change the look, the season dates or the Home page order | Admin > **Theme & layout** |
 | Change the scrolling words at the top or bottom | Admin > Theme & layout > **Top and bottom strips** |
+| Check that everything online still works | Admin > **Backup & files** > **Run the live check** (it sends a test order and removes it again) |
 | Keep a safe copy of everything | Admin > **Backup & files** > download a backup |
 
 ### Getting the next version built
@@ -74,6 +75,8 @@ The full checklist is in [`roadmap/ROADMAP.md`, section 2](roadmap/ROADMAP.md#ne
 | WhatsApp did not open after an order | Your browser may have blocked the pop-up. The thank-you page has an **Open WhatsApp** button. The order is saved either way. |
 | An item I marked "Sold out today" is back | That is on purpose: it switches itself off at midnight. |
 | The moving decorations are too much | Admin > Theme & layout > Theme: untick **Moving decorations**. Customers can also press the Pause button. |
+| The live check shows a yellow or red line | The line says what to do. Most often it is "run the newest `setup.sql`" (roadmap section 2c). Red means stop and send us a screenshot. |
+| Orders from one customer or phone are not saved online | The spam guard allows 6 an hour per phone number. The WhatsApp message always works, so the order still reaches you. |
 | Anything else | Tell us in your next change list, with the page name and what you expected. |
 
 ### Words explained
@@ -91,6 +94,9 @@ The full checklist is in [`roadmap/ROADMAP.md`, section 2](roadmap/ROADMAP.md#ne
 | **`setup.sql`** | A small file of instructions you paste into Supabase once in a while. It never deletes anything. |
 | **Publish** | An old step from before v10.17. You do not need it any more: Save is already live. |
 | **Placeholder / Draft** | A sample that should be replaced with your real details (for example the sample delivery fees). |
+| **Live check** | The admin button that tries the real online database and tells you in plain words what is fine and what to fix. |
+| **Spam guard** | Quiet rules that stop robots flooding the order form. Real customers never notice them. |
+| **Keep-alive** | A tiny scheduled job that touches the free database every few days so it never pauses. |
 | **Price guide** | The box on the Custom Orders page where a customer picks a cake size and flavour and sees a rough price. The prices are yours to set in the admin. |
 | **Order calendar** | The rules about which dates customers may choose: notice days, days off, blocked dates and a daily limit. |
 | **Email sender (SMTP)** | A service that sends the confirm and reset emails to customers. We set it up with your own web address. |
@@ -115,6 +121,7 @@ online-bakery/
 ├── docs/           BRAND.md, ARCHITECTURE.md, AI_HANDOFF.md, REFERENCES.md
 ├── preview.html    double-click to browse every page locally (no install, no server)
 ├── config/         business.json (name, WhatsApp, public Supabase url + key, etc.)
+├── .github/        workflows/keep-alive.yml (keeps the free database awake)
 ├── supabase/       setup.sql (paste into the Supabase SQL Editor when a version says so: tables, admin emails, locks; safe to run again)
 ├── assets/logo/    logo files
 └── src/            index.html + placeholder pages, css/, js/, themes/, theme-preview.html

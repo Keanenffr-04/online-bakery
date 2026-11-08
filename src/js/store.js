@@ -197,9 +197,17 @@
     },
     // v10.19.1: remember what was just sent (this tab only) so thanks.html can show it. Never leaves the browser.
     lastOrder(o) { try { if (o) sessionStorage.setItem("sb_last", JSON.stringify({ ...o, at: Date.now() })); else return JSON.parse(sessionStorage.getItem("sb_last") || "null"); } catch (e) { return null; } },
+    // v10.23: spam traps. A hidden box real people never see (bots fill it in) + a bot-fast timer. A trapped form only skips the ONLINE copy:
+    // the WhatsApp message always works, so a real customer is never blocked. The database has its own rate limits too (setup.sql section 10).
+    spam: {
+      t0: Date.now(),
+      field() { return '<div class="hp" aria-hidden="true"><label>Leave this box empty<input type="text" name="hp_extra" tabindex="-1" autocomplete="off"></label></div>'; },
+      bot(root) { const h = (root || document).querySelector('input[name="hp_extra"]'); return !!(h && h.value.trim() !== "") || Date.now() - SB.spam.t0 < 3000; }
+    },
     // v10.17: save an order online (anyone may add one, only admins can read them). Never blocks or breaks the WhatsApp message.
     saveOrder(o) {
       try {
+        if (SB.spam.bot()) return;   // v10.23
         const c = (SB._biz || {}).supabase; if (!c || !c.url || !c.key || window.top !== window) return;
         const t = SB.customer(), live = t && t.expires_at * 1000 > Date.now() + 30000, h = { apikey: c.key, "Content-Type": "application/json", Prefer: "return=minimal" };
         if (live) { h.Authorization = "Bearer " + t.access_token; o = { ...o, user_id: t.user.id }; }   // v10.18: signed in = shows under My account
