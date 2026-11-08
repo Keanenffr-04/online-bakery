@@ -1,47 +1,97 @@
-# Backlog (completed work)
-Append-only. Never delete. Newest at the bottom. What is still to do is in [`ROADMAP.md`](ROADMAP.md).
+# ✅ Backlog: everything that has been built
 
-## Contents: everything finished, one line per version
-| Version | What was done | Date |
+*Written for Becca. This page is the list of **finished** work. What is still to do is in [`ROADMAP.md`](ROADMAP.md). New entries are added at the bottom and nothing is ever deleted.*
+
+**Latest version:** v10.21.1
+
+## Contents
+1. [What the website can do today](#today)
+2. [Every version in plain English](#versions)
+3. [The detailed records (for whoever builds the site)](#records)
+
+---
+
+<a id="today"></a>
+## 1. What the website can do today
+
+### For your customers
+- **Browse the Menu:** sections, a search box, dietary tags with filters (once items are tagged), a "New" badge on recent items, and a "Sold out today" label.
+- **Order in two ways.** Add items to the **Cart**, or fill in the **Custom Order** form for cakes and events. Either one opens **one WhatsApp message** to Becca with everything typed in. A copy is also saved so Becca can find it in the admin.
+- **Order calendar:** a customer cannot choose a date that is too soon, on a day off, blocked, or already full. The page says why and suggests the first free date. *(Numbers are samples until Becca sets hers.)*
+- **Delivery or collection:** delivery asks for an area and adds that area's fee to the cart total. *(Areas and fees are samples until Becca sets hers.)*
+- **A thank-you page** after ordering, and one floating WhatsApp button on every page.
+- **My account:** sign in with email or Google, see past orders, press **Order again**, keep their details, change password or delete their account.
+- **Remember my details** on their own phone or computer, so they do not retype their name and number.
+- **FAQ, About, Contact, Privacy and Terms** pages, plus Instagram and Facebook links in the footer. Customer reviews appear once real ones are added.
+
+### Look and feel
+- **Themes:** 3 everyday themes (Classic, Cocoa, Pastel) and **12 special-occasion themes** with small moving decorations: Christmas, Valentine's, Easter, Halloween, Braai Day, Mother's Day, Father's Day, New Year, Women's Day, Black Friday, Diwali and Eid.
+- **Seasons change the theme by themselves,** on dates Becca can edit. **Visitors never choose the theme.**
+- **Home page:** top banner, "Shop by treat" tiles, best sellers (frosted glass or plain), "New and popular" (Most popular is worked out from real orders), "Meet Becca", reviews, "How ordering works" and an order banner. Becca can switch each on or off and **drag them into any order**.
+- A **scrolling specials strip** at the top and an **orders strip** at the bottom, both with words Becca edits.
+
+### In the admin (Becca and Keanen only)
+- **Real sign-in** with a username and a round picture. Only the emails on the admin list can get in.
+- **Orders:** colour-coded statuses, a one-tap next step (Confirm, Mark ready, Mark done), a ready-made **WhatsApp message** for each status, a **printable order slip**, **Numbers** (this week, this month, last month, all time, with a spreadsheet download), a **change log**, and an **Upcoming dates** box showing how full the next 14 days are.
+- **Menu items and sections:** add, edit, hide, reorder, tag, "Sold out today".
+- **Theme & layout:** theme, automatic seasons, Home page sections, the two strips, and the **Order calendar & delivery** rules.
+- **Backup & files:** download a backup of the menu, settings and orders.
+- Everything you save is **live for everyone straight away** (there is no separate Publish step any more).
+
+---
+
+<a id="versions"></a>
+## 2. Every version in plain English
+Oldest first. Click a version to jump to its detailed record. A version like **v10.17.1** is a **patch**: a small fix or extra on top of v10.17.
+
+| Version | Date | What you got |
 |---|---|---|
-| [v1](#v1) | Foundation | 2026-11-06 |
-| [v2](#v2) | Research + theme foundation | 2026-11-06 |
-| [v3](#v3) | Site skeleton + navigation | 2026-11-06 |
-| [v4](#v4) | Menu hub, decluttered home, admin | 2026-11-06 |
-| [v5](#v5) | Menu dropdown + hover style | 2026-11-06 |
-| [v6](#v6) | Clicked menu colour + inverting buttons | 2026-11-06 |
-| [v7](#v7) | Preview as a web page + Menu-only dropdown | 2026-11-06 |
-| [v8](#v8) | Baked-goods hero + menu List layout | 2026-11-06 |
-| [v9](#v9) | Best sellers heading + specials strip | 2026-11-06 |
-| [v10](#v10) | Orders strip at the bottom + floating WhatsApp button | 2026-11-06 |
-| [v10.1](#v10-1) | Pinned strips + mobile menu | 2026-11-06 |
-| [v10.2](#v10-2) | Cart + Custom Order form | 2026-11-06 |
-| [v10.3](#v10-3) | FAQ + reviews | 2026-11-06 |
-| [v10.4](#v10-4) | Dietary tags + filters, menu search | 2026-11-06 |
-| [v10.5](#v10-5) | Instagram + Facebook footer, glass best-seller cards | 2026-11-07 |
-| [v10.6](#v10-6) | Forgot password, phone country codes, occasion themes | 2026-11-07 |
-| [v10.7](#v10-7) | Father's Day theme + moving occasion decorations | 2026-11-07 |
-| [v10.8](#v10-8) | Decorations always move + Pause button, live preview in admin, tidy roadmap | 2026-11-07 |
-| [v10.9](#v10-9) | Automatic seasonal themes + "New and popular" section on Home | 2026-11-07 |
-| [v10.10](#v10-10) | "Sold out today" toggle + Automatic seasons dropdown | 2026-11-07 |
-| [v10.11](#v10-11) | Themes dropdown + tidier admin (+ Supabase answer, top 10, next-5 plan) | 2026-11-07 |
-| [v10.12](#v10-12) | Home page tiles + steps, admin hidden from customers (+ roadmap: Supabase decided, top 10 scheduled, no visitor theme switching) | 2026-11-07 |
-| [v10.13](#v10-13) | "Meet Becca" section, season-aware greeting + top strip, "remember my details" on this device | 2026-11-08 |
-| [v10.14](#v10-14) | Admin "Remember me" tick box + versions-left answer (owner list 14) | 2026-11-08 |
-| [v10.15](#v10-15) | Manage menu sections (add / rename / reorder / hide / delete) + "New" badge on recent items | 2026-11-08 |
-| [v10.16](#v10-16) | Menu items list as a dropdown + Supabase walkthrough (owner list 16) | 2026-11-08 |
-| [v10.17](#v10-17) | Supabase foundation: real sign-in, server-locked admin, menu + settings live online, orders saved online, backup | 2026-11-08 |
-| [v10.17.1](#v10-17-1) | Patch: admin login that works without email (the email code / link did not arrive), honest error messages | 2026-11-08 |
-| [v10.17.2](#v10-17-2) | Patch: admin profile (username + account picture) | 2026-11-08 |
-| [v10.17.3](#v10-17-3) | Patch: Home "New and popular" layout tidied | 2026-11-08 |
-| [v10.17.4](#v10-17-4) | Patch: drag the Home page sections into any order (admin) | 2026-11-08 |
-| [v10.18](#v10-18) | Customer accounts: My account page + Privacy and Terms pages + email-sender walkthrough | 2026-11-08 |
-| [v10.19](#v10-19) | Order tools: one-tap statuses, printable slip, Numbers (week / month), automatic "Most popular" | 2026-11-08 |
-| [v10.19.1](#v10-19-1) | Patch: order thank-you page + order change log | 2026-11-08 |
-| [v10.20](#v10-20) | Five more occasion themes + WhatsApp order-status buttons | 2026-11-08 |
-| [v10.21](#v10-21) | Order calendar + delivery or collection fees by area | 2026-11-08 |
+| [v1](#v1) | 2026-11-06 | The project is set up: folders, the business details (name, WhatsApp number) and the planning notes. |
+| [v2](#v2) | 2026-11-06 | Research on other bakery sites, and the first three look-and-feel "themes" (Classic, Cocoa, Pastel). |
+| [v3](#v3) | 2026-11-06 | The website skeleton: pages, menu bar and your cleaned-up logo. |
+| [v4](#v4) | 2026-11-06 | A Menu page with filters, a simpler Home page and the first admin page. |
+| [v5](#v5) | 2026-11-06 | The header menu becomes a dropdown, with a hover highlight. |
+| [v6](#v6) | 2026-11-06 | The menu link you clicked stays coloured; buttons flip colours when you hover. |
+| [v7](#v7) | 2026-11-06 | `preview.html`: double-click it to browse the whole site. Only "Menu" is a dropdown. |
+| [v8](#v8) | 2026-11-06 | A second Home banner (baked goods + a greeting); the Menu "List" layout fixed. |
+| [v9](#v9) | 2026-11-06 | "Our best sellers" heading and a scrolling specials strip across the top (you edit the words). |
+| [v10](#v10) | 2026-11-06 | A scrolling orders strip at the bottom and one floating WhatsApp button on every page. |
+| [v10.1](#v10-1) | 2026-11-06 | Both strips stay pinned while you scroll; a three-line menu button on phones. |
+| [v10.2](#v10-2) | 2026-11-06 | The Cart (one WhatsApp message with the whole order) and the Custom Order form. |
+| [v10.3](#v10-3) | 2026-11-06 | FAQ page (draft answers) and a reviews section (empty until real reviews are added). |
+| [v10.4](#v10-4) | 2026-11-06 | Dietary tags (vegan, gluten-free and so on) with filters, and a search box on the Menu. |
+| [v10.5](#v10-5) | 2026-11-07 | Instagram and Facebook links in the footer; frosted-glass best-seller cards. |
+| [v10.6](#v10-6) | 2026-11-07 | Forgot-password code for the admin, country-code dropdown on phone numbers, and six special-occasion themes. |
+| [v10.7](#v10-7) | 2026-11-07 | Father's Day theme and small moving decorations on the occasion themes. |
+| [v10.8](#v10-8) | 2026-11-07 | Decorations always move and have a Pause button; live preview in admin; the first tidy of the plan. |
+| [v10.9](#v10-9) | 2026-11-07 | The theme changes by itself for each season; a "New and popular" section on Home. |
+| [v10.10](#v10-10) | 2026-11-07 | A "Sold out today" button for each item; one Automatic seasons dropdown. |
+| [v10.11](#v10-11) | 2026-11-07 | All themes in one dropdown (special ones marked); a tidier admin. |
+| [v10.12](#v10-12) | 2026-11-07 | Home page "Shop by treat" tiles and "How ordering works"; the admin is hidden from customers. |
+| [v10.13](#v10-13) | 2026-11-08 | A "Meet Becca" section; greeting follows the season; "remember my details" on a customer's own device. |
+| [v10.14](#v10-14) | 2026-11-08 | A "Remember me" tick box on the admin sign-in. |
+| [v10.15](#v10-15) | 2026-11-08 | Add, rename, reorder, hide and delete menu sections yourself; a "New" badge on recent items. |
+| [v10.16](#v10-16) | 2026-11-08 | The items list folds away in admin; a plain-English explanation of Supabase. |
+| [v10.17](#v10-17) | 2026-11-08 | The online "back room" (Supabase): real sign-in, only listed admins get in, menu and settings save online (no more Publish), orders are saved online, backup download. |
+| [v10.17.1](#v10-17-1) | 2026-11-08 | Patch: admin sign-in that works even when emails do not arrive; clearer error messages. |
+| [v10.17.2](#v10-17-2) | 2026-11-08 | Patch: a username and a round picture for each admin. |
+| [v10.17.3](#v10-17-3) | 2026-11-08 | Patch: the Home "New and popular" section is tidier. |
+| [v10.17.4](#v10-17-4) | 2026-11-08 | Patch: drag the Home page sections into any order. |
+| [v10.18](#v10-18) | 2026-11-08 | Customer accounts: a My account page (past orders, Order again, saved details, delete my account), plus Privacy and Terms pages (drafts). |
+| [v10.19](#v10-19) | 2026-11-08 | Order tools: colour-coded statuses, one-tap next step, printable slip, weekly and monthly numbers; "Most popular" worked out from real orders. |
+| [v10.19.1](#v10-19-1) | 2026-11-08 | Patch: a thank-you page after ordering, and a change log of who changed what. |
+| [v10.20](#v10-20) | 2026-11-08 | Five more occasion themes (New Year, Women's Day, Black Friday, Diwali, Eid) and ready-made WhatsApp messages for each order status. |
+| [v10.21](#v10-21) | 2026-11-08 | Order calendar (notice days, days off, blocked dates, daily limit) and delivery or collection fees by area. |
+| [v10.21.1](#v10-21-1) | 2026-11-08 | Patch: this tidy-up. A plain-English roadmap, backlog and README for Becca. |
 
-Full details for each version follow, oldest first.
+---
+
+<a id="records"></a>
+## 3. The detailed records (for whoever builds the site)
+Each entry below is the technical record of one version: what was built, which files changed (`Files`), how it was checked (`Tests`), honest limits (`Notes`) and ideas that were left for later (`Pushed to the backlog`). **You do not need to read these.** The two lists above are enough. The ideas that were left for later are also gathered in one place in [`ROADMAP.md`, section 4b](ROADMAP.md#ideas).
+
+
+---
 
 <a id="v1"></a>
 ## v1: Foundation (done)
@@ -435,3 +485,13 @@ Files: `src/js/store.js` (defaults `calendar` + `delivery`, `bookedDates`, `date
 Tests (headless browser, Supabase mocked, **not tested against the real project**): too-soon, fully booked and normal dates on Cart and Custom Order with the right messages and first free date; delivery without an area is refused, with an area the total, fee row, WhatsApp text, saved order and thank-you page all agree; collection note shows; custom order saves `details.delivery`; admin: Upcoming dates counts (cancelled ignored), delivery on order row, rules section edits (notice, limit, closed days, blocked dates, add / remove area, free-delivery amount) save the right settings and clear the placeholder warning; `preview.html` over `file://` with every link opened and no empty page; Cart and Custom Order at 320 px with no sideways scroll; no console errors.
 Notes and honest limits: (a) the daily limit counts orders, not cakes (a big wedding cake and a cookie box count the same); (b) it is a friendly check in the browser, not a server lock, so a determined person could still send a WhatsApp message by hand; Becca always confirms; (c) a date only counts once the order is saved online; WhatsApp-only messages do not count; (d) Custom Orders show a fee "from R x" because the real fee can depend on distance; (e) an order total in Numbers now includes delivery fees.
 Pushed to the backlog (not built): different notice days per product or section; a calendar grid view in admin; separate limits for cakes and small treats; delivery fee by distance / postcode; a delivery time slot; blocked date ranges (holiday week) instead of single dates; emailing Becca when a day fills up.
+
+<a id="v10-21-1"></a>
+## v10.21.1: Plain-English roadmap, backlog and README (done, 2026-11-08)
+Owner change list (`Changes for next version.md`): two requests, both done. It is a docs-only patch, so no website code or database changed and **nothing needs to be run in Supabase**.
+1. **Roadmap and backlog tidied for Becca.** `ROADMAP.md` now opens with "In one minute" and a contents list, then: the plan (only what is still to build), a **checklist of what we need from you** (with the simple "update the online database" steps and the first-time setup), every request and where it stands, an **ideas list that now collects the "good idea, but not now" notes from every finished version in one place**, the plain-English guides, and the rules. `BACKLOG.md` now opens with **"What the website can do today"** grouped by customers, look and feel, and admin, then a plain-English table of every version; the detailed technical records are unchanged below. Parts of the old roadmap that were out of date or finished (the old plan rows, the "what Claude recommends" note, the "next versions at a glance" table, the Firebase comparison, the "versions left" count, the "needs the backend" list and the old first-run table) were moved, **together with the whole previous roadmap, word for word, into `ROADMAP_ARCHIVE.md`**. Nothing was deleted.
+2. **README made friendly.** A new **"Start here (for Becca)"** section: what the project is, the three files that matter, how to see the site and open the admin, a table of day-to-day jobs, how to ask for the next version, a short checklist, a "something looks wrong" table and a **"Words explained"** list. The very long version-history line that sat at the top was moved to the archive; the README now shows the latest three versions and points to the backlog. The working rules for whoever builds the site are kept at the bottom, unchanged.
+Files: `README.md`, `roadmap/ROADMAP.md`, `roadmap/BACKLOG.md`, `roadmap/ROADMAP_ARCHIVE.md`, `docs/AI_HANDOFF.md`, `VERSION`.
+Checks: every link between the files (contents lists, version links, section references) was checked; no entry was removed from the backlog (all version records are still there, in order); the old roadmap is in the archive in full.
+Notes: (a) the admin screen still says "Save to this device. Then use Publish" and "after you Publish" although saving has gone live straight away since v10.17; the README tells Becca to ignore that wording and the fix is listed in the roadmap (section 4b); (b) "Words explained" lives in the README, the roadmap and backlog point to it.
+Pushed to the backlog (not built), also in `ROADMAP.md` section 4b: a one-page printable cheat sheet for the day-to-day admin jobs; screenshots in the README next to each admin job; a short "What's new" note in admin after each version; fixing the out-of-date Publish wording in admin.

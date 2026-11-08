@@ -1,88 +1,245 @@
-# Roadmap: what is done, what is next, what is waiting
+# 🗺️ Roadmap: what's next and what we need from you
 
-**Current version:** v10.21 &nbsp;|&nbsp; **Next up:** v10.22 (cake price guide / quote helper + "Order again" on the thank-you page; needs your real cake prices) &nbsp;|&nbsp; Rule: **max 2 to 3 things per version.**
+**Where we are:** v10.21.1 &nbsp;|&nbsp; **Next up:** v10.22 (cake price guide + "Order again" on the thank-you page) &nbsp;|&nbsp; **Rule:** 2 to 3 things per version.
 
-Finished work lives in [`BACKLOG.md`](BACKLOG.md). The old, long roadmap notes are kept untouched in [`ROADMAP_ARCHIVE.md`](ROADMAP_ARCHIVE.md).
+*This page is written for Becca. No website or coding knowledge needed. Words you might not know are explained in the "Words explained" list in the [README](../README.md). Finished work is in [`BACKLOG.md`](BACKLOG.md).*
 
-## Table of contents
-1. [Up next: the plan, version by version](#1-up-next-the-plan-version-by-version)
-2. [Every request from the owner, and where it stands](#2-every-request-from-the-owner-and-where-it-stands)
-3. [Waiting on the owner (things only you can give us)](#3-waiting-on-the-owner)
-4. [Needs the backend (cannot be done on the static site)](#4-needs-the-backend)
-5. [Ideas parking lot (not scheduled)](#5-ideas-parking-lot)
-6. [Working rules](#6-working-rules)
+## In one minute
+- ✅ **The shop works.** Menu, cart, custom orders, WhatsApp, customer accounts, the admin, themes, order calendar and delivery fees are all built.
+- ⏭️ **Next:** the cake price guide (v10.22). It needs your real cake sizes and prices.
+- ⏳ **Waiting on you:** real prices, FAQ answers, reviews, your story, Instagram / Facebook names and photos. The full checklist is in section 2.
+- 🚀 **Last step:** putting the website online, only when you say "I'm happy with everything".
 
-Status key: **DONE** built and tested &middot; **NEXT** the next version &middot; **PLANNED** has a version number &middot; **WAITING** needs something from the owner &middot; **BACKEND** needs the hosted backend first
+**What the symbols mean:** ✅ done &middot; ⏭️ next &middot; 📅 planned (has a version number) &middot; ⏳ waiting for something from you
+
+## Contents
+1. [What is still to build (the plan)](#plan)
+2. [What we need from you (your checklist)](#need)
+3. [Every request you have made, and where it stands](#requests)
+4. [Ideas for later (not scheduled)](#ideas)
+5. [Guides in plain English](#guides)
+6. [How we work together (the rules)](#rules)
 
 ---
 
-## 1. Up next: the plan, version by version
-Owner's list always comes first; older scheduled items slide back. Photos and launch are deliberately LAST.
+<a id="plan"></a>
+## 1. What is still to build (the plan)
+Your change lists always go **first**, so the versions below may slide back by one when you send a list. Photos and going online are deliberately **last**. Everything already built is listed in [`BACKLOG.md`](BACKLOG.md) (start with "What the website can do today").
 
-| Version | Status | What we do (max 2 to 3 things) | Why / notes |
+| Version | Status | What you will get | What we need from you |
 |---|---|---|---|
-| v10.8 | DONE | Fix: decorations always move + Pause/Play button; live preview of the decorations in admin; this tidy roadmap and backlog | Owner list 10, items 3, 5, 6 |
-| v10.9 | DONE | **Automatic seasonal themes** (theme switches by date; dates editable in admin; Preview + "try a date") + **"New and popular" section** on Home (Just added + Most popular) | Owner list 10 item 4; older plan |
-| v10.10 | DONE | **"Sold out today"** toggle per product (greys the item out, switches itself off at midnight) + **Automatic seasons dropdown** (all seasons in one section, pick one to change) | Owner list 11; the next-step pick from Claude's recommendation (section 1b) |
-| v10.11 | DONE | **Theme dropdown** (all themes in one dropdown, special ones marked) + **tidier admin** (tab bar, collapsible sections, neat item rows, sticky Save bar and preview) + answers: Supabase vs Firebase, top 10 ideas | Owner list 12 items 1 to 4 |
-| v10.12 | DONE | **Home page, first round**: "Shop by treat" tiles + "How ordering works" steps (each can be switched off in admin) + **admin hidden from customers** (no public link, no public sign-up) | Owner list 13 items 3 (first part) and 5 |
-| v10.13 | DONE | **Home page, round 2**: a short "Meet Becca" section + greeting and specials text that follow the season; **remember my details on this device** (name, phone, notes pre-filled on Cart and Custom Order) | Owner list 13 item 5 (customer side first); the device-only part of list 10 item 1 |
-| v10.14 | DONE | **Admin "Remember me"** (tick box under Log in: stay signed in on this device for 30 days, username remembered) + the **"how many versions are left?" answer** (section 1g) | Owner list 14 items 1 and 2 |
-| v10.15 | DONE | **Manage menu sections** (add / rename / reorder / hide / delete; the Shop-by-treat tiles and header menu follow) + a **"New" badge** on recently added items (length set in admin) | Older plan; owner list 15 was empty |
-| v10.16 | DONE | **Menu items list is now a dropdown** under Menu sections (Admin > Menu) + **Supabase walkthrough** (plain-English explanation, section 1h) | Owner list 16 items 1 and 2; took the v10.16 slot, so every later version slid back by one |
-| v10.17 | DONE | **Supabase foundation**: real sign-in (email + Google, real reset emails), **admin locked on the server** (admins by email: Becca + Keanen), **menu and settings live online (no Publish)**, **orders saved online** + backup download | Owner list 17; list 13 items 2 and 3, list 10 item 1, list 6 item 7 |
-| v10.18 | DONE | **"My account" page** (sign in, profile, saved details, past orders, order again, change password, delete my account) + **Privacy (POPIA) and Terms pages** (drafts) + **email-sender walkthrough** (section 1i; the sender itself is set up by the owner in Brevo / Resend + Supabase, no code) | Owner list 10 item 2. Privacy page shipped with accounts |
-| v10.19 | DONE | **Order tools, part 1**: colour-coded statuses with a one-tap next step (Confirm, Mark ready, Mark done) + a **printable order slip** + **"Numbers"** (this week / this month / last month / all time, with a CSV) + **"Most popular" ranked automatically from real orders** (SQL section 7) | Needs v10.17 (done). The thank-you page and the change log did not fit the 3-things rule and moved to v10.19.1 |
-| v10.19.1 | DONE | **Patch: order thank-you page** (shows what was just sent, honest "not confirmed yet", Open WhatsApp, Empty my cart) + **change log** (who changed what on orders, SQL section 8) | Pushed from v10.19 |
-| v10.20 | DONE | **More occasion themes** (New Year, Women's Day, Black Friday, Diwali, Eid; Visitors still never switch themes) + **WhatsApp order-status buttons** (confirmed / ready / thank you / cancelled messages filled in for Becca to send) | Top 10 #4. Diwali and Eid dates move each year, so their automatic seasons start switched off |
-| v10.21 | DONE | **Top 10 #1: order calendar** (notice days, closed weekdays, blocked dates, orders-per-day limit, "Upcoming dates" box in Orders) + **#2: delivery or collection with fees by area** (fee added to the Cart total, area on Custom Orders) | Built with **placeholder numbers** (3 / 7 days notice, 6 orders a day, two sample areas) that Becca replaces in admin; SQL section 9 |
-| **v10.22** | **NEXT** | **Top 10 #6: cake price guide / quote helper** + **"Order again" button** | Needs real prices; order again needs v10.18 |
-| v10.23 | PLANNED | **Top 10 #7: gift vouchers** + **#8: loyalty reward / referral** | Needs accounts (v10.17) and your rules |
-| v10.24 | PLANNED | **Top 10 #3: deposits / online payment** (Yoco / PayFast / Ozow) on its own, because it handles real money | Needs a payment account opened by the owner |
-| v10.25 | PLANNED | **Top 10 #10: opt-in specials broadcast list** (POPIA-friendly) + home page round 3 | Needs accounts + Privacy page |
-| When photos exist | WAITING | **Real product photos** instead of emoji (set in admin; emoji stays as fallback) + **Top 10 #5: "Our work" gallery** | Owner decides when; tip: same light and background for every photo |
-| LAST (v11) | WAITING | **Get it online**: hosting (GitHub Pages or Netlify), favicon, SEO + page titles, **Top 10 #9: Google Business Profile + local search tidy-up**, share image for WhatsApp / Facebook, custom domain, launch checklist | Only when the owner says "I'm happy with everything" |
+| **v10.22** | ⏭️ Next | **Cake price guide:** a customer picks size, servings and flavour and sees an estimated price, so there are fewer messages back and forth. Plus **"Order again"** on the thank-you page (My account already has it). | Your real cake sizes, servings and prices |
+| v10.23 | 📅 Planned | **Gift vouchers** (you give a code, the customer types it in the cart, it comes off the total) + a **loyalty reward** (for example every 10th order a free cupcake box) | Your voucher and loyalty rules |
+| v10.24 | 📅 Planned | **Deposits / online payment** (Yoco, PayFast or Ozow). A deposit secures the date. This one is on its own because it handles real money. | A payment account that you open |
+| v10.25 | 📅 Planned | **Specials list:** customers who tick "yes, send me specials" (POPIA-friendly, with an easy unsubscribe) + **Home page, round 3** | Nothing new |
+| When photos exist | ⏳ Waiting | **Real product photos** instead of emoji + an **"Our work" gallery** | Your photos (tip: same light and background for every photo) |
+| Last (v11) | ⏳ Waiting | **Put the website online:** hosting, small browser icon, search-engine tidy-up, Google Business Profile, share picture for WhatsApp / Facebook, your own web address, launch checklist | You saying "I'm happy with everything" |
 
-### 1b. What Claude recommends doing next (answer to owner list 11 item 1)
-In this order, and why:
-1. **Small wins first (no backend needed): v10.10 and v10.15.** "Sold out today" and menu-section control are things Becca uses every week, and remembering a customer's details on their own device removes the retyping the owner asked about, without waiting for logins.
-2. **Then decide the backend (before v10.17).** It is the biggest unlock: Google / Apple / email sign-in, the account page with past orders, orders saved online, the admin working across devices with no manual Publish, and real forgot-password emails. It needs two decisions from the owner (section 3): Supabase or Firebase, and whether to pay for Apple sign-in.
-3. **Fill in the real content in parallel** (section 3): FAQ answers, reviews, Instagram / Facebook handles, real prices, dietary tags, photos. The site cannot launch without them, and none needs code.
-4. **Launch LAST**, once the owner says she is happy with everything.
-Why not the backend right now: every admin change still needs a manual Publish until it exists, so the backend deserves a clean, uninterrupted version of its own, and it needs the owner's account decisions first.
+---
 
-### 1c. The next versions at a glance (v10.13 to v10.19)
-| Version | Plain-English summary |
-|---|---|
-| v10.13 (done) | More home page: a short "Meet Becca" story section, and the greeting and specials text change with the season. Repeat customers do not retype their name and phone (kept on their own device). |
-| v10.14 (done) | Admin "Remember me" tick box under the Log in button, and the count of versions left (section 1g). |
-| v10.15 (done) | Becca can add, rename, reorder, hide and delete menu sections herself (the home tiles and header menu follow), plus a "New" badge on recent items. |
-| v10.16 (done) | In Admin > Menu the list of items folds into a dropdown under "Menu sections", and the plain-English Supabase explanation is written down (section 1h). |
-| v10.17 | The online "back room" (Supabase, free plan): real sign-in, the admin panel locked so **only admins can get in**, the admin works on every device with no manual Publish, orders saved online. Needs you to create the free account (section 3). |
-| v10.18 | "My account" page (details, past orders, order again, delete my account) plus the Privacy (POPIA) and Terms pages. |
-| v10.19 (done) | Order tools: one-tap statuses, a printable slip, weekly / monthly numbers, and "Most popular" worked out from real orders. (Thank-you page and change log: v10.19.1.) |
-After that: v10.20 to v10.25 are the more occasion themes and your approved top-10 list (see the plan table). Visitors never change the theme themselves.
+<a id="need"></a>
+## 2. What we need from you (your checklist)
+Nothing here can be built or guessed by us. Send things whenever you have them (in your next change list is fine).
 
-### 1j. The next five, at a glance (answer to "what will you add in the next 5 v/patches?", after v10.21)
-| Version | Plain-English summary | Needs from you |
+### 2a. Your to-do list
+- [ ] **Update the online database** with the newest `supabase/setup.sql` (steps in 2c). Latest change: v10.21.
+- [ ] **Replace the placeholder numbers** in Admin > Theme & layout > **Order calendar & delivery**: days of notice, orders per day, days off, delivery areas and fees. Today they are samples.
+- [ ] **Real prices and product list.** Today the menu prices are samples (Admin > Menu items).
+- [ ] **FAQ answers, reviews, your "Meet Becca" story, Instagram and Facebook names** (details in 2b).
+- [ ] **Read the Privacy and Terms pages** and fix anything that is not true for your bakery. They are drafts.
+- [ ] **Which items are vegan, gluten-free, nut-free, dairy-free** (only what is definitely true).
+- [ ] **Email sender for customers** (guide 5c). Easiest once you own a web address.
+- [ ] **A payment account** before v10.24.
+- [ ] **Photos** when you have them.
+- [ ] **Tell us when you are happy** and we will put the website online.
+
+### 2b. Details only you can give us
+| What we need | Where it shows up | How to give it to us |
 |---|---|---|
-| v10.22 | **Cake price guide / quote helper** (pick size, servings and flavour on Custom Orders and see an estimated price, so fewer back-and-forth messages) + **Order again on the thank-you page** (My account already has it) | Your real cake sizes, servings and prices |
-| v10.23 | **Gift vouchers** (Becca issues a code, the customer enters it in the Cart, it comes off the total) + **loyalty reward** (e.g. every 10th order a free cupcake box, tracked per signed-in customer) | Your voucher and loyalty rules |
-| v10.24 | **Deposits / online payment** (Yoco, PayFast or Ozow) on its own, because it handles real money: a deposit secures the date | A payment account opened by you |
-| v10.25 | **Opt-in specials list** (customers who tick "yes, send me specials"; POPIA-friendly, one-tap unsubscribe, Becca copies the list to WhatsApp broadcast) + **Home page round 3** | Nothing new; uses accounts + Privacy page |
-| When photos exist | **Real product photos** instead of emoji + **"Our work" gallery** | Your photos (same light and background for every photo) |
-After that only the launch version (v11: hosting, favicon, search tidy-up, Google Business Profile, share image, custom domain) is left. Anything you send in a change list goes first and pushes these back by one.
+| Real answers to the 6 FAQ questions (notice needed, allergens, delivery area and fees, payment, changing or cancelling an order) | FAQ page (the "Draft answer" tag goes away) | Send them in your next change list |
+| Real customer reviews (name, what they said, optional stars and date) | "What people say" on Home and FAQ | Send them in your next change list |
+| A few sentences about you | Home page "Meet Becca" (today a placeholder marked Draft) | Type it in Admin > Theme & layout > Home page > Your story |
+| Your real Instagram and Facebook names (or full links) | "Follow us" links in the footer (today the sample name `sweetest.bakery`) | Send them in your next change list |
+| Which products are vegan, gluten-free, nut-free, dairy-free | Tags and filters on the Menu | Admin > Menu items > Edit |
+| Your own wording for Christmas, Valentine's and other seasons (optional) | Greeting and top strip during that season | Admin > Theme & layout > Automatic seasons |
+| Real prices and product list | Menu and cart totals | Admin > Menu items |
+| Real notice days, daily limit, delivery areas and fees | Order calendar and delivery | Admin > Theme & layout > Order calendar & delivery |
+| Product photos | Replace the emoji | When you are ready |
+| Voucher and loyalty rules, payment provider | v10.23 and v10.24 | When we reach those versions |
+| *Decided:* Sign in with Apple is **skipped for now** (it costs about US$99 a year). Google and email sign-in are free and built. | | |
 
-### 1d. Supabase or Firebase? (answer to owner list 12 item 1)
-**Recommendation: Supabase**, free plan for now. Checked against the providers' 2026 pricing pages:
-- **Free, no card needed.** 2 projects, 500 MB database, 50,000 monthly sign-ins, unlimited API requests. A bakery's orders and menu are tiny; this is plenty for a long time.
-- **Fits our data.** Orders, items, customers and accounts are tables that link to each other, which is what Supabase's database (Postgres) is built for. Sign-in with Google and email is included free.
-- **Firebase is also free to start (Spark plan), but** the things we will want (running our own server code, e.g. emailing customers, and file storage for photos) need its pay-as-you-go plan with a card on file, and SMS sign-in is charged per text. Not a disaster, just earlier and less predictable.
-- **One catch with Supabase's free plan:** a free project pauses after a week with no activity (the data is kept, but the site stops until someone un-pauses it). A bakery getting orders will not sit idle, and a tiny scheduled ping prevents it. When you launch with real customers and are earning, the Pro plan (about US$25 per month) removes the pause and adds daily backups. That is the "pay later" step.
-- Sign in with **Apple** is separate from both: it needs an Apple Developer account (about US$99 per year), so we ship Google + email first.
-**Decided (owner list 13): Supabase.** Your one job before v10.17: create a free account at supabase.com (we will walk you through it).
+### 2c. Update the online database (do this when a version says so)
+The newest `supabase/setup.sql` always contains everything, so you can run it at any time. **Nothing is deleted when you run it.**
+1. Open your project at **supabase.com** and sign in.
+2. In the left menu click **SQL Editor**, then **New query**.
+3. Open the file `supabase/setup.sql` from the project folder in Notepad. Select all, copy, paste into the query box.
+4. Click **Run**.
+If you skip this, the site keeps working, but the newest extras (for example the daily order limit from v10.21) stay switched off.
 
-### 1e. Top 10 things we suggest adding (answer to owner list 12 item 2)
+### 2d. First-time setup (once only, already done if the admin works for you)
+1. Run `supabase/setup.sql` (steps above).
+2. **Authentication > URL configuration:** set the Site URL to the website address once it is online.
+3. *Optional, for "Continue with Google":* Authentication > Sign In / Providers > Google, switch it on and paste the Google client id and secret.
+4. **Create your admin login without email:** Authentication > Users > **Add user** > Create new user. Type your admin email and a password and tick **Auto Confirm User**. Then sign in on the admin page. (Supabase's free email sender only emails the project team, about 2 an hour, so confirmation emails often never arrive.)
+
+---
+
+<a id="requests"></a>
+## 3. Every request you have made, and where it stands
+Newest first. "List" is the number of your change list. BACKEND means "needed the online database first" (now built).
+
+Newest list first. (Version numbers of the BACKEND items have moved later several times because owner lists are done first; v10.14 was taken by owner list 14, so every later number slid by one. Older notes in `BACKLOG.md` that mention v10.11 to v10.15 for backend work use older numbers; the plan table above is always the truth.) "List" is the order the owner's change lists arrived in.
+
+| List | # | Request (short) | Status | Where |
+|---|---|---|---|---|
+| - | - | (Change list: tidy the roadmap and backlog so Becca can read them; add what is useful to the README. Two changes, ideas for later collected in section 4b) | DONE | v10.21.1 |
+| - | - | (Owner said "follow the roadmap" and asked for the next 5 versions, so the version marked NEXT was built with placeholder numbers: order calendar + delivery fees; next five listed in the plan, section 1) | DONE | v10.21 |
+| - | - | (No change list came with "start next v/patch", so the version marked NEXT was built: five more occasion themes + WhatsApp order-status buttons) | DONE | v10.20 |
+| - | - | (No change list came with "start next v/patch", so the version marked NEXT was built: thank-you page + change log) | DONE | v10.19.1 |
+| - | - | (No change list came with "start the next v/patch", so the version marked NEXT was built: statuses + printable slip, Numbers, automatic "Most popular"; thank-you page + change log pushed to v10.19.1 to keep to 3 things) | DONE | v10.19 |
+| - | - | (No change list came with "start next v/patch", so the version marked NEXT was built: My account + Privacy and Terms + email-sender walkthrough) | DONE | v10.18 |
+| 21 | 1 | In Admin > Theme & layout, hold and drag to put the Home page sections where I want them | DONE (grip handle + up / down arrows; Home follows the order) | v10.17.4 |
+| 21 | 2 | Only 2 changes per patch, the rest to the backlog | DONE (only 1 request came; ideas listed in the v10.17.4 backlog entry) | v10.17.4 |
+| 20 | 1 | The "New and popular" section on Home is cluttered: make the layout better | DONE (two slim columns, compact rows, one "See the full menu" link) | v10.17.3 |
+| 20 | 2 | Only 2 changes per patch, the rest to the backlog | DONE (only 1 request came, nothing extra added; ideas listed in the v10.17.3 backlog entry) | v10.17.3 |
+| 17 | 1 | Use the Supabase project + publishable key; add Becca and Keanen as admins in this patch | DONE (emails in `supabase/setup.sql`; keys in `config/business.json`) | v10.17 |
+| 19 | 1 | A username and an account picture, chosen on first sign-in, shown after "Hi," | DONE (admins; customer accounts later with My account, v10.18) | v10.17.2 |
+| 19 | 2 | Only 2 changes per patch, the rest to the backlog | DONE | v10.17.2 |
+| 18 | 1 | The email code / confirm email does not work, so the admin cannot be entered: fix | DONE (no-email login via the Supabase dashboard + honest messages; real email needs a custom SMTP sender, see v10.18 note) | v10.17.1 |
+| 18 | 2 | Only 2 changes per patch, the rest to the backlog | DONE | v10.17.1 |
+| 17 | 2 | Only 3 changes per version, everything else to the backlog | DONE (rule kept; leftovers listed in the v10.17 backlog entry) | v10.17 |
+| 16 | 1 | Make the items list in Admin > Menu a dropdown too, under Menu sections | DONE | v10.16 |
+| 16 | 2 | "Go through the explanation of the Supabase thing" | DONE (plain-English walkthrough, now guide 5d) | v10.16 |
+| 15 | 1 | (Change-list file was empty.) "Start the next version" + "tell me what you will do in the next 5 versions" | DONE (v10.15 built; next 5 were listed then: v10.16 to v10.20) | v10.15 |
+| 14 | 1 | How many versions are left in the roadmap / backlog? | DONE (answered then; that count is out of date, see the plan in section 1 and the archive) | v10.14 |
+| 14 | 2 | "Remember me" on the admin sign-in (tick box below the sign-in) | DONE | v10.14 |
+| 13 | 1 | No visitor theme switching (only Becca and the seasons choose); keep adding more themes | DONE (plan changed) | v10.12 rule; more themes v10.20 |
+| 13 | 2 | Use Supabase | DONE (decision recorded; owner creates the free account) | v10.17 |
+| 13 | 3 | Only admins can see the admin panel, not customers | DONE (v10.12 no public link; v10.17 real server-side lock) | v10.17 |
+| 13 | 4 | Add all 10 suggested things to the roadmap | DONE | v10.20 to v10.25, photos, launch |
+| 13 | 5 | Start customising the home page, away from admin things | DONE (round 1 v10.12; round 2 v10.13: Meet Becca, season-aware greeting and strip) | v10.12, v10.13 |
+| 12 | 1 | Supabase or Firebase? (free for now, pay later) | DONE (answered: Supabase; the comparison is kept in `ROADMAP_ARCHIVE.md`) | v10.11 |
+| 12 | 2 | Top 10 things to add | DONE (answered, now guide 5b) | v10.11 |
+| 12 | 3 | Themes dropdown: all themes in one, special ones marked | DONE | v10.11 |
+| 12 | 4 | Admin neater: it was confusing and all over the place | DONE | v10.11 |
+| 12 | 5 | "Tell me what you will do in the next 5 versions" | DONE (kept in `ROADMAP_ARCHIVE.md`) | v10.11 |
+| 11 | 1 | "What would you do next?" | DONE (answered then, kept in `ROADMAP_ARCHIVE.md`; first pick built) | v10.10 |
+| 11 | 2 | Automatic seasons: all dates in one section with a dropdown to pick the season to change | DONE | v10.10 |
+| 10 | 1 | Sign in so it remembers people (admins and customers); Google, Apple, etc. | DONE for admins (v10.17) and customers (v10.18, email + Google; Apple skipped, it costs about US$99 a year; confirm / reset emails reach customers only after the email sender is set up, guide 5c) | v10.17, v10.18 |
+| 10 | 2 | Full account page: whole account, past orders, customise, all info | DONE (My account page; no list sent for this version, so the NEXT item was built) | v10.18 |
+| 10 | 3 | Preview of the moving effects when changing theme or ticking the box | DONE | v10.8 |
+| 10 | 4 | Theme changes automatically for every season | DONE | v10.9 |
+| 10 | 5 | Neat roadmap + backlog with a table of contents | DONE | v10.8 (this file) |
+| 10 | 6 | Emojis not moving when the theme changes: fix | DONE | v10.8 |
+| 9 | 1 | Father's Day + moving decorations on occasion themes only | DONE | v10.7 (made to always move in v10.8) |
+| 8 | 1 | Forgot password with a code | DONE (admin accounts) | v10.6; real email / SMS in v10.17 |
+| 8 | 2 | Phone country-code dropdown, default +27 | DONE | v10.6 |
+| 8 | 3 | Themes for Christmas, Valentine's, Braai Day, every occasion | DONE | v10.6 (+ Father's Day v10.7); more in v10.20 (DONE) |
+| 7 | 1 | Rewrite or confirm the 6 FAQ answers | WAITING | owner sends the info (section 2) |
+| 7 | 2 | Add real reviews | WAITING | owner sends the info (section 2) |
+| 6 | 1 | Get it online | PLANNED | LAST (v11) |
+| 6 | 2 | Real product photos | WAITING | when photos exist |
+| 6 | 3 | Cart that sends one WhatsApp message | DONE | v10.2 |
+| 6 | 4 | Custom Order form | DONE | v10.2 |
+| 6 | 5 | FAQ and reviews | DONE (needs owner's answers) | v10.3 |
+| 6 | 6 | Allergen / dietary tags with filters | DONE (owner must tag products) | v10.4 |
+| 6 | 7 | Admin that works across devices | DONE | v10.17 |
+| 5 | 1 | Instagram + Facebook in the footer | DONE (needs real handles) | v10.5 |
+| 5 | 2 | Glass-style best-seller cards + choose how many | DONE | v10.5 |
+| 5 | 3 | Most recent + most popular section | DONE (v10.9: owner ticks it; v10.19: now ranked automatically from real orders, ticked items fill the gaps) | v10.9 |
+
+The owner re-sent the list 10 file once more with the same six items and no new requests (so nothing new was added); items 3, 4, 5, 6 are now all DONE, items 1 and 2 wait for the backend.
+
+Older lists (1 to 5) are all finished; see `ROADMAP_ARCHIVE.md` and `BACKLOG.md`.
+
+---
+
+<a id="ideas"></a>
+## 4. Ideas for later (not scheduled)
+Tell us which of these to pull into a version. The ranked top 10 is in guide 5d.
+
+### 4a. From your earlier lists
+Not scheduled. Tell us which to pull into a version. The ranked **top 10** is in guide 5b; the older ideas are below.
+- Gallery / "Our work" page with an Instagram-style grid
+- Order lead-time / availability calendar (needs the owner's real lead times)
+- Online card payments (Yoco / PayFast / Ozow), only if wanted after launch
+- Privacy-friendly analytics
+- Specials with start and end dates; clickable specials; seasonal specials banner per occasion
+- Owner-chosen decoration emoji per theme in admin
+- A "New" badge on items added in the last 2 weeks (DONE v10.15)
+- "Sold out" for a chosen date range or "until further notice" (today it is one day at a time, switching itself off at midnight)
+- Seasonal greeting / specials text that changes with the season theme (DONE v10.13)
+- Let the owner edit the Easter / Mother's Day / Father's Day windows (today only the fixed-date seasons have editable dates; those three are worked out from the calendar)
+- Reserve space for the two strips so the page does not jump on first load
+- Customer accounts only if repeat-order history is wanted (it is now, see v10.18)
+- Finish the reference review of `online_bakery_marketplace_v2` and verify licences
+- Notes from the Keagan reference repos (what we borrowed, what we skip) are in `ROADMAP_ARCHIVE.md`
+
+### 4b. Collected from finished versions (gathered here in v10.21.1)
+Every version leaves a few "good idea, but not now" notes. They used to be spread through the backlog; here they are in one place. The tag shows which version they came from.
+
+**Orders and customers**
+- Different notice days per product or section (v10.21)
+- A calendar grid view of orders in admin (v10.21)
+- Separate daily limits for cakes and small treats (v10.21)
+- Delivery fee by distance or postcode; a delivery time slot (v10.21)
+- Block a run of dates at once, such as a holiday week (v10.21)
+- An email to Becca when a day fills up (v10.21)
+- A "my addresses" list for customers who get deliveries (v10.18)
+- Save name and phone in the customer account so they follow to a new phone (needs the Privacy page to say so) (v10.18)
+- Admin view of which orders belong to which account (v10.18)
+- Show the customer an order number (v10.19.1)
+- Weekly numbers by email; a "this week" bar chart; choose the 90-day window for Most popular; item names with prices on the slip (v10.19)
+- Log entries for printing a slip; filter the change log per order (v10.19.1)
+
+**Messages**
+- Editable WhatsApp message wording per order status (v10.20)
+- One tap to "mark ready and open WhatsApp" (v10.20)
+- Remember that a customer was already messaged (v10.20)
+
+**Look and feel**
+- More themes: Youth Day, Valentine's week variants, Ramadan, school holidays (v10.20)
+- Diwali and Eid dates worked out automatically (they move each year) (v10.20)
+- A different hero picture and logo per theme (v10.20)
+- Best sellers in the same slim style as New and popular; a "Just added / Most popular" tab switcher; description on hover; a "Top 3 this month" ribbon (v10.17.3)
+- Alternate the cream and white section backgrounds automatically after sections are shuffled (v10.17.4)
+- Drag to reorder the Menu sections and the footer the same way; a "Reset to the usual order" button; show or hide a Home section per season (v10.17.4)
+
+**Accounts and safety**
+- A keep-alive ping so the free online project never pauses (v10.17)
+- Spam protection on sign-up and on the public order form (v10.17, v10.18)
+- Sign-in by emailed 6-digit code, once real email works (v10.17.1, v10.18)
+- Sign in with Apple (paid developer account) (v10.18)
+- A switch that hides the account link and page if ever needed (v10.18)
+- Bigger account pictures; a picture crop tool; an admin "display name" separate from the username (v10.17.2)
+- An in-admin button to create a new admin with a password (needs hosting first) (v10.17.1)
+- Fill in the real data region and information officer on the Privacy page once confirmed (v10.18)
+
+**Found while tidying (v10.21.1), to fix in a later version**
+- The Save bar in Admin > Theme & layout still says "Save to this device. Then use Publish". Since v10.17 pressing Save goes live straight away, so that wording is out of date.
+- The Menu sections / Menu items help text in admin still says changes reach customers "after you Publish". Same reason, same fix.
+
+**Helping Becca (new in v10.21.1)**
+- A one-page printable cheat sheet for the day-to-day admin jobs
+- Screenshots in the README next to each admin job
+- A short "What's new" note in admin after each version
+
+---
+
+<a id="guides"></a>
+## 5. Guides in plain English
+
+### 5a. Home page: what we recommend, and what is done
+Goal: the customer-facing site gets the attention now, the admin only when it blocks something. Ranked by how much each helps a first-time visitor decide to order:
+1. **DONE v10.12 "Shop by treat" tiles** right under the hero: one tile per menu section plus Custom cake. A visitor sees what Becca makes in two seconds and is one tap from the right part of the menu. It follows the menu sections automatically.
+2. **DONE v10.12 "How ordering works"** (Choose, Send, Confirm): removes the "how do I even order?" question before it is asked.
+3. **DONE v10.13 "Meet Becca"**: a short, warm story section (who bakes, why, baked to order). People buy from people. Needs a few sentences from Becca, a placeholder goes in first.
+4. **DONE v10.13 Season-aware greeting and specials**: at Christmas the greeting and the specials strip talk about Christmas, then switch back by themselves.
+5. **With photos**: a real hero photo and photos on the cards (biggest visual upgrade; waits for the owner's photos).
+6. **After launch**: Instagram grid / "Our work" gallery, and reviews once real ones exist.
+Each new home section can be switched on or off in Admin > Theme & layout > Home page, so nothing is forced.
+
+### 5b. The top 10 things we suggested (all approved)
 **All ten were approved by the owner (list 13 item 4) and are now in the plan table:** #4 v10.20, #1 and #2 v10.21, #6 v10.22, #7 and #8 v10.23, #3 v10.24, #10 v10.25, #5 when photos exist, #9 with the launch (v11).
 Ordered by how much they help a one-person bakery. None is scheduled yet; pick any and we will slot it in.
 1. **Order calendar with lead times and a daily limit** (e.g. "no more than 6 cakes per day", blocked dates, "3 days notice") so Becca never double-books.
@@ -97,26 +254,17 @@ Ordered by how much they help a one-person bakery. None is scheduled yet; pick a
 10. **Opt-in specials broadcast list** (customers who agree to hear about specials; POPIA-friendly; after accounts exist).
 Also nice but smaller: "Order again" button, birthday reminders, a "New" badge on recent items.
 
-### 1f. Home page: what we recommend, and what v10.12 did (answer to owner list 13 item 5)
-Goal: the customer-facing site gets the attention now, the admin only when it blocks something. Ranked by how much each helps a first-time visitor decide to order:
-1. **DONE v10.12 "Shop by treat" tiles** right under the hero: one tile per menu section plus Custom cake. A visitor sees what Becca makes in two seconds and is one tap from the right part of the menu. It follows the menu sections automatically.
-2. **DONE v10.12 "How ordering works"** (Choose, Send, Confirm): removes the "how do I even order?" question before it is asked.
-3. **DONE v10.13 "Meet Becca"**: a short, warm story section (who bakes, why, baked to order). People buy from people. Needs a few sentences from Becca, a placeholder goes in first.
-4. **DONE v10.13 Season-aware greeting and specials**: at Christmas the greeting and the specials strip talk about Christmas, then switch back by themselves.
-5. **With photos**: a real hero photo and photos on the cards (biggest visual upgrade; waits for the owner's photos).
-6. **After launch**: Instagram grid / "Our work" gallery, and reviews once real ones exist.
-Each new home section can be switched on or off in Admin > Theme & layout > Home page, so nothing is forced.
+### 5c. Email sender for customers (you set it up, no code)
+**Why.** Supabase's free built-in email sender only delivers to the project team's own addresses (about 2 an hour). Customers who create an account need a confirm email, and "forgot password" needs a reset email, so both fail for them until the project has its **own email sender (SMTP)**. Until then the My account page says so honestly, and **Continue with Google** (once switched on) and the WhatsApp route still work.
+**What you do (about 20 minutes, then tell us how it went).**
+1. Open a free account with an email service. **Brevo** or **Resend** are the usual free choices for a small shop (a few hundred emails a day is plenty). Check their current free limits when you sign up.
+2. Verify a **sender**. For emails that reliably reach inboxes (not spam) services want you to verify a **domain** you own (for example `thesweetestbakery.co.za`), which is normally bought with the launch (v11). A free Gmail address is often rejected or lands in spam, so email for customers will likely only work well **after the domain exists**. If you want it sooner, buying the domain first is the answer.
+3. Create the SMTP login in the service (host, port, username, password / API key). **Never send us the password**; you paste it straight into Supabase.
+4. In Supabase: **Authentication > Emails > SMTP Settings**: switch on custom SMTP and paste the details, set the sender name to "The Sweetest Bakery". Then **Authentication > URL configuration**: set the Site URL to the live address (add `http://localhost:8000` too if testing locally) so the confirm and reset links come back to the site.
+5. Test: create a customer account with a normal email address and see the confirm email arrive.
+**Meanwhile:** the sign-up and reset messages on the My account page tell the customer plainly if no email arrives, and Google sign-in is the no-email way in (switch it on in Supabase > Authentication > Sign In / Providers > Google, see section 2d).
 
-### 1g. How many versions are left? (answer to owner list 14 item 1)
-Counted from the plan table above, after v10.14:
-- **10 numbered versions** were still planned after v10.14 (v10.15 is now done, so 9 remain): v10.15 (menu sections, DONE), v10.16 (Supabase backend), v10.17 (My account + Privacy and Terms), v10.18 (order tools), v10.19 (more occasion themes + WhatsApp status buttons), v10.20 (order calendar + delivery), v10.21 (price guide + Order again), v10.22 (vouchers + loyalty), v10.23 (deposits / online payment), v10.24 (broadcast list + home page round 3).
-- **2 more steps that wait for you rather than for us:** real product photos (when you have them) and the launch version, v11 (hosting, search tidy-up, domain).
-- **So 12 steps in total, 10 of them numbered.** The backend (v10.17) is the biggest; the rest are small to medium.
-- **After v10.16** (owner list 16 took a slot, so Supabase moved to v10.17): **9 numbered versions** remain (v10.17 to v10.25) + the 2 steps that wait for you (photos, launch v11) = **11 steps**.
-- Done so far: v1 to v10.16 (see `BACKLOG.md`; it lists only finished work, so nothing in it is still to do).
-- The number grows by about one for every new list you send, because your list always goes first and the older items slide back. Anything you add that is not in the plan sits in the ideas parking lot (section 5) until it is given a version.
-
-### 1h. Supabase explained, step by step (answer to owner list 16 item 2)
+### 5d. Supabase explained, step by step
 **What it is, in one sentence.** Supabase is an online "back room" for the website: a safe place on the internet where the site can keep things that must be remembered for everyone (accounts, orders, the menu) and checks who is allowed to see or change them.
 
 **Why the site needs one.** Today the website is "static": every page is a plain file, and anything Becca or a customer does is only remembered inside that one browser. That is why admin changes need a manual **Publish**, why the admin does not work across devices, why a customer's order history cannot exist, and why "forgot password" cannot send a real email. A back room fixes all of those at once.
@@ -145,132 +293,13 @@ Counted from the plan table above, after v10.14:
 
 **What could go wrong, and the answer.** Project paused: click restore (or upgrade). Free limits reached: upgrade to Pro. Supabase changes its plans: the data can be exported at any time, so you are never locked in. You lose the admin email: we add a second admin first.
 
-### 1i. Email sender for customers (the third part of v10.18; no code, you set it up)
-**Why.** Supabase's free built-in email sender only delivers to the project team's own addresses (about 2 an hour). Customers who create an account need a confirm email, and "forgot password" needs a reset email, so both fail for them until the project has its **own email sender (SMTP)**. Until then the My account page says so honestly, and **Continue with Google** (once switched on) and the WhatsApp route still work.
-**What you do (about 20 minutes, then tell us how it went).**
-1. Open a free account with an email service. **Brevo** or **Resend** are the usual free choices for a small shop (a few hundred emails a day is plenty). Check their current free limits when you sign up.
-2. Verify a **sender**. For emails that reliably reach inboxes (not spam) services want you to verify a **domain** you own (for example `thesweetestbakery.co.za`), which is normally bought with the launch (v11). A free Gmail address is often rejected or lands in spam, so email for customers will likely only work well **after the domain exists**. If you want it sooner, buying the domain first is the answer.
-3. Create the SMTP login in the service (host, port, username, password / API key). **Never send us the password**; you paste it straight into Supabase.
-4. In Supabase: **Authentication > Emails > SMTP Settings**: switch on custom SMTP and paste the details, set the sender name to "The Sweetest Bakery". Then **Authentication > URL configuration**: set the Site URL to the live address (add `http://localhost:8000` too if testing locally) so the confirm and reset links come back to the site.
-5. Test: create a customer account with a normal email address and see the confirm email arrive.
-**Meanwhile:** the sign-up and reset messages on the My account page tell the customer plainly if no email arrives, and Google sign-in is the no-email way in (switch it on in Supabase > Authentication > Sign In / Providers > Google, see section 3).
+---
 
-## 2. Every request from the owner, and where it stands
-Newest list first. (Version numbers of the BACKEND items have moved later several times because owner lists are done first; v10.14 was taken by owner list 14, so every later number slid by one. Older notes in `BACKLOG.md` that mention v10.11 to v10.15 for backend work use older numbers; the plan table above is always the truth.) "List" is the order the owner's change lists arrived in.
-
-| List | # | Request (short) | Status | Where |
-|---|---|---|---|---|
-| - | - | (Owner said "follow the roadmap" and asked for the next 5 versions, so the version marked NEXT was built with placeholder numbers: order calendar + delivery fees; next 5 listed in section 1j) | DONE | v10.21 |
-| - | - | (No change list came with "start next v/patch", so the version marked NEXT was built: five more occasion themes + WhatsApp order-status buttons) | DONE | v10.20 |
-| - | - | (No change list came with "start next v/patch", so the version marked NEXT was built: thank-you page + change log) | DONE | v10.19.1 |
-| - | - | (No change list came with "start the next v/patch", so the version marked NEXT was built: statuses + printable slip, Numbers, automatic "Most popular"; thank-you page + change log pushed to v10.19.1 to keep to 3 things) | DONE | v10.19 |
-| - | - | (No change list came with "start next v/patch", so the version marked NEXT was built: My account + Privacy and Terms + email-sender walkthrough) | DONE | v10.18 |
-| 21 | 1 | In Admin > Theme & layout, hold and drag to put the Home page sections where I want them | DONE (grip handle + up / down arrows; Home follows the order) | v10.17.4 |
-| 21 | 2 | Only 2 changes per patch, the rest to the backlog | DONE (only 1 request came; ideas listed in the v10.17.4 backlog entry) | v10.17.4 |
-| 20 | 1 | The "New and popular" section on Home is cluttered: make the layout better | DONE (two slim columns, compact rows, one "See the full menu" link) | v10.17.3 |
-| 20 | 2 | Only 2 changes per patch, the rest to the backlog | DONE (only 1 request came, nothing extra added; ideas listed in the v10.17.3 backlog entry) | v10.17.3 |
-| 17 | 1 | Use the Supabase project + publishable key; add Becca and Keanen as admins in this patch | DONE (emails in `supabase/setup.sql`; keys in `config/business.json`) | v10.17 |
-| 19 | 1 | A username and an account picture, chosen on first sign-in, shown after "Hi," | DONE (admins; customer accounts later with My account, v10.18) | v10.17.2 |
-| 19 | 2 | Only 2 changes per patch, the rest to the backlog | DONE | v10.17.2 |
-| 18 | 1 | The email code / confirm email does not work, so the admin cannot be entered: fix | DONE (no-email login via the Supabase dashboard + honest messages; real email needs a custom SMTP sender, see v10.18 note) | v10.17.1 |
-| 18 | 2 | Only 2 changes per patch, the rest to the backlog | DONE | v10.17.1 |
-| 17 | 2 | Only 3 changes per version, everything else to the backlog | DONE (rule kept; leftovers listed in the v10.17 backlog entry) | v10.17 |
-| 16 | 1 | Make the items list in Admin > Menu a dropdown too, under Menu sections | DONE | v10.16 |
-| 16 | 2 | "Go through the explanation of the Supabase thing" | DONE (plain-English walkthrough, section 1h) | v10.16 |
-| 15 | 1 | (Change-list file was empty.) "Start the next version" + "tell me what you will do in the next 5 versions" | DONE (v10.15 built; next 5 listed in section 1c: v10.16 to v10.20) | v10.15 |
-| 14 | 1 | How many versions are left in the roadmap / backlog? | DONE (answered in section 1g) | v10.14 |
-| 14 | 2 | "Remember me" on the admin sign-in (tick box below the sign-in) | DONE | v10.14 |
-| 13 | 1 | No visitor theme switching (only Becca and the seasons choose); keep adding more themes | DONE (plan changed) | v10.12 rule; more themes v10.20 |
-| 13 | 2 | Use Supabase | DONE (decision recorded; owner creates the free account) | v10.17 |
-| 13 | 3 | Only admins can see the admin panel, not customers | DONE (v10.12 no public link; v10.17 real server-side lock) | v10.17 |
-| 13 | 4 | Add all 10 suggested things to the roadmap | DONE | v10.20 to v10.25, photos, launch |
-| 13 | 5 | Start customising the home page, away from admin things | DONE (round 1 v10.12; round 2 v10.13: Meet Becca, season-aware greeting and strip) | v10.12, v10.13 |
-| 12 | 1 | Supabase or Firebase? (free for now, pay later) | DONE (answered in section 1d: Supabase) | v10.11 |
-| 12 | 2 | Top 10 things to add | DONE (answered in section 1e) | v10.11 |
-| 12 | 3 | Themes dropdown: all themes in one, special ones marked | DONE | v10.11 |
-| 12 | 4 | Admin neater: it was confusing and all over the place | DONE | v10.11 |
-| 12 | 5 | "Tell me what you will do in the next 5 versions" | DONE (section 1c) | v10.11 |
-| 11 | 1 | "What would you do next?" | DONE (answered in section 1b; first pick built) | v10.10 |
-| 11 | 2 | Automatic seasons: all dates in one section with a dropdown to pick the season to change | DONE | v10.10 |
-| 10 | 1 | Sign in so it remembers people (admins and customers); Google, Apple, etc. | DONE for admins (v10.17) and customers (v10.18, email + Google; Apple skipped, it costs about US$99 a year; confirm / reset emails reach customers only after the email sender is set up, section 1i) | v10.17, v10.18 |
-| 10 | 2 | Full account page: whole account, past orders, customise, all info | DONE (My account page; no list sent for this version, so the NEXT item was built) | v10.18 |
-| 10 | 3 | Preview of the moving effects when changing theme or ticking the box | DONE | v10.8 |
-| 10 | 4 | Theme changes automatically for every season | DONE | v10.9 |
-| 10 | 5 | Neat roadmap + backlog with a table of contents | DONE | v10.8 (this file) |
-| 10 | 6 | Emojis not moving when the theme changes: fix | DONE | v10.8 |
-| 9 | 1 | Father's Day + moving decorations on occasion themes only | DONE | v10.7 (made to always move in v10.8) |
-| 8 | 1 | Forgot password with a code | DONE (admin accounts) | v10.6; real email / SMS in v10.17 |
-| 8 | 2 | Phone country-code dropdown, default +27 | DONE | v10.6 |
-| 8 | 3 | Themes for Christmas, Valentine's, Braai Day, every occasion | DONE | v10.6 (+ Father's Day v10.7); more in v10.20 (DONE) |
-| 7 | 1 | Rewrite or confirm the 6 FAQ answers | WAITING | owner sends the info (section 3) |
-| 7 | 2 | Add real reviews | WAITING | owner sends the info (section 3) |
-| 6 | 1 | Get it online | PLANNED | LAST (v11) |
-| 6 | 2 | Real product photos | WAITING | when photos exist |
-| 6 | 3 | Cart that sends one WhatsApp message | DONE | v10.2 |
-| 6 | 4 | Custom Order form | DONE | v10.2 |
-| 6 | 5 | FAQ and reviews | DONE (needs owner's answers) | v10.3 |
-| 6 | 6 | Allergen / dietary tags with filters | DONE (owner must tag products) | v10.4 |
-| 6 | 7 | Admin that works across devices | DONE | v10.17 |
-| 5 | 1 | Instagram + Facebook in the footer | DONE (needs real handles) | v10.5 |
-| 5 | 2 | Glass-style best-seller cards + choose how many | DONE | v10.5 |
-| 5 | 3 | Most recent + most popular section | DONE (v10.9: owner ticks it; v10.19: now ranked automatically from real orders, ticked items fill the gaps) | v10.9 |
-
-The owner re-sent the list 10 file once more with the same six items and no new requests (so nothing new was added); items 3, 4, 5, 6 are now all DONE, items 1 and 2 wait for the backend.
-
-Older lists (1 to 5) are all finished; see `ROADMAP_ARCHIVE.md` and `BACKLOG.md`.
-
-## 3. Waiting on the owner
-Nothing below can be built or guessed by us. Send it whenever you have it.
-
-| Need | Used for | Where it goes |
-|---|---|---|
-| Real answers for the 6 FAQ questions (notice needed, allergens, delivery area and fees, payment, change / cancel) | FAQ page; drops the "Draft answer" tag | `config/site-settings.json` (`faq`; remove `"draft": true` per item) |
-| Real customer reviews (name, text, optional rating and date) | "What people say" on Home and FAQ | `config/site-settings.json` (`reviews`) |
-| The text for "Meet Becca" (a few sentences about you; today a placeholder with a Draft tag) | Home "Meet Becca" section | Admin > Theme & layout > Home page > Your story |
-| Real Instagram and Facebook handles (or full links) | Footer "Follow us" links (placeholder `sweetest.bakery`) | `config/business.json` (`instagram`, `facebook`) |
-| Which products are vegan, gluten-free, nut-free, dairy-free (only what is definitely true) | Dietary tags and filters on the Menu | Admin > Menu items > Edit |
-| (Optional) your own Christmas / Valentine's / ... greeting and top-strip lines | Season wording (built-in text is used until you write yours) | Admin > Automatic seasons |
-| Real prices and product list (today they are SAMPLE prices) | Menu, cart totals | Admin > Menu items |
-| Product photos | Replace emoji | when ready (see plan, "When photos exist") |
-| Decision on "Sign in with Apple" | It needs an Apple Developer account (paid, about US$99 per year). Google sign-in and email sign-in are free. If you skip Apple, we ship Google + email first | before v10.17 |
-| **v10.17 first run (about 10 minutes, in the Supabase dashboard):** (1) SQL Editor > New query > paste `supabase/setup.sql` > Run. (2) Authentication > URL configuration: set Site URL to the site address once it is hosted (add `http://localhost:8000` too if testing locally). (3) Optional, for Google sign-in: Authentication > Sign In / Providers > Google, switch on and paste a Google Cloud OAuth client id + secret. (4) **Create your admin login without email:** Authentication > Users > Add user > Create new user, type your admin email + a password, tick **Auto Confirm User**; then log in on `admin.html` with them (Supabase's free email sender only emails your own team and about 2 an hour, so confirm / reset emails often never arrive). Email + password works without step 3. | v10.17 working live | now |
-| **v10.18 first run:** (1) Supabase > SQL Editor > run `supabase/setup.sql` again (new section 6: customer accounts, your past orders, delete my account). (2) Read the Privacy and Terms pages and fix anything that is not true for the bakery (they are marked Draft): the **region** your Supabase data sits in (Project Settings > General), whether Becca is the information officer, notice and cancellation wording. (3) Email sender for customers: section 1i. | Customer accounts working for real | now |
-| **v10.19 first run:** Supabase > SQL Editor > paste the **whole** new `supabase/setup.sql` over the old text (or into a new query) > Run (new section 7: the "Most popular" ranking). Nothing is deleted. Until you do, Most popular quietly keeps using the items you tick. | Automatic "Most popular" working for real | now |
-| **v10.19.1 first run:** Supabase > SQL Editor > paste the whole new `supabase/setup.sql` > Run (new section 8: the order change log). Until then the log box says "needs setup" and everything else works. | Change log working | now |
-| **v10.21 first run:** (1) Supabase > SQL Editor > paste the whole new `supabase/setup.sql` > Run (new section 9: the daily-limit count; until then dates are still checked for notice, closed days and blocked dates, only the daily limit is skipped). (2) **Admin > Theme & layout > Order calendar & delivery:** replace the placeholder numbers (notice days, orders per day, closed weekdays, delivery areas and fees, free-delivery amount, collection message) and Save. | Order calendar + delivery fees working for real | now |
-| For the top-10 items: real cake prices (v10.22), which payment provider (Yoco / PayFast / Ozow), voucher and loyalty rules | v10.21 to v10.24 | when we reach each one |
-
-## 4. Needs the backend
-(v10.17 added the backend: sign-in, database, locks. What is left below is built on top of it.)
-A static website (what we have now) cannot keep an account for someone on all their devices, send real emails or SMS, or let you sign in with Google or Apple. Everything below waits for v10.17, which adds a hosted backend (login, database, email). Until then: carts, details and admin changes live on one device only.
-- Sign in with Google / Apple / email, and being remembered on every device (v10.17)
-- Customer and admin "My account" page with past orders (v10.18)
-- Real forgot-password link or SMS code instead of the admin handing over a code (v10.17)
-- Admin changes going live instantly for everyone, no manual Publish (v10.17)
-- Orders saved online, order statuses, printable slips, reports (DONE v10.19 and v10.19.1)
-- Small interim idea that does NOT need the backend: remember the customer's name, phone and last order details on their own device so they don't retype (DONE v10.13, this device only)
-
-## 5. Ideas parking lot
-Not scheduled. Tell us which to pull into a version. The ranked **top 10** is in section 1e; the older ideas are below.
-- Gallery / "Our work" page with an Instagram-style grid
-- Order lead-time / availability calendar (needs the owner's real lead times)
-- Online card payments (Yoco / PayFast / Ozow), only if wanted after launch
-- Privacy-friendly analytics
-- Specials with start and end dates; clickable specials; seasonal specials banner per occasion
-- Owner-chosen decoration emoji per theme in admin
-- A "New" badge on items added in the last 2 weeks (DONE v10.15)
-- "Sold out" for a chosen date range or "until further notice" (today it is one day at a time, switching itself off at midnight)
-- Seasonal greeting / specials text that changes with the season theme (DONE v10.13)
-- Let the owner edit the Easter / Mother's Day / Father's Day windows (today only the fixed-date seasons have editable dates; those three are worked out from the calendar)
-- Reserve space for the two strips so the page does not jump on first load
-- Customer accounts only if repeat-order history is wanted (it is now, see v10.18)
-- Finish the reference review of `online_bakery_marketplace_v2` and verify licences
-- Notes from the Keagan reference repos (what we borrowed, what we skip) are in `ROADMAP_ARCHIVE.md`
-
-## 6. Working rules
-1. 2 to 3 things per version, no more. Anything else goes into the plan above or the ideas list.
-2. Roadmap and backlog are append-only in spirit: nothing is thrown away. Old text that is no longer current moves to `ROADMAP_ARCHIVE.md`; it is never deleted.
-3. When a version is finished: add it to `BACKLOG.md` (summary table + full entry), update the status here, bump `VERSION`.
-4. Read `docs/AI_HANDOFF.md` before starting a version. Deliver the whole repo (with `.git`) as `online-bakery-vN.zip`.
-5. **Visitors never choose the theme** (owner, list 13): only Becca (everyday theme) and the automatic seasons decide. More themes are fine, a visitor-side switcher is not.
-6. **The admin is for admins only**: never link to `admin.html` from a public page; no public sign-up. New admins are added by an existing admin. Real protection (server-side) arrives with Supabase.
+<a id="rules"></a>
+## 6. How we work together (the rules)
+1. **2 to 3 things per version**, no more. Anything else goes into the plan above or the ideas list.
+2. **Nothing is thrown away.** Old text that is no longer current moves to [`ROADMAP_ARCHIVE.md`](ROADMAP_ARCHIVE.md). Finished work goes into [`BACKLOG.md`](BACKLOG.md).
+3. **When a version is finished** it is added to the backlog, the status here is updated and `VERSION` goes up.
+4. **Every version arrives as one `.zip`** of the whole project, named like `online-bakery-v10.21.1.zip`. You never have to apply anything by hand.
+5. **Visitors never choose the theme.** Only Becca (everyday theme) and the automatic seasons decide.
+6. **The admin is for admins only.** It is never linked from a public page, there is no public sign-up, and new admins are added by an existing admin. The real lock is in the online database.
