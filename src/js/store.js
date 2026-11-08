@@ -137,6 +137,8 @@
           .then(r => r.ok ? r.json() : null).then(n => { if (n && n.access_token) localStorage.setItem("sb-customer", JSON.stringify({ ...t, ...n })); }).catch(() => { /* offline */ });
       } catch (e) { /* ignore */ }
     },
+    // v10.19.1: remember what was just sent (this tab only) so thanks.html can show it. Never leaves the browser.
+    lastOrder(o) { try { if (o) sessionStorage.setItem("sb_last", JSON.stringify({ ...o, at: Date.now() })); else return JSON.parse(sessionStorage.getItem("sb_last") || "null"); } catch (e) { return null; } },
     // v10.17: save an order online (anyone may add one, only admins can read them). Never blocks or breaks the WhatsApp message.
     saveOrder(o) {
       try {

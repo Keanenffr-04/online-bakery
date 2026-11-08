@@ -30,7 +30,8 @@
   }
   async function loadAdminData() {
     if (!state.isAdmin) return;
-    const [o, a, pr] = await Promise.all([sb.from("orders").select("*").order("created_at", { ascending: false }).limit(1000), sb.from("admins").select("*").order("added_at"), sb.from("profiles").select("*")]);
+    const [o, a, pr, lg] = await Promise.all([sb.from("orders").select("*").order("created_at", { ascending: false }).limit(1000), sb.from("admins").select("*").order("added_at"), sb.from("profiles").select("*"), sb.from("order_log").select("*").order("at", { ascending: false }).limit(200)]);
+    state.log = lg.data || []; state.logErr = !!lg.error;   // v10.19.1: change log (table from setup.sql section 8)
     state.orders = o.data || []; state.admins = a.data || [];
     state.profErr = !!pr.error; state.profiles = pr.data || []; state.profile = state.profiles.find(x => x.user_id === state.user.id) || null;   // profErr = profiles table missing: do not block the admin if (o.error || a.error) state.note = "Could not load from the online database: " + ((o.error || a.error).message || "unknown error");
   }
@@ -184,6 +185,13 @@
     <h2>What to make</h2><ul>${items || "<li>-</li>"}</ul>${+o.total ? `<div class="tot">Total: ${esc(money(+o.total))}</div>` : ""}</body></html>`;
   }
 
+  // v10.19.1: change log. Every status change, new order and delete is written down with who did it. Never blocks the change itself.
+  const who = () => (state.profile && state.profile.username) || (state.user && state.user.email) || "admin";
+  const logOrder = async (o, action) => { try { await sb.from("order_log").insert({ order_id: o.id || null, order_name: String(o.name || "").slice(0, 120), action: String(action).slice(0, 300), by_name: String(who()).slice(0, 120) }); } catch (e) { /* log table missing: ignore */ } };
+  const when = t => { try { return new Date(t).toLocaleString("en-ZA", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); } catch (e) { return ""; } };
+  const lastChange = id => { const l = (state.log || []).find(x => x.order_id === id); return l ? `<br><span class="muted">Last change: ${esc(l.action)} by ${esc(l.by_name || "?")}, ${esc(when(l.at))}</span>` : ""; };
+  const logBox = () => `<details class="adm-sec" data-sec="olog" ${state.open.olog ? "open" : ""}><summary><span class="adm-sec__t">Change log</span><span class="adm-sec__h">${state.logErr ? "needs setup" : (state.log || []).length + " recent"}</span></summary><div class="adm-sec__b">${state.logErr ? `<p class="muted">Run the newest <code>supabase/setup.sql</code> once (section 8) to start the log.</p>` : `<ul class="adm-list">${(state.log || []).slice(0, 50).map(l => `<li><div><strong>${esc(l.order_name || "Order")}</strong>: ${esc(l.action)}<br><span class="muted">${esc(l.by_name || "?")} &middot; ${esc(when(l.at))}</span></div></li>`).join("") || "<li>Nothing yet. Changes are written here from now on.</li>"}</ul>`}</div></details>`;
+
   function orders() {
     const o = state.orders || [], f = state.filter || "pending", list = o.filter(x => f === "all" || x.status === f), nper = state.nper || "week";
     const cnt = s => s === "all" ? o.length : o.filter(x => x.status === s).length;
@@ -193,12 +201,12 @@
     <p><button class="btn btn--sm" type="submit">Save order</button></p></form></div>
     <div class="adm-card"><div class="adm-top"><h2>${list.length} ${f === "all" ? "" : f} order${list.length === 1 ? "" : "s"}</h2>
     <select data-act="filter" style="width:auto" aria-label="Show orders">${["all", ...ST].map(s => `<option value="${s}" ${s === f ? "selected" : ""}>${s} (${cnt(s)})</option>`).join("")}</select></div>
-    <ul class="adm-list">${list.map(x => `<li><div><strong>${esc(x.name)}</strong> <span class="tag tag--${x.status}">${x.status}</span><br><span class="muted">${esc(x.items)}${x.date ? " &middot; for " + esc(x.date) : ""}${x.source && x.source !== "admin" ? " &middot; from the website (" + (x.source === "cart" ? "cart" : "custom order") + ")" : ""}${x.total ? " &middot; R " + esc(x.total) : ""}<br>Placed ${esc(placed(x))}</span></div>
+    <ul class="adm-list">${list.map(x => `<li><div><strong>${esc(x.name)}</strong> <span class="tag tag--${x.status}">${x.status}</span><br><span class="muted">${esc(x.items)}${x.date ? " &middot; for " + esc(x.date) : ""}${x.source && x.source !== "admin" ? " &middot; from the website (" + (x.source === "cart" ? "cart" : "custom order") + ")" : ""}${x.total ? " &middot; R " + esc(x.total) : ""}<br>Placed ${esc(placed(x))}</span>${lastChange(x.id)}</div>
     <div class="adm-actions">${NEXT[x.status] ? `<button class="btn btn--sm" data-act="onext" data-id="${x.id}" data-v="${NEXT[x.status][0]}">${NEXT[x.status][1]}</button>` : ""}<select data-act="ostatus" data-id="${x.id}" style="width:auto" aria-label="Change status">${ST.map(s => `<option ${s === x.status ? "selected" : ""}>${s}</option>`).join("")}</select>
     <button class="btn btn--sm btn--ghost" data-act="oslip" data-id="${x.id}">Print slip</button>
     ${x.phone ? `<a class="btn btn--sm btn--whatsapp" target="_blank" rel="noopener" href="https://wa.me/${esc(x.phone.replace(/\D/g, ""))}">WhatsApp</a>` : ""}
     <button class="btn btn--sm btn--ghost" data-act="odel" data-id="${x.id}">Delete</button></div></li>`).join("") || "<li>No orders here.</li>"}</ul></div></div>
-    <p class="muted">Orders sent from the Cart or the Custom Order form are saved here automatically (the WhatsApp message still goes to you too). You can also add one by hand. They are stored online, so you see the same list on every device.</p>`;
+    <p class="muted">Orders sent from the Cart or the Custom Order form are saved here automatically (the WhatsApp message still goes to you too). You can also add one by hand. They are stored online, so you see the same list on every device.</p>${logBox()}`;
   }
 
   function menu() {
@@ -379,7 +387,7 @@
     if (k === "order") {
       const ph = SB.phoneRead("o-phone"); if (ph.error) return go("orders", ph.error);
       const r = await sb.from("orders").insert({ source: "admin", status: "pending", name: v.name, items: v.items, date: v.date || null, total: v.total === "" ? null : Number(v.total), phone: ph.digits || "" });
-      if (r.error) return go("orders", "Could not save: " + r.error.message); await loadAdminData(); return go("orders", "Order saved."); }
+      if (r.error) return go("orders", "Could not save: " + r.error.message); await logOrder({ name: v.name }, "added by hand"); await loadAdminData(); return go("orders", "Order saved."); }
     if (k === "csec") {   // v10.15: rename / change emoji (the id never changes, so links and items keep working)
       const c = state.data.categories.find(x => x.id === f.dataset.id), nm = (v.name || "").trim(); if (!c || !nm) return go("menu", "A section needs a name.");
       c.name = nm; c.icon = (v.icon || "").trim(); await saveProducts(); return go("menu", "Section saved.");
@@ -456,7 +464,7 @@
     if (a === "pic" && t.files && t.files[0]) {
       shrink(t.files[0]).then(d => { state.picTmp = d; const el = document.getElementById("av-prev"); if (el) el.innerHTML = avatar({ avatar: d }, state.user.email, true); }).catch(() => alert("Please choose a picture file (JPG or PNG)."));
     }
-    if (a === "ostatus") { sb.from("orders").update({ status: t.value }).eq("id", t.dataset.id).then(async r => { await loadAdminData(); go("orders", r.error ? "Could not update: " + r.error.message : ""); }); }
+    if (a === "ostatus") { const o0 = state.orders.find(x => x.id === t.dataset.id) || {}, was = o0.status; sb.from("orders").update({ status: t.value }).eq("id", t.dataset.id).then(async r => { if (!r.error) await logOrder(o0, "status " + was + " to " + t.value); await loadAdminData(); go("orders", r.error ? "Could not update: " + r.error.message : ""); }); }
   });
 
   // v10.17.4: hold the grip and drag a Home section up or down (pointer events, so it works with a mouse, a finger or a pen).
@@ -479,10 +487,10 @@
     if (a === "google") { const f = app.querySelector("input[name=remember]"); return google(!!(f && f.checked)); }
     if (a === "psold") { const p = state.data.products.find(x => x.id === id); if (SB.isSoldOut(p)) delete p.soldOut; else p.soldOut = SB.today(); await saveProducts(); return go("menu", p.name + (p.soldOut ? " is marked sold out for today." : " is back in stock.")); }
     if (a === "tab") { state.tab = v; if (v === "look") await prepLook(); if (v === "menu") state.edit = null; state.picTmp = null; if (v === "orders" || v === "admins") await loadAdminData(); if (v !== "look") sessionStorage.removeItem("sb_preview"); return go(v); }
-    if (a === "onext") { const r = await sb.from("orders").update({ status: v }).eq("id", id); await loadAdminData(); return go("orders", r.error ? "Could not update: " + r.error.message : "Order moved to " + v + "."); }   // v10.19
+    if (a === "onext") { const o0 = state.orders.find(x => x.id === id) || {}, was = o0.status, r = await sb.from("orders").update({ status: v }).eq("id", id); if (!r.error) await logOrder(o0, "status " + was + " to " + v); await loadAdminData(); return go("orders", r.error ? "Could not update: " + r.error.message : "Order moved to " + v + "."); }   // v10.19
     if (a === "oslip") { const o = state.orders.find(x => x.id === id); if (!o) return; const w = window.open("", "_blank"); if (!w) return go("orders", "Your browser blocked the slip window. Allow pop-ups for this page and try again."); w.document.write(slip(o)); w.document.close(); w.focus(); setTimeout(() => w.print(), 300); return; }
     if (a === "dl-num") { const k = v || "week"; return csvOrders(state.orders.filter(o => inPeriod(o, k)), "orders-" + k + "-" + SB.today() + ".csv"); }
-    if (a === "odel") { if (!confirm("Delete this order?")) return; const r = await sb.from("orders").delete().eq("id", id); await loadAdminData(); return go("orders", r.error ? "Could not delete: " + r.error.message : ""); }
+    if (a === "odel") { if (!confirm("Delete this order?")) return; const o0 = state.orders.find(x => x.id === id) || {}, r = await sb.from("orders").delete().eq("id", id); if (!r.error) await logOrder(o0, "order deleted"); await loadAdminData(); return go("orders", r.error ? "Could not delete: " + r.error.message : ""); }
     if (a === "cup" || a === "cdown") { const L = state.data.categories, i = L.findIndex(c => c.id === id), j = a === "cup" ? i - 1 : i + 1; if (i < 0 || j < 0 || j >= L.length) return go("menu"); [L[i], L[j]] = [L[j], L[i]]; await saveProducts(); return go("menu", L[j].name + " moved " + (a === "cup" ? "up." : "down.")); }
     if (a === "chide") { const c = state.data.categories.find(x => x.id === id); if (c.hidden) delete c.hidden; else c.hidden = true; await saveProducts(); return go("menu", c.name + (c.hidden ? " is hidden from customers." : " is showing again.")); }
     if (a === "cdel") { const c = state.data.categories.find(x => x.id === id); if (state.data.products.some(p => p.category === id)) return go("menu", "Move or delete the items in " + c.name + " first."); if (confirm("Delete the section " + c.name + "?")) { state.data.categories = state.data.categories.filter(x => x.id !== id); await saveProducts(); } return go("menu"); }

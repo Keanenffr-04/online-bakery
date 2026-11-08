@@ -1,4 +1,4 @@
--- The Sweetest Bakery, v10.19: online database setup (sections 1 to 7).
+-- The Sweetest Bakery, v10.19: online database setup (sections 1 to 8).
 -- Run ONCE: Supabase dashboard > SQL Editor > New query > paste this whole file > Run.
 -- Safe to run again (it never deletes your data).
 
@@ -138,3 +138,19 @@ language sql stable security definer set search_path = public as $$
 $$;
 revoke all on function public.popular_items(int, int) from public;
 grant execute on function public.popular_items(int, int) to anon, authenticated;
+
+-- 8. (v10.19.1) Order change log: who changed what. Admins only (read + add); nobody can edit or delete entries. Re-runnable.
+create table if not exists public.order_log (
+  id         bigint generated always as identity primary key,
+  at         timestamptz not null default now(),
+  order_id   uuid,
+  order_name text check (char_length(order_name) <= 120),
+  action     text not null check (char_length(action) <= 300),
+  by_name    text check (char_length(by_name) <= 120)
+);
+create index if not exists order_log_order_idx on public.order_log (order_id);
+alter table public.order_log enable row level security;
+drop policy if exists "admins read log" on public.order_log;
+create policy "admins read log" on public.order_log for select using (public.is_admin());
+drop policy if exists "admins add log" on public.order_log;
+create policy "admins add log" on public.order_log for insert with check (public.is_admin());

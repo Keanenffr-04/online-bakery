@@ -1,6 +1,6 @@
 # Roadmap: what is done, what is next, what is waiting
 
-**Current version:** v10.19 &nbsp;|&nbsp; **Next up:** v10.19.1 (patch: order thank-you page + change log "who changed what"; run `supabase/setup.sql` again first, section 7, if you have not yet) &nbsp;|&nbsp; Rule: **max 2 to 3 things per version.**
+**Current version:** v10.19.1 &nbsp;|&nbsp; **Next up:** v10.20 (more occasion themes + WhatsApp order-status buttons; run `supabase/setup.sql` again first, section 8, if you have not yet) &nbsp;|&nbsp; Rule: **max 2 to 3 things per version.**
 
 Finished work lives in [`BACKLOG.md`](BACKLOG.md). The old, long roadmap notes are kept untouched in [`ROADMAP_ARCHIVE.md`](ROADMAP_ARCHIVE.md).
 
@@ -33,8 +33,8 @@ Owner's list always comes first; older scheduled items slide back. Photos and la
 | v10.17 | DONE | **Supabase foundation**: real sign-in (email + Google, real reset emails), **admin locked on the server** (admins by email: Becca + Keanen), **menu and settings live online (no Publish)**, **orders saved online** + backup download | Owner list 17; list 13 items 2 and 3, list 10 item 1, list 6 item 7 |
 | v10.18 | DONE | **"My account" page** (sign in, profile, saved details, past orders, order again, change password, delete my account) + **Privacy (POPIA) and Terms pages** (drafts) + **email-sender walkthrough** (section 1i; the sender itself is set up by the owner in Brevo / Resend + Supabase, no code) | Owner list 10 item 2. Privacy page shipped with accounts |
 | v10.19 | DONE | **Order tools, part 1**: colour-coded statuses with a one-tap next step (Confirm, Mark ready, Mark done) + a **printable order slip** + **"Numbers"** (this week / this month / last month / all time, with a CSV) + **"Most popular" ranked automatically from real orders** (SQL section 7) | Needs v10.17 (done). The thank-you page and the change log did not fit the 3-things rule and moved to v10.19.1 |
-| **v10.19.1** | **NEXT** | **Patch: order thank-you page** (shows the saved order after sending) + **change log** ("who changed what" on orders) | Pushed from v10.19 |
-| v10.20 | PLANNED | **More occasion themes** (New Year, Women's Day, Black Friday, Diwali, Eid ...). **Visitors never switch themes** (owner list 13 item 1): only Becca and the automatic seasons decide + **Top 10 #4: WhatsApp order-status buttons** ("ready for collection") | Needs v10.19 for the buttons |
+| v10.19.1 | DONE | **Patch: order thank-you page** (shows what was just sent, honest "not confirmed yet", Open WhatsApp, Empty my cart) + **change log** (who changed what on orders, SQL section 8) | Pushed from v10.19 |
+| **v10.20** | **NEXT** | **More occasion themes** (New Year, Women's Day, Black Friday, Diwali, Eid ...). **Visitors never switch themes** (owner list 13 item 1): only Becca and the automatic seasons decide + **Top 10 #4: WhatsApp order-status buttons** ("ready for collection") | Needs v10.19 for the buttons |
 | v10.21 | PLANNED | **Top 10 #1: order calendar** (lead times, daily limit, blocked dates) + **#2: delivery or collection with fees by area** | Needs your real lead times, areas and prices |
 | v10.22 | PLANNED | **Top 10 #6: cake price guide / quote helper** + **"Order again" button** | Needs real prices; order again needs v10.18 |
 | v10.23 | PLANNED | **Top 10 #7: gift vouchers** + **#8: loyalty reward / referral** | Needs accounts (v10.17) and your rules |
@@ -150,6 +150,7 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 
 | List | # | Request (short) | Status | Where |
 |---|---|---|---|---|
+| - | - | (No change list came with "start next v/patch", so the version marked NEXT was built: thank-you page + change log) | DONE | v10.19.1 |
 | - | - | (No change list came with "start the next v/patch", so the version marked NEXT was built: statuses + printable slip, Numbers, automatic "Most popular"; thank-you page + change log pushed to v10.19.1 to keep to 3 things) | DONE | v10.19 |
 | - | - | (No change list came with "start next v/patch", so the version marked NEXT was built: My account + Privacy and Terms + email-sender walkthrough) | DONE | v10.18 |
 | 21 | 1 | In Admin > Theme & layout, hold and drag to put the Home page sections where I want them | DONE (grip handle + up / down arrows; Home follows the order) | v10.17.4 |
@@ -223,6 +224,7 @@ Nothing below can be built or guessed by us. Send it whenever you have it.
 | **v10.17 first run (about 10 minutes, in the Supabase dashboard):** (1) SQL Editor > New query > paste `supabase/setup.sql` > Run. (2) Authentication > URL configuration: set Site URL to the site address once it is hosted (add `http://localhost:8000` too if testing locally). (3) Optional, for Google sign-in: Authentication > Sign In / Providers > Google, switch on and paste a Google Cloud OAuth client id + secret. (4) **Create your admin login without email:** Authentication > Users > Add user > Create new user, type your admin email + a password, tick **Auto Confirm User**; then log in on `admin.html` with them (Supabase's free email sender only emails your own team and about 2 an hour, so confirm / reset emails often never arrive). Email + password works without step 3. | v10.17 working live | now |
 | **v10.18 first run:** (1) Supabase > SQL Editor > run `supabase/setup.sql` again (new section 6: customer accounts, your past orders, delete my account). (2) Read the Privacy and Terms pages and fix anything that is not true for the bakery (they are marked Draft): the **region** your Supabase data sits in (Project Settings > General), whether Becca is the information officer, notice and cancellation wording. (3) Email sender for customers: section 1i. | Customer accounts working for real | now |
 | **v10.19 first run:** Supabase > SQL Editor > paste the **whole** new `supabase/setup.sql` over the old text (or into a new query) > Run (new section 7: the "Most popular" ranking). Nothing is deleted. Until you do, Most popular quietly keeps using the items you tick. | Automatic "Most popular" working for real | now |
+| **v10.19.1 first run:** Supabase > SQL Editor > paste the whole new `supabase/setup.sql` > Run (new section 8: the order change log). Until then the log box says "needs setup" and everything else works. | Change log working | now |
 | For the top-10 items: real lead times and daily limit, delivery areas and fees, which payment provider (Yoco / PayFast / Ozow), voucher and loyalty rules | v10.21 to v10.24 | when we reach each one |
 
 ## 4. Needs the backend
@@ -232,7 +234,7 @@ A static website (what we have now) cannot keep an account for someone on all th
 - Customer and admin "My account" page with past orders (v10.18)
 - Real forgot-password link or SMS code instead of the admin handing over a code (v10.17)
 - Admin changes going live instantly for everyone, no manual Publish (v10.17)
-- Orders saved online, order statuses, printable slips, reports (DONE v10.19; thank-you page + change log v10.19.1)
+- Orders saved online, order statuses, printable slips, reports (DONE v10.19 and v10.19.1)
 - Small interim idea that does NOT need the backend: remember the customer's name, phone and last order details on their own device so they don't retype (DONE v10.13, this device only)
 
 ## 5. Ideas parking lot

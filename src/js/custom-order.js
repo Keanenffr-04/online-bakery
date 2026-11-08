@@ -38,5 +38,7 @@ SB.load().then(({ biz }) => {
     if (!biz.whatsappLink) { location.href = "contact.html"; return; }
     SB.saveOrder({ source: "custom", name: v("name").slice(0, 120), phone: ph.digits || "", items: ("Custom order: " + v("what") + " (" + v("occasion") + ", " + s + " servings)").slice(0, 3000), date: v("date"), details: { method: v("method"), flavours: v("flavours"), diet: v("diet"), notes: v("notes") } });   // v10.17
     window.open(biz.whatsappLink + "?text=" + encodeURIComponent(L.join("\n")), "_blank", "noopener");
+    SB.lastOrder({ source: "custom", name: v("name"), items: [v("what") + " (" + v("occasion") + ", " + s + " servings)"], date: v("date"), total: null, method: v("method") });   // v10.19.1
+    setTimeout(() => { location.href = "thanks.html"; }, 900);
   });
 });
