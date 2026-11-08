@@ -22,7 +22,20 @@
   };
   const dayText = d => d.getDate() + " " + MON[d.getMonth()];
 
-  const D = { theme: "classic", tagline: "", heroStyle: "logo", greeting: "Welcome in, something sweet is baking.", home: { hero: true, shop: true, featured: true, fresh: true, steps: true, cta: true }, featuredCount: 3, featuredStyle: "glass", recentCount: 3, popularCount: 3, decorations: true, autoTheme: { enabled: true, rules: SEASON_RULES }, menuLayout: "grid", faq: [], reviews: [], specials: { enabled: true, items: ["Today's specials: ask Becca on WhatsApp", "Custom cakes for every occasion, order online"] }, orders: { enabled: true, items: ["How to order: message Becca on WhatsApp", "Tell us what you'd like, the date you need it and any notes"] } };
+  // v10.13: built-in wording for each season (home greeting + one line for the top strip). Becca can overwrite either per season in
+  // Admin > Theme & layout > Automatic seasons (rule.greeting / rule.special); blank = these. Used only while that season is on.
+  const SEASON_WORDS = {
+    valentines: { greeting: "Happy Valentine's Day, something sweet for someone special.", special: "Valentine's treats and custom cakes: order early so we can fit you in" },
+    easter: { greeting: "Happy Easter, fresh-baked treats for the long weekend.", special: "Easter treats and custom cakes: order early for the long weekend" },
+    mothers: { greeting: "Happy Mother's Day, treat the special lady in your life.", special: "Mother's Day cakes and treat boxes: order early" },
+    fathers: { greeting: "Happy Father's Day, bake dad's day sweeter.", special: "Father's Day cakes and treats: order early" },
+    braai: { greeting: "Happy Braai Day, celebrate Heritage Day with something sweet.", special: "Heritage Day (Braai Day) treats: order early" },
+    halloween: { greeting: "Happy Halloween, spooky and sweet treats are baking.", special: "Halloween treats and custom cakes: order early" },
+    christmas: { greeting: "Merry Christmas from our kitchen to yours.", special: "Christmas cakes and treats: order early, spaces fill up fast" }
+  };
+  // Placeholder for the "Meet Becca" section until Becca writes her own (shows a small "Draft text" tag; the tag goes when she edits it in admin).
+  const MEET_TEXT = "Hi, I'm Becca, the baker behind The Sweetest Bakery. Everything here is handmade and baked fresh to order, so nothing sits on a shelf waiting for you.\n\nTell me what you're celebrating and I'll bake something sweet for it.";
+  const D = { theme: "classic", tagline: "", heroStyle: "logo", greeting: "Welcome in, something sweet is baking.", home: { hero: true, shop: true, featured: true, fresh: true, meet: true, steps: true, cta: true }, meet: { heading: "Meet Becca", text: MEET_TEXT, draft: true }, featuredCount: 3, featuredStyle: "glass", recentCount: 3, popularCount: 3, decorations: true, autoTheme: { enabled: true, rules: SEASON_RULES }, menuLayout: "grid", faq: [], reviews: [], specials: { enabled: true, items: ["Today's specials: ask Becca on WhatsApp", "Custom cakes for every occasion, order online"] }, orders: { enabled: true, items: ["How to order: message Becca on WhatsApp", "Tell us what you'd like, the date you need it and any notes"] } };
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const SB = window.SB = {
     esc, TAGS: [["vegan", "Vegan"], ["gluten-free", "Gluten-free"], ["nut-free", "Nut-free"], ["dairy-free", "Dairy-free"]],
@@ -58,7 +71,25 @@
     // "Sold out today": the item carries the DATE it was marked (p.soldOut = "2026-11-08"). It only counts on that day, so it switches itself
     // off at midnight, even on a published site nobody touches.
     isSoldOut(p) { return !!p && p.soldOut === SB.today(); },
-    SEASON_RULES,
+    SEASON_RULES, SEASON_WORDS,
+    // v10.13: wording for a season theme id: the rule's own greeting / special if Becca wrote one, else the built-in text.
+    seasonWords(settings, id) {
+      const r = (((settings || {}).autoTheme || {}).rules || []).find(x => x.theme === id) || {}, d = SEASON_WORDS[id] || {};
+      return { greeting: (r.greeting || "").trim() || d.greeting || "", special: (r.special || "").trim() || d.special || "" };
+    },
+    // v10.13: "remember my details on this device". Name, phone, collection/delivery and allergies live ONLY in this browser (localStorage
+    // "sb_me"), never sent anywhere except inside the WhatsApp message the customer chooses to send. remember:false = customer opted out.
+    me: {
+      get() { try { const m = JSON.parse(localStorage.getItem("sb_me")); return m && typeof m === "object" ? m : {}; } catch (e) { return {}; } },
+      save(d) { try { localStorage.setItem("sb_me", JSON.stringify({ ...SB.me.get(), ...d, remember: true })); } catch (e) { /* private mode: nothing to remember */ } },
+      optOut() { try { localStorage.setItem("sb_me", JSON.stringify({ remember: false })); } catch (e) { /* ignore */ } },
+      forget() { try { localStorage.removeItem("sb_me"); localStorage.removeItem("sb_cc"); } catch (e) { /* ignore */ } },
+      has() { const m = SB.me.get(); return m.remember !== false && !!(m.name || m.phone); },
+      // The tick box + "Forget" link drawn under a form. Wire it with SB.me.wire().
+      box(id) { const m = SB.me.get(); return `<div class="remember"><label class="chk"><input type="checkbox" id="${id}" ${m.remember === false ? "" : "checked"}> Remember my details on this device</label><span class="muted small">Kept only on this phone or computer, never on our server. <button type="button" class="linkbtn" data-forget${SB.me.has() ? "" : " hidden"}>Forget my details</button></span></div>`; },
+      // After a send: save (ticked) or clear (unticked). Only call when the customer actually sends.
+      commit(id, d) { const c = document.getElementById(id); if (c && !c.checked) SB.me.optOut(); else SB.me.save(d); },
+    },
     // Which special-occasion theme should show on this date? Returns a theme id, or null (= use the everyday theme).
     seasonTheme(auto, date) {
       if (!auto || auto.enabled === false) return null;
@@ -83,12 +114,12 @@
         const [biz, pubSet, pubProd] = await Promise.all([get("../config/business.json", "business"), get("../config/site-settings.json", "settings"), get("data/products.json", "products")]);
         const pv = window.top !== window ? J(sessionStorage, "sb_preview") : null;
         const base = { ...D, ...(pubSet || {}) }, own = (pv && pv.settings) || J(localStorage, "sb_settings") || {};
-        const settings = { ...base, ...own, home: { ...D.home, ...(base.home || {}), ...(own.home || {}) }, specials: { ...D.specials, ...(base.specials || {}), ...(own.specials || {}) }, orders: { ...D.orders, ...(base.orders || {}), ...(own.orders || {}) }, autoTheme: { ...D.autoTheme, ...(base.autoTheme || {}), ...(own.autoTheme || {}) } };
+        const settings = { ...base, ...own, home: { ...D.home, ...(base.home || {}), ...(own.home || {}) }, meet: { ...D.meet, ...(base.meet || {}), ...(own.meet || {}) }, specials: { ...D.specials, ...(base.specials || {}), ...(own.specials || {}) }, orders: { ...D.orders, ...(base.orders || {}), ...(own.orders || {}) }, autoTheme: { ...D.autoTheme, ...(base.autoTheme || {}), ...(own.autoTheme || {}) } };
         const data = J(localStorage, "sb_products") || pubProd || { categories: [], products: [] };
         // v10.9: themeNow = the theme showing right now (a season's theme when one is on, else the owner's everyday theme).
         // settings.theme is NEVER changed by the seasons, so the admin and Publish always keep the owner's own choice.
         // Inside the admin preview (pv) we show exactly the chosen theme, so the owner can look at any theme any time of year.
-        const season = pv ? null : SB.seasonTheme(settings.autoTheme), themeNow = season || settings.theme;
+        const season = pv ? (pv.peek || null) : SB.seasonTheme(settings.autoTheme), themeNow = season || settings.theme;
         document.documentElement.dataset.theme = themeNow;
         return { biz: biz || {}, settings, themeNow, season, categories: data.categories || [], products: data.products || [], published: { settings: base, products: pubProd } };
       })());

@@ -2,7 +2,14 @@
    with the whole request already typed in. Business number comes from config/business.json via SB.load(). */
 SB.load().then(({ biz }) => {
   const f = document.getElementById("co-form"), err = document.getElementById("co-error"); if (!f) return;
-  document.getElementById("co-phone-wrap").innerHTML = SB.phoneField("co-phone", { label: "Your phone number" });
+  // v10.13: details remembered on this device (name, phone, collection/delivery, allergies) are filled in; the tick box sits above the button.
+  const me = SB.me.get(), mine = me.remember !== false ? me : {};
+  document.getElementById("co-phone-wrap").innerHTML = SB.phoneField("co-phone", { label: "Your phone number", value: mine.phone || "" });
+  if (mine.name) f.elements.name.value = mine.name;
+  if (mine.method && [...f.elements.method.options].some(o => o.value === mine.method || o.text === mine.method)) f.elements.method.value = mine.method;
+  if (mine.diet) f.elements.diet.value = mine.diet;
+  const sendBtn = document.getElementById("co-send"); sendBtn.insertAdjacentHTML("beforebegin", SB.me.box("co-remember"));
+  f.addEventListener("click", e => { if (e.target.closest("[data-forget]")) { SB.me.forget(); f.elements.name.value = ""; f.elements.diet.value = ""; document.getElementById("co-phone").value = ""; f.elements.method.value = "Not sure yet"; e.target.closest("[data-forget]").hidden = true; } });
   const date = f.elements.date; date.min = SB.today();
   const nice = iso => new Date(iso + "T12:00").toLocaleDateString("en-ZA", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   const show = (msg, el) => { err.textContent = msg; err.hidden = !msg; if (el) el.focus(); };
@@ -26,6 +33,8 @@ SB.load().then(({ biz }) => {
     if (v("notes")) L.push(`Notes: ${v("notes")}`);
     L.push("", "Please let me know if you can do it and what it would cost. Thank you!");
     show("");
+    SB.me.commit("co-remember", { name: v("name"), phone: document.getElementById("co-phone").value.trim(), method: v("method"), diet: v("diet") });
+    const fg = f.querySelector("[data-forget]"); if (fg) fg.hidden = !SB.me.has();
     if (!biz.whatsappLink) { location.href = "contact.html"; return; }
     window.open(biz.whatsappLink + "?text=" + encodeURIComponent(L.join("\n")), "_blank", "noopener");
   });

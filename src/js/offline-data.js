@@ -26,8 +26,14 @@ window.SB_OFFLINE = {
       "shop": true,
       "featured": true,
       "fresh": true,
+      "meet": true,
       "steps": true,
       "cta": true
+    },
+    "meet": {
+      "heading": "Meet Becca",
+      "text": "Hi, I'm Becca, the baker behind The Sweetest Bakery. Everything here is handmade and baked fresh to order, so nothing sits on a shelf waiting for you.\n\nTell me what you're celebrating and I'll bake something sweet for it.",
+      "draft": true
     },
     "featuredCount": 3,
     "featuredStyle": "glass",
@@ -109,7 +115,7 @@ window.SB_OFFLINE = {
         "Tell us what you'd like, the date you need it and any notes"
       ]
     },
-    "_note": "Published site settings. The admin page (src/admin.html) can export a new copy of this file. faq: [{q,a,draft}] (draft:true shows a 'Draft answer' tag until Becca confirms it). reviews: [{name,text,rating(1-5, optional),date(optional)}], real reviews only; the section stays hidden while the list is empty.",
+    "_note": "Published site settings. The admin page (src/admin.html) can export a new copy of this file. faq: [{q,a,draft}] (draft:true shows a 'Draft answer' tag until Becca confirms it). reviews: [{name,text,rating(1-5, optional),date(optional)}], real reviews only; the section stays hidden while the list is empty. meet: {heading,text,draft} is the Home \"Meet Becca\" section (draft:true shows a 'Draft text' tag; editing the text in admin clears it). Each autoTheme rule may carry optional greeting / special text for that season (blank = built-in wording).",
     "faq": [
       {
         "q": "How do I order?",

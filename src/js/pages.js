@@ -1,11 +1,11 @@
 /* pages.js: fills the Home "featured" row and the Menu page (category filter) from the data. */
-SB.load().then(({ biz, settings: s, categories: cs, products }) => {
+SB.load().then(({ biz, settings: s, categories: cs, products, season }) => {
   const vis = products.filter(p => p.visible !== false), $ = q => document.querySelector(q);
   if ($("[data-home]")) {
     // Two hero styles live in index.html; keep the chosen one (or neither if the Hero box is switched off).
     const dropHero = s.home.hero === false ? ["hero", "hero-bakes"] : [s.heroStyle === "bakes" ? "hero" : "hero-bakes"];
     dropHero.forEach(k => { const e = $(`[data-section="${k}"]`); if (e) e.remove(); });
-    ["shop", "featured", "fresh", "steps", "cta"].forEach(k => { if (s.home[k] === false) { const e = $(`[data-section="${k}"]`); if (e) e.remove(); } });
+    ["shop", "featured", "fresh", "meet", "steps", "cta"].forEach(k => { if (s.home[k] === false) { const e = $(`[data-section="${k}"]`); if (e) e.remove(); } });
     const g = document.getElementById("featured-grid");
     if (g) {
       g.classList.toggle("menu--glass", s.featuredStyle !== "plain");  // v10.5: glass-style cards unless admin picks "Plain"
@@ -33,8 +33,21 @@ SB.load().then(({ biz, settings: s, categories: cs, products }) => {
       const tile = (href, e, name, sub) => `<a class="tile-link" href="${href}"><span class="tile-link__e" aria-hidden="true">${SB.esc(e)}</span><strong>${SB.esc(name)}</strong><span class="tile-link__s">${SB.esc(sub)}</span></a>`;
       sh.innerHTML = cs.map(c => { const n = vis.filter(p => p.category === c.id).length; return n ? tile("menu.html?c=" + encodeURIComponent(c.id), c.icon || "🍰", c.name, n + (n === 1 ? " item" : " items")) : ""; }).join("") + tile("custom-orders.html", "🎂", "Custom cake", "Tell us your idea");
     }
+    // v10.13: "Meet Becca" (heading + text from settings.meet; blank lines make new paragraphs).
+    const mt = document.getElementById("meet-text");
+    if (mt) {
+      const m = s.meet || {}, paras = String(m.text || "").split(/\n\s*\n|\n/).map(x => x.trim()).filter(Boolean);
+      if (!paras.length) { const e = $('[data-section="meet"]'); if (e) e.remove(); }
+      else {
+        mt.innerHTML = paras.map(x => `<p>${SB.esc(x)}</p>`).join(""); document.getElementById("meet-heading").textContent = m.heading || "Meet Becca";
+        document.getElementById("meet-draft").hidden = !m.draft;
+      }
+    }
     if (s.tagline) document.querySelectorAll("[data-tagline]").forEach(t => { t.textContent = s.tagline; });
-    const gr = document.getElementById("bakes-greeting"); if (gr && s.greeting) gr.textContent = s.greeting;
+    // v10.13: while a season is on, the greeting follows it (Becca's own season wording, else the built-in text). Outside seasons: her normal greeting.
+    const sw = season ? SB.seasonWords(s, season) : null;
+    const gr = document.getElementById("bakes-greeting"); if (gr && (sw && sw.greeting || s.greeting)) gr.textContent = (sw && sw.greeting) || s.greeting;
+    if (sw && sw.greeting) { const ey = document.querySelector('[data-section="hero"] .eyebrow'); if (ey) ey.textContent = sw.greeting; }   // the logo hero has no greeting box: its small line above the title carries it
     const hi = document.getElementById("bakes-hello"); if (hi) { const h = new Date().getHours(); hi.textContent = h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening"; }
   }
   const m = document.getElementById("menu-grid"), chips = document.getElementById("chips");

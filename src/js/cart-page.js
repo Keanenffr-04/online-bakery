@@ -19,7 +19,8 @@ SB.load().then(async ({ biz }) => {
   const draw = () => {
     const keepFocus = document.activeElement && document.activeElement.closest && document.activeElement.closest(".cart-row") ? document.activeElement.closest(".cart-row").dataset.id + "|" + (document.activeElement.dataset.q || (document.activeElement.hasAttribute("data-rm") ? "rm" : "")) : "";
     if (!state.lines.length) { root.innerHTML = empty(); return; }
-    const m = C.meta(), today = SB.today();
+    const m = { ...C.meta() }, me = SB.me.get(), today = SB.today();
+    if (me.remember !== false) { m.name = m.name || me.name || ""; m.phoneRaw = m.phoneRaw || me.phone || ""; m.method = m.method || me.method || ""; }   // v10.13: this device's saved details
     root.innerHTML = `
     ${state.lines.some(l => l.soldOut) ? `<p class="notice">Some items in your cart are sold out today. You can still send the order and ask us about another day, or remove them.</p>` : ""}
     ${state.gone.length ? `<p class="notice">Some items in your cart are no longer on the menu and were left out.</p>` : ""}
@@ -37,6 +38,7 @@ SB.load().then(async ({ biz }) => {
           <select id="c-method">${["Not sure yet", "Collection", "Delivery"].map(o => `<option${(m.method || "Not sure yet") === o ? " selected" : ""}>${o}</option>`).join("")}</select>
           <label for="c-notes">Notes <span class="muted">(optional)</span></label><textarea id="c-notes" rows="3" placeholder="Allergies, message on the cake, anything we should know">${E(m.notes || "")}</textarea>
         </div>
+        ${SB.me.box("c-remember")}
         <a class="btn btn--whatsapp btn--block" id="cart-send" target="_blank" rel="noopener" href="contact.html">Send order on WhatsApp</a>
         <p class="cart-actions"><a href="menu.html">Keep browsing</a><button type="button" class="linkbtn" id="cart-clear">Empty cart</button></p>
       </div></aside>
@@ -59,6 +61,11 @@ SB.load().then(async ({ biz }) => {
   };
 
   const refresh = async () => { state = await C.lines(); draw(); };
+  // v10.13: pressing send saves the details on this device (if ticked); "Forget my details" clears them and the boxes.
+  root.addEventListener("click", e => {
+    if (e.target.closest("#cart-send")) { const v = id => (document.getElementById(id) || {}).value || ""; SB.me.commit("c-remember", { name: v("c-name").trim(), phone: v("c-phone").trim(), method: v("c-method") }); const f = root.querySelector("[data-forget]"); if (f) f.hidden = !SB.me.has(); }
+    if (e.target.closest("[data-forget]")) { SB.me.forget(); C.meta({ name: "", phoneRaw: "", method: "" }); draw(); }
+  });
   root.addEventListener("input", link);
   root.addEventListener("change", link);
   root.addEventListener("click", e => {

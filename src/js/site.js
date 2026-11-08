@@ -54,8 +54,10 @@
     const publish = () => document.documentElement.style.setProperty(cssVar, bar.offsetHeight + "px");
     publish(); if (window.ResizeObserver) new ResizeObserver(publish).observe(bar);
   };
-  window.SB && SB.load().then(({ settings }) => {
-    strip(settings.specials, "specials--top", "Specials", el => document.body.prepend(el), "--specials-h");
+  window.SB && SB.load().then(({ settings, season }) => {
+    // v10.13: while a season is on, its line goes first in the top strip (only if Becca has the top strip switched on).
+    const sw = season && SB.seasonWords(settings, season), sp = settings.specials || {};
+    strip(sw && sw.special && sp.enabled !== false ? { ...sp, items: [sw.special, ...(sp.items || [])] } : sp, "specials--top", "Specials", el => document.body.prepend(el), "--specials-h");
     strip(settings.orders, "specials--bottom", "How to order", el => document.body.append(el), "--orders-h");
   });
 

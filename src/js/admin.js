@@ -120,7 +120,7 @@
   }
 
   const OFFLINE_HEAD = "/* offline-data.js: a COPY of config/business.json, config/site-settings.json and src/data/products.json.\n   Only used when the site is opened straight from disk (file://, e.g. preview.html), because browsers block\n   fetch() of local files. The live/hosted site ignores this file and reads the real JSON files.\n   KEEP IN SYNC: whenever one of those three files changes, regenerate this file (see docs/AI_HANDOFF.md). */\n";
-  const draftKey = () => sessionStorage.setItem("sb_preview", JSON.stringify({ settings: state.peek ? { ...state.draft, theme: state.peek } : state.draft }));
+  const draftKey = () => sessionStorage.setItem("sb_preview", JSON.stringify({ peek: state.peek || null, settings: state.peek ? { ...state.draft, theme: state.peek } : state.draft }));
   // v10.11: Theme & layout is split into five tidy sections (click a heading to open / close it). Every theme is in ONE dropdown,
   // grouped "Everyday themes" and "Special occasions", and each special one also says "(special)" so you can tell when it is closed.
   const sec = (id, title, hint, body) => `<details class="adm-sec" data-sec="${id}" ${state.open[id] ? "open" : ""}><summary><span class="adm-sec__t">${title}</span><span class="adm-sec__h">${hint}</span></summary><div class="adm-sec__b">${body}</div></details>`;
@@ -136,13 +136,17 @@
   }
   function look() {
     const s = state.draft, pg = (v, n) => `<button class="btn btn--sm ${state.page === v ? "" : "btn--ghost"}" data-act="ppage" data-v="${v}">${n}</button>`;
-    const homeBox = `${[["hero", "Hero"], ["shop", "Shop by treat (section tiles)"], ["featured", "Featured items"], ["fresh", "New and popular"], ["steps", "How ordering works"], ["cta", "Order banner"]].map(([k, n]) => `<label class="chk"><input type="checkbox" data-act="home" data-k="${k}" ${s.home[k] !== false ? "checked" : ""}>${n}</label>`).join("")}
+    const homeBox = `${[["hero", "Hero"], ["shop", "Shop by treat (section tiles)"], ["featured", "Featured items"], ["fresh", "New and popular"], ["meet", "Meet Becca"], ["steps", "How ordering works"], ["cta", "Order banner"]].map(([k, n]) => `<label class="chk"><input type="checkbox" data-act="home" data-k="${k}" ${s.home[k] !== false ? "checked" : ""}>${n}</label>`).join("")}
     <div class="adm-row"><div><label>Best sellers shown</label>${countSel("fc", s.featuredCount)}</div><div><label>"Just added" shown</label>${countSel("rc", s.recentCount || 3)}</div><div><label>"Most popular" shown</label>${countSel("pc", s.popularCount || 3)}</div>
     <div><label>Card style</label><select data-act="fs"><option value="glass" ${s.featuredStyle !== "plain" ? "selected" : ""}>Glass (frosted)</option><option value="plain" ${s.featuredStyle === "plain" ? "selected" : ""}>Plain</option></select></div></div>
     <p class="muted">Best sellers are items ticked "Show on home page"; Most popular are items ticked "Show in Most popular".</p>
     <div class="adm-row"><div><label>Hero style</label><select data-act="hs"><option value="logo" ${s.heroStyle !== "bakes" ? "selected" : ""}>Logo (rabbit)</option><option value="bakes" ${s.heroStyle === "bakes" ? "selected" : ""}>Baked goods + greeting</option></select></div>
     <div><label>Greeting (baked goods hero)</label><input data-act="gr" maxlength="80" value="${esc(s.greeting)}"></div></div>
-    <label>Hero text</label><textarea data-act="tag">${esc(s.tagline)}</textarea>`;
+    <label>Hero text</label><textarea data-act="tag">${esc(s.tagline)}</textarea>
+    <p class="adm-sub">Meet Becca (about you, on the Home page)</p>
+    <label>Heading</label><input data-act="mh" maxlength="40" value="${esc((s.meet || {}).heading || "Meet Becca")}">
+    <label>Your story <span class="muted">(a few sentences; a blank line starts a new paragraph)</span></label><textarea data-act="mt" maxlength="700" rows="5">${esc((s.meet || {}).text || "")}</textarea>
+    <p class="muted">${(s.meet || {}).draft ? "This is placeholder text: the site shows a small \"Draft text\" tag until you change it." : "Clear the box to hide the section."}</p>`;
     const stripBox = `<label class="chk"><input type="checkbox" data-act="spon" ${s.specials && s.specials.enabled === false ? "" : "checked"}><strong>Top strip</strong>&nbsp;(specials, scrolls at the top of every page)</label>
     <label>Specials (one per line, up to 6)</label><textarea data-act="sptxt" maxlength="500" placeholder="e.g. Cupcake boxes: buy 2, get 1 free this week">${esc(((s.specials || {}).items || []).join("\n"))}</textarea>
     <label class="chk" style="margin-top:1rem"><input type="checkbox" data-act="oron" ${s.orders && s.orders.enabled === false ? "" : "checked"}><strong>Bottom strip</strong>&nbsp;(orders, scrolls at the bottom of every page)</label>
@@ -198,7 +202,10 @@
     <div class="season-edit">${r.type === "range"
       ? `<label>From <input data-act="sfrom" data-i="${i}" value="${ddmm(r.from)}" size="5" maxlength="5" inputmode="numeric" aria-label="${nm} starts (day/month)"></label> <label>to <input data-act="sto" data-i="${i}" value="${ddmm(r.to)}" size="5" maxlength="5" inputmode="numeric" aria-label="${nm} ends (day/month)"></label>`
       : `<span class="muted">${r.type === "easter" ? `${r.before == null ? 9 : r.before} days before Easter Sunday to ${r.after == null ? 1 : r.after} day after (worked out each year, nothing to edit)` : `The week up to the ${["first", "second", "third", "fourth"][r.n - 1] || r.n + "th"} Sunday of ${MONTHS[r.month]} (worked out each year, nothing to edit)`}</span>`}
-      <button type="button" class="btn btn--sm btn--ghost" data-act="speek" data-v="${esc(r.theme)}">Preview ${nm}</button></div>`;
+      <button type="button" class="btn btn--sm btn--ghost" data-act="speek" data-v="${esc(r.theme)}">Preview ${nm}</button></div>
+    <label>Home greeting during ${nm} <span class="muted">(blank = the suggested one below)</span><input data-act="sgr" data-i="${i}" maxlength="80" value="${esc(r.greeting || "")}" placeholder="${esc(SB.seasonWords({}, r.theme).greeting)}"></label>
+    <label>Top strip message during ${nm} <span class="muted">(shown first; blank = suggested)</span><input data-act="ssp" data-i="${i}" maxlength="100" value="${esc(r.special || "")}" placeholder="${esc(SB.seasonWords({}, r.theme).special)}"></label>
+    <p class="muted">These replace your normal greeting and add to the top strip only while ${nm} is on. Use Preview ${nm} to see them.</p>`;
   }
   // After a change, refresh the dropdown wording and the dates line without rebuilding the editor (keeps focus while typing).
   function refreshSeasonLabels() {
@@ -293,6 +300,7 @@
     const t = e.target, a = t.dataset.act, s = state.draft; if (!a || !s || t.tagName === "BUTTON") return;
     if (a === "theme") { s.theme = t.value; state.peek = null; draftKey(); go("look"); const el = $("#theme-pick"); if (el) el.focus(); return; }   // v10.11: themes dropdown
     if (a === "ssel") { state.seasonSel = +t.value; drawSeasonEditor(); return; }
+    if (a === "sgr" || a === "ssp") { const r = (s.autoTheme.rules || [])[+t.dataset.i]; if (r) { r[a === "sgr" ? "greeting" : "special"] = t.value; if (!t.value.trim()) delete r[a === "sgr" ? "greeting" : "special"]; } draftKey(); return; }   // v10.13
     if (["auto", "son", "sfrom", "sto", "sdate"].includes(a)) {
       const au = s.autoTheme || (s.autoTheme = { enabled: true, rules: JSON.parse(JSON.stringify(SB.SEASON_RULES)) }), r = au.rules[+t.dataset.i];
       if (a === "auto") au.enabled = t.checked;
@@ -304,7 +312,8 @@
       }
       draftKey(); refreshSeasonLabels(); return drawSeasonStatus();
     }
-    if (a === "tag") s.tagline = t.value; else if (a === "gr") s.greeting = t.value; else if (a === "hs") s.heroStyle = t.value; else if (a === "fc") s.featuredCount = +t.value; else if (a === "fs") s.featuredStyle = t.value; else if (a === "rc") s.recentCount = +t.value; else if (a === "pc") s.popularCount = +t.value; else if (a === "deco") s.decorations = t.checked; else if (a === "ml") s.menuLayout = t.value; else if (a === "home") s.home[t.dataset.k] = t.checked; else if (a === "spon") (s.specials = s.specials || {}).enabled = t.checked; else if (a === "oron") (s.orders = s.orders || {}).enabled = t.checked; else if (a === "ortxt") (s.orders = s.orders || {}).items = t.value.split("\n").map(x => x.trim()).filter(Boolean).slice(0, 6); else if (a === "sptxt") (s.specials = s.specials || {}).items = t.value.split("\n").map(x => x.trim()).filter(Boolean).slice(0, 6); else return;
+    if (a === "mh") (s.meet = s.meet || {}).heading = t.value; else if (a === "mt") { s.meet = s.meet || {}; s.meet.text = t.value; s.meet.draft = false; }   // v10.13: editing the story removes the placeholder "Draft text" tag
+    else if (a === "tag") s.tagline = t.value; else if (a === "gr") s.greeting = t.value; else if (a === "hs") s.heroStyle = t.value; else if (a === "fc") s.featuredCount = +t.value; else if (a === "fs") s.featuredStyle = t.value; else if (a === "rc") s.recentCount = +t.value; else if (a === "pc") s.popularCount = +t.value; else if (a === "deco") s.decorations = t.checked; else if (a === "ml") s.menuLayout = t.value; else if (a === "home") s.home[t.dataset.k] = t.checked; else if (a === "spon") (s.specials = s.specials || {}).enabled = t.checked; else if (a === "oron") (s.orders = s.orders || {}).enabled = t.checked; else if (a === "ortxt") (s.orders = s.orders || {}).items = t.value.split("\n").map(x => x.trim()).filter(Boolean).slice(0, 6); else if (a === "sptxt") (s.specials = s.specials || {}).items = t.value.split("\n").map(x => x.trim()).filter(Boolean).slice(0, 6); else return;
     draftKey();
     if (a === "deco") drawDemo();   // tick box: redraw the little preview at once
     // Show the change where it can be seen: layout -> Menu preview, everything else here -> Home preview.

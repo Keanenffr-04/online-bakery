@@ -1,6 +1,6 @@
 # Roadmap: what is done, what is next, what is waiting
 
-**Current version:** v10.12 &nbsp;|&nbsp; **Next up:** v10.13 (Home page round 2: "Meet Becca" + season-aware greeting, and "remember my details" on this device) &nbsp;|&nbsp; Rule: **max 2 to 3 things per version.**
+**Current version:** v10.13 &nbsp;|&nbsp; **Next up:** v10.14 (Manage menu sections + a "New" badge on recently added items) &nbsp;|&nbsp; Rule: **max 2 to 3 things per version.**
 
 Finished work lives in [`BACKLOG.md`](BACKLOG.md). The old, long roadmap notes are kept untouched in [`ROADMAP_ARCHIVE.md`](ROADMAP_ARCHIVE.md).
 
@@ -26,8 +26,8 @@ Owner's list always comes first; older scheduled items slide back. Photos and la
 | v10.10 | DONE | **"Sold out today"** toggle per product (greys the item out, switches itself off at midnight) + **Automatic seasons dropdown** (all seasons in one section, pick one to change) | Owner list 11; the next-step pick from Claude's recommendation (section 1b) |
 | v10.11 | DONE | **Theme dropdown** (all themes in one dropdown, special ones marked) + **tidier admin** (tab bar, collapsible sections, neat item rows, sticky Save bar and preview) + answers: Supabase vs Firebase, top 10 ideas | Owner list 12 items 1 to 4 |
 | v10.12 | DONE | **Home page, first round**: "Shop by treat" tiles + "How ordering works" steps (each can be switched off in admin) + **admin hidden from customers** (no public link, no public sign-up) | Owner list 13 items 3 (first part) and 5 |
-| **v10.13** | **NEXT** | **Home page, round 2**: a short "Meet Becca" section + greeting and specials text that follow the season; **remember my details on this device** (name, phone, notes pre-filled on Cart and Custom Order) | Owner list 13 item 5 (customer side first); the device-only part of list 10 item 1 |
-| v10.14 | PLANNED | **Manage menu sections** (add / rename / reorder / hide; the Shop-by-treat tiles follow) + a "New" badge on recently added items | Older plan |
+| v10.13 | DONE | **Home page, round 2**: a short "Meet Becca" section + greeting and specials text that follow the season; **remember my details on this device** (name, phone, notes pre-filled on Cart and Custom Order) | Owner list 13 item 5 (customer side first); the device-only part of list 10 item 1 |
+| **v10.14** | **NEXT** | **Manage menu sections** (add / rename / reorder / hide; the Shop-by-treat tiles follow) + a "New" badge on recently added items | Older plan |
 | v10.15 | BACKEND | **Supabase foundation (decided, list 13 item 2)**: real sign-in with Google / email (Apple only if paid for), **admin panel locked on the server so only admins can enter (list 13 item 3)**, admin works across devices (no manual Publish), forgot-password by real email, orders saved online, backup | Owner list 13 items 2 and 3, list 10 item 1, list 6 item 7. One big item |
 | v10.16 | BACKEND | **"My account" page** (profile, saved details, past orders, order again, edit and delete my account) + **Privacy (POPIA) and Terms pages** | Owner list 10 item 2. Privacy page MUST ship with accounts |
 | v10.17 | BACKEND | **Order tools**: statuses, thank-you page, printable slip, weekly / monthly numbers + CSV, change log; **"Most popular" ranked automatically from real orders** | Needs v10.15 |
@@ -51,7 +51,7 @@ Why not the backend right now: every admin change still needs a manual Publish u
 ### 1c. The next five versions at a glance (v10.13 to v10.17)
 | Version | Plain-English summary |
 |---|---|
-| v10.13 | More home page: a short "Meet Becca" story section, and the greeting and specials text change with the season. Repeat customers do not retype their name and phone (kept on their own device). |
+| v10.13 (done) | More home page: a short "Meet Becca" story section, and the greeting and specials text change with the season. Repeat customers do not retype their name and phone (kept on their own device). |
 | v10.14 | Becca can add, rename, reorder and hide menu sections herself (the home tiles follow), plus a "New" badge on recent items. |
 | v10.15 | The online "back room" (Supabase, free plan): real sign-in, the admin panel locked so **only admins can get in**, the admin works on every device with no manual Publish, orders saved online. Needs you to create the free account (section 3). |
 | v10.16 | "My account" page (details, past orders, order again, delete my account) plus the Privacy (POPIA) and Terms pages. |
@@ -86,8 +86,8 @@ Also nice but smaller: "Order again" button, birthday reminders, a "New" badge o
 Goal: the customer-facing site gets the attention now, the admin only when it blocks something. Ranked by how much each helps a first-time visitor decide to order:
 1. **DONE v10.12 "Shop by treat" tiles** right under the hero: one tile per menu section plus Custom cake. A visitor sees what Becca makes in two seconds and is one tap from the right part of the menu. It follows the menu sections automatically.
 2. **DONE v10.12 "How ordering works"** (Choose, Send, Confirm): removes the "how do I even order?" question before it is asked.
-3. **v10.13 "Meet Becca"**: a short, warm story section (who bakes, why, baked to order). People buy from people. Needs a few sentences from Becca, a placeholder goes in first.
-4. **v10.13 Season-aware greeting and specials**: at Christmas the greeting and the specials strip talk about Christmas, then switch back by themselves.
+3. **DONE v10.13 "Meet Becca"**: a short, warm story section (who bakes, why, baked to order). People buy from people. Needs a few sentences from Becca, a placeholder goes in first.
+4. **DONE v10.13 Season-aware greeting and specials**: at Christmas the greeting and the specials strip talk about Christmas, then switch back by themselves.
 5. **With photos**: a real hero photo and photos on the cards (biggest visual upgrade; waits for the owner's photos).
 6. **After launch**: Instagram grid / "Our work" gallery, and reviews once real ones exist.
 Each new home section can be switched on or off in Admin > Theme & layout > Home page, so nothing is forced.
@@ -101,7 +101,7 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 | 13 | 2 | Use Supabase | DONE (decision recorded; owner creates the free account) | v10.15 |
 | 13 | 3 | Only admins can see the admin panel, not customers | PARTLY DONE: no public link, no public sign-up (v10.12); real server-side lock comes with sign-in | v10.15 |
 | 13 | 4 | Add all 10 suggested things to the roadmap | DONE | v10.18 to v10.23, photos, launch |
-| 13 | 5 | Start customising the home page, away from admin things | DONE (first round; round 2 next) | v10.12, v10.13 |
+| 13 | 5 | Start customising the home page, away from admin things | DONE (round 1 v10.12; round 2 v10.13: Meet Becca, season-aware greeting and strip) | v10.12, v10.13 |
 | 12 | 1 | Supabase or Firebase? (free for now, pay later) | DONE (answered in section 1d: Supabase) | v10.11 |
 | 12 | 2 | Top 10 things to add | DONE (answered in section 1e) | v10.11 |
 | 12 | 3 | Themes dropdown: all themes in one, special ones marked | DONE | v10.11 |
@@ -109,7 +109,7 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 | 12 | 5 | "Tell me what you will do in the next 5 versions" | DONE (section 1c) | v10.11 |
 | 11 | 1 | "What would you do next?" | DONE (answered in section 1b; first pick built) | v10.10 |
 | 11 | 2 | Automatic seasons: all dates in one section with a dropdown to pick the season to change | DONE | v10.10 |
-| 10 | 1 | Sign in so it remembers people (admins and customers); Google, Apple, etc. | BACKEND (a device-only "remember my details" part comes earlier in v10.13) | v10.15 |
+| 10 | 1 | Sign in so it remembers people (admins and customers); Google, Apple, etc. | PARTLY DONE: device-only "remember my details" (v10.13); real sign-in is BACKEND | v10.13, v10.15 |
 | 10 | 2 | Full account page: whole account, past orders, customise, all info | BACKEND | v10.16 |
 | 10 | 3 | Preview of the moving effects when changing theme or ticking the box | DONE | v10.8 |
 | 10 | 4 | Theme changes automatically for every season | DONE | v10.9 |
@@ -143,8 +143,10 @@ Nothing below can be built or guessed by us. Send it whenever you have it.
 |---|---|---|
 | Real answers for the 6 FAQ questions (notice needed, allergens, delivery area and fees, payment, change / cancel) | FAQ page; drops the "Draft answer" tag | `config/site-settings.json` (`faq`; remove `"draft": true` per item) |
 | Real customer reviews (name, text, optional rating and date) | "What people say" on Home and FAQ | `config/site-settings.json` (`reviews`) |
+| The text for "Meet Becca" (a few sentences about you; today a placeholder with a Draft tag) | Home "Meet Becca" section | Admin > Theme & layout > Home page > Your story |
 | Real Instagram and Facebook handles (or full links) | Footer "Follow us" links (placeholder `sweetest.bakery`) | `config/business.json` (`instagram`, `facebook`) |
 | Which products are vegan, gluten-free, nut-free, dairy-free (only what is definitely true) | Dietary tags and filters on the Menu | Admin > Menu items > Edit |
+| (Optional) your own Christmas / Valentine's / ... greeting and top-strip lines | Season wording (built-in text is used until you write yours) | Admin > Automatic seasons |
 | Real prices and product list (today they are SAMPLE prices) | Menu, cart totals | Admin > Menu items |
 | Product photos | Replace emoji | when ready (see plan, "When photos exist") |
 | Decision on "Sign in with Apple" | It needs an Apple Developer account (paid, about US$99 per year). Google sign-in and email sign-in are free. If you skip Apple, we ship Google + email first | before v10.15 |
@@ -158,7 +160,7 @@ A static website (what we have now) cannot keep an account for someone on all th
 - Real forgot-password link or SMS code instead of the admin handing over a code (v10.15)
 - Admin changes going live instantly for everyone, no manual Publish (v10.15)
 - Orders saved online, order statuses, printable slips, reports (v10.17)
-- Small interim idea that does NOT need the backend: remember the customer's name, phone and last order details on their own device so they don't retype (can be done any time; tell us if you want it sooner)
+- Small interim idea that does NOT need the backend: remember the customer's name, phone and last order details on their own device so they don't retype (DONE v10.13, this device only)
 
 ## 5. Ideas parking lot
 Not scheduled. Tell us which to pull into a version. The ranked **top 10** is in section 1e; the older ideas are below.
@@ -170,7 +172,7 @@ Not scheduled. Tell us which to pull into a version. The ranked **top 10** is in
 - Owner-chosen decoration emoji per theme in admin
 - A "New" badge on items added in the last 2 weeks
 - "Sold out" for a chosen date range or "until further notice" (today it is one day at a time, switching itself off at midnight)
-- Seasonal greeting / specials text that changes with the season theme
+- Seasonal greeting / specials text that changes with the season theme (DONE v10.13)
 - Let the owner edit the Easter / Mother's Day / Father's Day windows (today only the fixed-date seasons have editable dates; those three are worked out from the calendar)
 - Reserve space for the two strips so the page does not jump on first load
 - Customer accounts only if repeat-order history is wanted (it is now, see v10.16)
