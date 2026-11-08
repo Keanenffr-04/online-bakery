@@ -1,4 +1,4 @@
--- The Sweetest Bakery, v10.17: online database setup.
+-- The Sweetest Bakery, v10.19: online database setup (sections 1 to 7).
 -- Run ONCE: Supabase dashboard > SQL Editor > New query > paste this whole file > Run.
 -- Safe to run again (it never deletes your data).
 
@@ -114,3 +114,27 @@ begin
 end $$;
 revoke all on function public.delete_my_account() from public, anon;
 grant execute on function public.delete_my_account() to authenticated;
+
+-- 7. (v10.19) "Most popular" worked out from real orders. Re-runnable.
+-- Public on purpose, but it only ever returns item ids + how many were ordered (last 90 days, cancelled orders ignored).
+-- No names, phones or order details leave the database. Bad data in an order can never make it fail.
+create or replace function public.popular_items(days int default 90, max_items int default 12)
+returns table (id text, qty bigint)
+language sql stable security definer set search_path = public as $$
+  select l.item ->> 'id' as id,
+         sum(case when (l.item ->> 'q') ~ '^[0-9]{1,3}$' then least((l.item ->> 'q')::int, 20) else 0 end)::bigint as qty
+  from public.orders o
+  cross join lateral jsonb_array_elements(
+    case when jsonb_typeof(o.details -> 'lines') = 'array' then o.details -> 'lines' else '[]'::jsonb end
+  ) as l(item)
+  where o.status <> 'cancelled'
+    and o.created_at > now() - make_interval(days => least(greatest(days, 1), 365))
+    and jsonb_typeof(l.item) = 'object'
+    and char_length(coalesce(l.item ->> 'id', '')) between 1 and 60
+  group by 1
+  having sum(case when (l.item ->> 'q') ~ '^[0-9]{1,3}$' then least((l.item ->> 'q')::int, 20) else 0 end) > 0
+  order by 2 desc, 1
+  limit least(greatest(max_items, 1), 30);
+$$;
+revoke all on function public.popular_items(int, int) from public;
+grant execute on function public.popular_items(int, int) to anon, authenticated;

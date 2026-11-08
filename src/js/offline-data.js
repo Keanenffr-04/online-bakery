@@ -43,6 +43,7 @@ window.SB_OFFLINE = {
     "featuredStyle": "glass",
     "recentCount": 3,
     "popularCount": 3,
+    "popularAuto": true,
     "decorations": true,
     "autoTheme": {
       "enabled": true,

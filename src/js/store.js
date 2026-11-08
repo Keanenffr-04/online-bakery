@@ -35,7 +35,7 @@
   };
   // Placeholder for the "Meet Becca" section until Becca writes her own (shows a small "Draft text" tag; the tag goes when she edits it in admin).
   const MEET_TEXT = "Hi, I'm Becca, the baker behind The Sweetest Bakery. Everything here is handmade and baked fresh to order, so nothing sits on a shelf waiting for you.\n\nTell me what you're celebrating and I'll bake something sweet for it.";
-  const D = { theme: "classic", tagline: "", heroStyle: "logo", greeting: "Welcome in, something sweet is baking.", home: { hero: true, shop: true, featured: true, fresh: true, meet: true, steps: true, cta: true }, homeOrder: ["hero", "shop", "featured", "fresh", "reviews", "meet", "steps", "cta"], meet: { heading: "Meet Becca", text: MEET_TEXT, draft: true }, featuredCount: 3, featuredStyle: "glass", recentCount: 3, popularCount: 3, newDays: 14, decorations: true, autoTheme: { enabled: true, rules: SEASON_RULES }, menuLayout: "grid", faq: [], reviews: [], specials: { enabled: true, items: ["Today's specials: ask Becca on WhatsApp", "Custom cakes for every occasion, order online"] }, orders: { enabled: true, items: ["How to order: message Becca on WhatsApp", "Tell us what you'd like, the date you need it and any notes"] } };
+  const D = { theme: "classic", tagline: "", heroStyle: "logo", greeting: "Welcome in, something sweet is baking.", home: { hero: true, shop: true, featured: true, fresh: true, meet: true, steps: true, cta: true }, homeOrder: ["hero", "shop", "featured", "fresh", "reviews", "meet", "steps", "cta"], meet: { heading: "Meet Becca", text: MEET_TEXT, draft: true }, featuredCount: 3, featuredStyle: "glass", recentCount: 3, popularCount: 3, popularAuto: true, newDays: 14, decorations: true, autoTheme: { enabled: true, rules: SEASON_RULES }, menuLayout: "grid", faq: [], reviews: [], specials: { enabled: true, items: ["Today's specials: ask Becca on WhatsApp", "Custom cakes for every occasion, order online"] }, orders: { enabled: true, items: ["How to order: message Becca on WhatsApp", "Tell us what you'd like, the date you need it and any notes"] } };
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const SB = window.SB = {
     esc, TAGS: [["vegan", "Vegan"], ["gluten-free", "Gluten-free"], ["nut-free", "Nut-free"], ["dairy-free", "Dairy-free"]],
@@ -115,6 +115,16 @@
         const c = new AbortController(), tm = setTimeout(() => c.abort(), 4000);
         const r = await fetch(cfg.url + "/rest/v1/site_data?select=key,value", { headers: { apikey: cfg.key }, signal: c.signal }); clearTimeout(tm);
         if (!r.ok) return null; const o = {}; (await r.json()).forEach(x => { o[x.key] = x.value; }); return o;
+      } catch (e) { return null; }
+    },
+    // v10.19: the items ordered most (last 90 days, cancelled orders ignored): [{id, qty}] or null if unavailable. Needs setup.sql section 7.
+    // Only item ids and counts are public, never names or phone numbers. Never throws.
+    async popularRank(cfg) {
+      cfg = cfg || (SB._biz || {}).supabase; if (!cfg || !cfg.url || !cfg.key || location.protocol === "file:") return null;
+      try {
+        const c = new AbortController(), tm = setTimeout(() => c.abort(), 4000);
+        const r = await fetch(cfg.url + "/rest/v1/rpc/popular_items", { method: "POST", headers: { apikey: cfg.key, "Content-Type": "application/json" }, body: JSON.stringify({ days: 90, max_items: 12 }), signal: c.signal }); clearTimeout(tm);
+        if (!r.ok) return null; const a = await r.json(); return Array.isArray(a) ? a.map(x => ({ id: String(x.id), qty: +x.qty || 0 })) : null;
       } catch (e) { return null; }
     },
     // v10.18: the customer's sign-in (kept by account.html under localStorage "sb-customer", separate from the admin's). saveOrder links an order to a signed-in

@@ -15,21 +15,31 @@ SB.load().then(({ biz, settings: s, shownCategories: cs, shownProducts: vis, sea
       const f = vis.filter(p => p.featured).slice(0, s.featuredCount);
       if (f.length) g.innerHTML = f.map(p => SB.card(p, biz)).join(""); else $('[data-section="featured"]').remove();
     }
-    // v10.9: "New and popular". Just added = newest items (by the date each item was added); Most popular = items the owner ticked
-    // "Show in Most popular" (automatic ranking from real orders comes with the order tools). An item is never shown twice in this
-    // section. Same card style and the same Glass / Plain choice as Our best sellers; empty rows (and an empty section) are hidden.
+    // v10.9: "New and popular". Just added = newest items (by the date each item was added). Most popular (v10.19) = ranked from real orders
+    // (last 90 days, only once there are at least 5 items ordered), filled up with the items the owner ticked "Show in Most popular";
+    // or only the ticked items when Admin > Home page is set to "Only items I tick". An item is never shown twice in this section.
+    // Same card style and Glass / Plain choice as Our best sellers; empty rows (and an empty section) are hidden.
     const fresh = $('[data-section="fresh"]');
     if (fresh) {
       const recent = vis.filter(p => p.added).sort((a, b) => b.added.localeCompare(a.added)).slice(0, s.recentCount || 3);
-      const seen = new Set(recent.map(p => p.id)), popular = vis.filter(p => p.popular && !seen.has(p.id)).slice(0, s.popularCount || 3);
-      [["recent", recent], ["popular", popular]].forEach(([k, list]) => {
-        const row = fresh.querySelector(`[data-row="${k}"]`), grid = document.getElementById(k + "-grid");
-        if (!list.length) return row.remove();
-        grid.classList.toggle("menu--glass", s.featuredStyle !== "plain"); grid.innerHTML = list.map(p => SB.card(p, biz)).join("");
-      });
-      // v10.17.3: one row left = a single, narrower column instead of a stretched one.
-      const left = fresh.querySelectorAll("[data-row]").length;
-      if (!left) fresh.remove(); else { fresh.classList.toggle("section--glass", s.featuredStyle !== "plain"); fresh.querySelector(".fresh").classList.toggle("fresh--one", left === 1); }
+      const seen = new Set(recent.map(p => p.id)), N = s.popularCount || 3, ticked = vis.filter(p => p.popular && !seen.has(p.id));
+      const drawFresh = rank => {
+        let popular = ticked.slice(0, N);
+        if (rank && rank.reduce((t, r) => t + r.qty, 0) >= 5) {
+          const byId = new Map(vis.map(p => [p.id, p])), auto = rank.map(r => byId.get(r.id)).filter(p => p && !seen.has(p.id));
+          popular = [...auto, ...ticked.filter(p => !auto.includes(p))].slice(0, N);
+        }
+        [["recent", recent], ["popular", popular]].forEach(([k, list]) => {
+          const row = fresh.querySelector(`[data-row="${k}"]`), grid = document.getElementById(k + "-grid");
+          if (!list.length) return row.remove();
+          grid.classList.toggle("menu--glass", s.featuredStyle !== "plain"); grid.innerHTML = list.map(p => SB.card(p, biz)).join("");
+        });
+        // v10.17.3: one row left = a single, narrower column instead of a stretched one.
+        const left = fresh.querySelectorAll("[data-row]").length;
+        if (!left) fresh.remove(); else { fresh.classList.toggle("section--glass", s.featuredStyle !== "plain"); fresh.querySelector(".fresh").classList.toggle("fresh--one", left === 1); }
+      };
+      // The ranking is asked for in the background, so the rest of the page never waits for it.
+      if (s.popularAuto !== false) SB.popularRank().then(drawFresh, () => drawFresh(null)); else drawFresh(null);
     }
     // v10.12: "Shop by treat": one tile per menu section that has visible items (link opens the Menu on that section) + a Custom cake tile.
     const sh = document.getElementById("shop-tiles");

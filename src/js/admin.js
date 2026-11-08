@@ -139,17 +139,63 @@
   /* ---------- tabs ---------- */
   const TABS = [["orders", "Orders"], ["menu", "Menu items"], ["look", "Theme & layout"], ["admins", "Admins"], ["account", "My account"], ["publish", "Backup & files"]];
 
+  // v10.19: order tools. Status colours + one-tap "next step", a printable slip, and this week / this month numbers.
+  const ST = ["pending", "confirmed", "ready", "completed", "cancelled"];
+  const NEXT = { pending: ["confirmed", "Confirm"], confirmed: ["ready", "Mark ready"], ready: ["completed", "Mark done"] };
+  const PERIODS = [["week", "This week (from Monday)"], ["month", "This month"], ["last", "Last month"], ["all", "All time"]];
+  const periodRange = k => {
+    const n = new Date(), d0 = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+    if (k === "week") { const m = new Date(d0); m.setDate(m.getDate() - ((m.getDay() + 6) % 7)); return [m, null]; }
+    if (k === "month") return [new Date(n.getFullYear(), n.getMonth(), 1), null];
+    if (k === "last") return [new Date(n.getFullYear(), n.getMonth() - 1, 1), new Date(n.getFullYear(), n.getMonth(), 1)];
+    return [null, null];
+  };
+  const inPeriod = (o, k) => { const [f, t] = periodRange(k), c = new Date(o.created_at); return (!f || c >= f) && (!t || c < t); };
+  const money = n => "R " + Math.round(n).toLocaleString("en-ZA");
+  const placed = o => { try { return new Date(o.created_at).toLocaleString("en-ZA", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); } catch (e) { return ""; } };
+  const linesOf = o => (o.details && Array.isArray(o.details.lines) ? o.details.lines : []).filter(l => l && l.id);
+  function numbers(k) {
+    const list = (state.orders || []).filter(o => inPeriod(o, k)), live = list.filter(o => o.status !== "cancelled");
+    const sum = live.reduce((t, o) => t + (+o.total || 0), 0), priced = live.filter(o => +o.total > 0).length;
+    const names = {}; ((state.data && state.data.products) || []).forEach(p => { names[p.id] = p.name; });
+    const q = {}; live.forEach(o => linesOf(o).forEach(l => { q[l.id] = (q[l.id] || 0) + (+l.q || 0); }));
+    const top = Object.entries(q).sort((x, y) => y[1] - x[1]).slice(0, 5);
+    const done = list.filter(o => o.status === "completed").length, cancelled = list.filter(o => o.status === "cancelled").length;
+    return `<div class="adm-card"><div class="adm-top"><h2>Numbers</h2><select data-act="nper" style="width:auto" aria-label="Period">${PERIODS.map(([v, l]) => `<option value="${v}" ${v === k ? "selected" : ""}>${l}</option>`).join("")}</select></div>
+    <div class="adm-stats"><div><strong>${live.length}</strong><span>order${live.length === 1 ? "" : "s"}</span></div><div><strong>${money(sum)}</strong><span>total value</span></div><div><strong>${priced ? money(sum / priced) : "-"}</strong><span>average order</span></div><div><strong>${done}</strong><span>done</span></div></div>
+    <p class="muted">${cancelled ? cancelled + " cancelled (not counted). " : ""}${live.length - priced ? (live.length - priced) + " order" + (live.length - priced === 1 ? " has" : "s have") + " no total yet (custom orders until you quote), so the value is a minimum." : "Cancelled orders are never counted."}</p>
+    ${top.length ? `<p><strong>Most ordered:</strong> ${top.map(([id, n]) => esc(names[id] || id) + " (" + n + ")").join(" &middot; ")}</p>` : `<p class="muted">Most-ordered items appear here once website cart orders come in.</p>`}
+    <p><button class="btn btn--sm btn--ghost" data-act="dl-num" data-v="${k}">Download these orders (CSV)</button></p></div>`;
+  }
+  const csvOrders = (list, name) => { const rows = [["created", "source", "name", "phone", "items", "date", "total", "status"], ...list.map(o => [o.created_at, o.source, o.name, o.phone, o.items, o.date, o.total, o.status])]; return dl(name, rows.map(r => r.map(c => '"' + String(c == null ? "" : c).replace(/"/g, '""') + '"').join(",")).join("\n"), "text/csv"); };
+  // A neat one-page slip for the bench or the box, printed from a small window.
+  function slip(o) {
+    const biz = SB._biz || {}, det = o.details && typeof o.details === "object" ? o.details : {};
+    const extra = Object.entries(det).filter(([k, v]) => k !== "lines" && v !== "" && v != null && typeof v !== "object").map(([k, v]) => `<tr><th>${esc(k.replace(/_/g, " "))}</th><td>${esc(v)}</td></tr>`).join("");
+    const items = String(o.items || "").split(/,\s*(?=\d+\s*x\s)/).map(x => `<li><span class="bx"></span>${esc(x)}</li>`).join("");
+    return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Order ${esc(String(o.id).slice(0, 8).toUpperCase())}</title><style>
+    body{font:15px/1.45 system-ui,Segoe UI,Arial,sans-serif;color:#111;margin:0;padding:24px;max-width:520px}h1{font-size:20px;margin:0}h2{font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin:18px 0 6px;color:#555}
+    .top{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #111;padding-bottom:10px}.ref{font:600 14px ui-monospace,Consolas,monospace}
+    table{border-collapse:collapse;width:100%}th{text-align:left;width:34%;color:#555;font-weight:500;padding:3px 8px 3px 0;vertical-align:top;text-transform:capitalize}td{padding:3px 0}
+    ul{list-style:none;margin:0;padding:0}li{padding:5px 0;border-bottom:1px dotted #bbb;display:flex;gap:10px;align-items:center}.bx{width:14px;height:14px;border:1.5px solid #111;border-radius:3px;flex:none}
+    .tot{font-size:18px;font-weight:700;margin-top:14px;text-align:right}@media print{body{padding:0}}</style></head><body>
+    <div class="top"><div><h1>${esc(biz.name || "The Sweetest Bakery")}</h1><div>Order slip</div></div><div class="ref">#${esc(String(o.id).slice(0, 8).toUpperCase())}</div></div>
+    <h2>Customer</h2><table><tr><th>Name</th><td>${esc(o.name || "-")}</td></tr><tr><th>Phone</th><td>${esc(o.phone ? "+" + String(o.phone).replace(/\D/g, "") : "-")}</td></tr><tr><th>Needed on</th><td><strong>${esc(o.date || "not given")}</strong></td></tr><tr><th>Placed</th><td>${esc(placed(o))}</td></tr><tr><th>Status</th><td>${esc(o.status)}</td></tr>${extra}</table>
+    <h2>What to make</h2><ul>${items || "<li>-</li>"}</ul>${+o.total ? `<div class="tot">Total: ${esc(money(+o.total))}</div>` : ""}</body></html>`;
+  }
+
   function orders() {
-    const o = state.orders || [], f = state.filter || "pending", list = o.filter(x => f === "all" || x.status === f);
-    const st = ["pending", "confirmed", "ready", "completed", "cancelled"];
-    return `<div class="adm-split"><div class="adm-card"><h2>Add an order</h2>
+    const o = state.orders || [], f = state.filter || "pending", list = o.filter(x => f === "all" || x.status === f), nper = state.nper || "week";
+    const cnt = s => s === "all" ? o.length : o.filter(x => x.status === s).length;
+    return `${numbers(nper)}<div class="adm-split"><div class="adm-card"><h2>Add an order</h2>
     <form data-form="order"><label>Customer</label><input name="name" required>${SB.phoneField("o-phone", { label: "Phone" })}
     <label>What they ordered</label><textarea name="items" required></textarea><div class="adm-row"><div><label>Needed on</label><input name="date" type="date"></div><div><label>Total (R)</label><input name="total" type="number" min="0"></div></div>
     <p><button class="btn btn--sm" type="submit">Save order</button></p></form></div>
     <div class="adm-card"><div class="adm-top"><h2>${list.length} ${f === "all" ? "" : f} order${list.length === 1 ? "" : "s"}</h2>
-    <select data-act="filter" style="width:auto">${["all", ...st].map(s => `<option ${s === f ? "selected" : ""}>${s}</option>`).join("")}</select></div>
-    <ul class="adm-list">${list.map(x => `<li><div><strong>${esc(x.name)}</strong> <span class="tag">${x.status}</span><br><span class="muted">${esc(x.items)}${x.date ? " &middot; for " + esc(x.date) : ""}${x.source && x.source !== "admin" ? " &middot; from the website (" + (x.source === "cart" ? "cart" : "custom order") + ")" : ""}${x.total ? " &middot; R " + esc(x.total) : ""}</span></div>
-    <div class="adm-actions"><select data-act="ostatus" data-id="${x.id}" style="width:auto">${st.map(s => `<option ${s === x.status ? "selected" : ""}>${s}</option>`).join("")}</select>
+    <select data-act="filter" style="width:auto" aria-label="Show orders">${["all", ...ST].map(s => `<option value="${s}" ${s === f ? "selected" : ""}>${s} (${cnt(s)})</option>`).join("")}</select></div>
+    <ul class="adm-list">${list.map(x => `<li><div><strong>${esc(x.name)}</strong> <span class="tag tag--${x.status}">${x.status}</span><br><span class="muted">${esc(x.items)}${x.date ? " &middot; for " + esc(x.date) : ""}${x.source && x.source !== "admin" ? " &middot; from the website (" + (x.source === "cart" ? "cart" : "custom order") + ")" : ""}${x.total ? " &middot; R " + esc(x.total) : ""}<br>Placed ${esc(placed(x))}</span></div>
+    <div class="adm-actions">${NEXT[x.status] ? `<button class="btn btn--sm" data-act="onext" data-id="${x.id}" data-v="${NEXT[x.status][0]}">${NEXT[x.status][1]}</button>` : ""}<select data-act="ostatus" data-id="${x.id}" style="width:auto" aria-label="Change status">${ST.map(s => `<option ${s === x.status ? "selected" : ""}>${s}</option>`).join("")}</select>
+    <button class="btn btn--sm btn--ghost" data-act="oslip" data-id="${x.id}">Print slip</button>
     ${x.phone ? `<a class="btn btn--sm btn--whatsapp" target="_blank" rel="noopener" href="https://wa.me/${esc(x.phone.replace(/\D/g, ""))}">WhatsApp</a>` : ""}
     <button class="btn btn--sm btn--ghost" data-act="odel" data-id="${x.id}">Delete</button></div></li>`).join("") || "<li>No orders here.</li>"}</ul></div></div>
     <p class="muted">Orders sent from the Cart or the Custom Order form are saved here automatically (the WhatsApp message still goes to you too). You can also add one by hand. They are stored online, so you see the same list on every device.</p>`;
@@ -167,7 +213,7 @@
     <fieldset class="adm-fs"><legend>Where it shows</legend>
     <label class="chk"><input type="checkbox" name="visible" ${e.visible !== false ? "checked" : ""}>Visible on the menu</label>
     <label class="chk"><input type="checkbox" name="featured" ${e.featured ? "checked" : ""}>Home page: Our best sellers</label>
-    <label class="chk"><input type="checkbox" name="popular" ${e.popular ? "checked" : ""}>Home page: Most popular</label></fieldset>
+    <label class="chk"><input type="checkbox" name="popular" ${e.popular ? "checked" : ""}>Home page: Most popular (my own pick)</label></fieldset>
     <p><button class="btn btn--sm" type="submit">Save</button> ${state.edit ? '<button class="btn btn--sm btn--ghost" type="button" data-act="pcancel">Cancel</button>' : ""}</p></form></div>
     <div>${sec("msec", "Menu sections", d.categories.length + (d.categories.length === 1 ? " section" : " sections"), `<p class="muted">The groups on your Menu page. The order here is the order customers see (Menu page buttons, the menu in the header and the Home "Shop by treat" tiles). Hiding a section hides its items too. Changes reach customers after you Publish.</p>
     <ul class="adm-list">${d.categories.map((c, i) => { const n = d.products.filter(p => p.category === c.id).length; return `<li class="item sec-row"><form class="csec" data-form="csec" data-id="${esc(c.id)}"><input name="icon" value="${esc(c.icon || "")}" maxlength="4" aria-label="Emoji for ${esc(c.name)}"><input name="name" value="${esc(c.name)}" required maxlength="40" aria-label="Section name"><button class="btn btn--sm btn--ghost" type="submit">Save</button></form>
@@ -201,9 +247,9 @@
     const ord = SB.homeOrder(s.homeOrder);
     const homeBox = `<p class="muted">Hold the <strong>&#8942;&#8942;</strong> handle and drag a section up or down, or use the arrows. The preview follows.</p>
     <ul class="hlist" id="hlist">${ord.map((k, i) => `<li data-k="${k}"><button type="button" class="hgrip" data-act="hgrip" aria-label="Drag ${esc(HN[k])} to move it" title="Hold and drag">&#8942;&#8942;</button>${k === "reviews" ? `<span class="hname">${HN[k]}<small class="muted"> shows by itself once you have reviews</small></span>` : `<label class="chk hname"><input type="checkbox" data-act="home" data-k="${k}" ${s.home[k] !== false ? "checked" : ""}>${HN[k]}</label>`}<span class="hmv"><button type="button" class="btn btn--sm btn--ghost" data-act="hmove" data-k="${k}" data-d="-1" aria-label="Move ${esc(HN[k])} up" ${i === 0 ? "disabled" : ""}>&uarr;</button><button type="button" class="btn btn--sm btn--ghost" data-act="hmove" data-k="${k}" data-d="1" aria-label="Move ${esc(HN[k])} down" ${i === ord.length - 1 ? "disabled" : ""}>&darr;</button></span></li>`).join("")}</ul>
-    <div class="adm-row"><div><label>Best sellers shown</label>${countSel("fc", s.featuredCount)}</div><div><label>"Just added" shown</label>${countSel("rc", s.recentCount || 3)}</div><div><label>"Most popular" shown</label>${countSel("pc", s.popularCount || 3)}</div><div><label>"New" badge stays for</label><select data-act="nd">${[[0, "Off"], [7, "1 week"], [14, "2 weeks"], [28, "4 weeks"]].map(([n, l]) => `<option value="${n}" ${n === (s.newDays == null ? 14 : s.newDays) ? "selected" : ""}>${l}</option>`).join("")}</select></div>
+    <div class="adm-row"><div><label>Best sellers shown</label>${countSel("fc", s.featuredCount)}</div><div><label>"Just added" shown</label>${countSel("rc", s.recentCount || 3)}</div><div><label>"Most popular" shown</label>${countSel("pc", s.popularCount || 3)}</div><div><label>"Most popular" is chosen</label><select data-act="pauto"><option value="auto" ${s.popularAuto !== false ? "selected" : ""}>Automatically from real orders</option><option value="ticked" ${s.popularAuto === false ? "selected" : ""}>Only the items I tick</option></select></div><div><label>"New" badge stays for</label><select data-act="nd">${[[0, "Off"], [7, "1 week"], [14, "2 weeks"], [28, "4 weeks"]].map(([n, l]) => `<option value="${n}" ${n === (s.newDays == null ? 14 : s.newDays) ? "selected" : ""}>${l}</option>`).join("")}</select></div>
     <div><label>Card style</label><select data-act="fs"><option value="glass" ${s.featuredStyle !== "plain" ? "selected" : ""}>Glass (frosted)</option><option value="plain" ${s.featuredStyle === "plain" ? "selected" : ""}>Plain</option></select></div></div>
-    <p class="muted">Best sellers are items ticked "Show on home page"; Most popular are items ticked "Show in Most popular".</p>
+    <p class="muted">Best sellers are items ticked "Show on home page". Most popular is worked out from real website orders of the last 90 days (it starts once at least 5 items have been ordered) and is topped up with items ticked "Show in Most popular"; choose "Only the items I tick" to use your own list.</p>
     <div class="adm-row"><div><label>Hero style</label><select data-act="hs"><option value="logo" ${s.heroStyle !== "bakes" ? "selected" : ""}>Logo (rabbit)</option><option value="bakes" ${s.heroStyle === "bakes" ? "selected" : ""}>Baked goods + greeting</option></select></div>
     <div><label>Greeting (baked goods hero)</label><input data-act="gr" maxlength="80" value="${esc(s.greeting)}"></div></div>
     <label>Hero text</label><textarea data-act="tag">${esc(s.tagline)}</textarea>
@@ -388,7 +434,7 @@
       draftKey(); refreshSeasonLabels(); return drawSeasonStatus();
     }
     if (a === "mh") (s.meet = s.meet || {}).heading = t.value; else if (a === "mt") { s.meet = s.meet || {}; s.meet.text = t.value; s.meet.draft = false; }   // v10.13: editing the story removes the placeholder "Draft text" tag
-    else if (a === "tag") s.tagline = t.value; else if (a === "gr") s.greeting = t.value; else if (a === "hs") s.heroStyle = t.value; else if (a === "fc") s.featuredCount = +t.value; else if (a === "fs") s.featuredStyle = t.value; else if (a === "rc") s.recentCount = +t.value; else if (a === "pc") s.popularCount = +t.value; else if (a === "nd") s.newDays = +t.value; else if (a === "deco") s.decorations = t.checked; else if (a === "ml") s.menuLayout = t.value; else if (a === "home") s.home[t.dataset.k] = t.checked; else if (a === "spon") (s.specials = s.specials || {}).enabled = t.checked; else if (a === "oron") (s.orders = s.orders || {}).enabled = t.checked; else if (a === "ortxt") (s.orders = s.orders || {}).items = t.value.split("\n").map(x => x.trim()).filter(Boolean).slice(0, 6); else if (a === "sptxt") (s.specials = s.specials || {}).items = t.value.split("\n").map(x => x.trim()).filter(Boolean).slice(0, 6); else return;
+    else if (a === "tag") s.tagline = t.value; else if (a === "gr") s.greeting = t.value; else if (a === "hs") s.heroStyle = t.value; else if (a === "fc") s.featuredCount = +t.value; else if (a === "fs") s.featuredStyle = t.value; else if (a === "rc") s.recentCount = +t.value; else if (a === "pc") s.popularCount = +t.value; else if (a === "pauto") s.popularAuto = t.value === "auto"; else if (a === "nd") s.newDays = +t.value; else if (a === "deco") s.decorations = t.checked; else if (a === "ml") s.menuLayout = t.value; else if (a === "home") s.home[t.dataset.k] = t.checked; else if (a === "spon") (s.specials = s.specials || {}).enabled = t.checked; else if (a === "oron") (s.orders = s.orders || {}).enabled = t.checked; else if (a === "ortxt") (s.orders = s.orders || {}).items = t.value.split("\n").map(x => x.trim()).filter(Boolean).slice(0, 6); else if (a === "sptxt") (s.specials = s.specials || {}).items = t.value.split("\n").map(x => x.trim()).filter(Boolean).slice(0, 6); else return;
     draftKey();
     if (a === "deco") drawDemo();   // tick box: redraw the little preview at once
     // Show the change where it can be seen: layout -> Menu preview, everything else here -> Home preview.
@@ -406,6 +452,7 @@
   app.addEventListener("change", e => {
     const t = e.target, a = t.dataset.act;
     if (a === "filter") { state.filter = t.value; go("orders"); }
+    if (a === "nper") { state.nper = t.value; go("orders"); }   // v10.19
     if (a === "pic" && t.files && t.files[0]) {
       shrink(t.files[0]).then(d => { state.picTmp = d; const el = document.getElementById("av-prev"); if (el) el.innerHTML = avatar({ avatar: d }, state.user.email, true); }).catch(() => alert("Please choose a picture file (JPG or PNG)."));
     }
@@ -432,6 +479,9 @@
     if (a === "google") { const f = app.querySelector("input[name=remember]"); return google(!!(f && f.checked)); }
     if (a === "psold") { const p = state.data.products.find(x => x.id === id); if (SB.isSoldOut(p)) delete p.soldOut; else p.soldOut = SB.today(); await saveProducts(); return go("menu", p.name + (p.soldOut ? " is marked sold out for today." : " is back in stock.")); }
     if (a === "tab") { state.tab = v; if (v === "look") await prepLook(); if (v === "menu") state.edit = null; state.picTmp = null; if (v === "orders" || v === "admins") await loadAdminData(); if (v !== "look") sessionStorage.removeItem("sb_preview"); return go(v); }
+    if (a === "onext") { const r = await sb.from("orders").update({ status: v }).eq("id", id); await loadAdminData(); return go("orders", r.error ? "Could not update: " + r.error.message : "Order moved to " + v + "."); }   // v10.19
+    if (a === "oslip") { const o = state.orders.find(x => x.id === id); if (!o) return; const w = window.open("", "_blank"); if (!w) return go("orders", "Your browser blocked the slip window. Allow pop-ups for this page and try again."); w.document.write(slip(o)); w.document.close(); w.focus(); setTimeout(() => w.print(), 300); return; }
+    if (a === "dl-num") { const k = v || "week"; return csvOrders(state.orders.filter(o => inPeriod(o, k)), "orders-" + k + "-" + SB.today() + ".csv"); }
     if (a === "odel") { if (!confirm("Delete this order?")) return; const r = await sb.from("orders").delete().eq("id", id); await loadAdminData(); return go("orders", r.error ? "Could not delete: " + r.error.message : ""); }
     if (a === "cup" || a === "cdown") { const L = state.data.categories, i = L.findIndex(c => c.id === id), j = a === "cup" ? i - 1 : i + 1; if (i < 0 || j < 0 || j >= L.length) return go("menu"); [L[i], L[j]] = [L[j], L[i]]; await saveProducts(); return go("menu", L[j].name + " moved " + (a === "cup" ? "up." : "down.")); }
     if (a === "chide") { const c = state.data.categories.find(x => x.id === id); if (c.hidden) delete c.hidden; else c.hidden = true; await saveProducts(); return go("menu", c.name + (c.hidden ? " is hidden from customers." : " is showing again.")); }
@@ -449,7 +499,7 @@
     if (a === "dl-set") return dl("site-settings.json", JSON.stringify(state.draft || state.data.settings, null, 2));
     if (a === "dl-off") return dl("offline-data.js", OFFLINE_HEAD + "window.SB_OFFLINE = " + JSON.stringify({ business: state.data.biz, settings: state.draft || state.data.settings, products: { categories: state.data.categories, products: state.data.products } }, null, 2) + ";\n", "text/javascript");
     if (a === "dl-prod") return dl("products.json", JSON.stringify({ categories: state.data.categories, products: state.data.products }, null, 2));
-    if (a === "dl-ord") { const rows = [["created", "source", "name", "phone", "items", "date", "total", "status"], ...state.orders.map(o => [o.created_at, o.source, o.name, o.phone, o.items, o.date, o.total, o.status])]; return dl("orders.csv", rows.map(r => r.map(c => '"' + String(c == null ? "" : c).replace(/"/g, '""') + '"').join(",")).join("\n"), "text/csv"); }
+    if (a === "dl-ord") return csvOrders(state.orders, "orders.csv");
     if (a === "dl-backup") { await loadAdminData(); const sd = await sb.from("site_data").select("*"); return dl("sweetest-bakery-backup-" + SB.today() + ".json", JSON.stringify({ exported: new Date().toISOString(), site_data: sd.data || [], orders: state.orders, admins: state.admins }, null, 2)); }
   });
 
