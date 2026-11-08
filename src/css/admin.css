@@ -89,3 +89,11 @@
 .adm-help{margin-top:1rem;border-top:1px solid var(--line,rgba(0,0,0,.12));padding-top:.75rem}
 .adm-help summary{cursor:pointer;font-weight:600}
 .adm-help ol{margin:.5rem 0 .25rem 1.1rem;padding:0}
+
+/* v10.17.2: admin profile (username + round picture) */
+.adm-av{width:36px;height:36px;border-radius:50%;object-fit:cover;flex:none;display:inline-block;background:var(--cocoa,#4a3626)}
+.adm-av--i{display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:600}
+.adm-av--lg{width:96px;height:96px;font-size:2.2rem}
+.adm-hi{display:inline-flex;align-items:center;gap:.5rem}
+.adm-who{display:flex;align-items:center;gap:.75rem}
+.adm-pic{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap}

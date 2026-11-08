@@ -6,7 +6,7 @@
   const S = (k, v) => localStorage.setItem(k, JSON.stringify(v));
   const uid = () => Math.random().toString(36).slice(2, 9);
   const ok = s => /^\S+@\S+\.\S+$/.test(s);
-  let state = { open: { theme: true, msec: true }, tab: "orders", note: "", authTab: "login", edit: null, page: "index.html", draft: null, data: null, user: null, isAdmin: false, orders: [], admins: [] };
+  let state = { open: { theme: true, msec: true }, tab: "orders", note: "", authTab: "login", edit: null, page: "index.html", draft: null, data: null, user: null, isAdmin: false, orders: [], admins: [], profiles: [], profile: null, profErr: false, picTmp: null };
   const flash = t => { state.note = t; render(); };
   const HERE = () => location.origin + location.pathname, WEB = () => /^https?:$/.test(location.protocol);
 
@@ -30,8 +30,9 @@
   }
   async function loadAdminData() {
     if (!state.isAdmin) return;
-    const [o, a] = await Promise.all([sb.from("orders").select("*").order("created_at", { ascending: false }).limit(1000), sb.from("admins").select("*").order("added_at")]);
-    state.orders = o.data || []; state.admins = a.data || []; if (o.error || a.error) state.note = "Could not load from the online database: " + ((o.error || a.error).message || "unknown error");
+    const [o, a, pr] = await Promise.all([sb.from("orders").select("*").order("created_at", { ascending: false }).limit(1000), sb.from("admins").select("*").order("added_at"), sb.from("profiles").select("*")]);
+    state.orders = o.data || []; state.admins = a.data || [];
+    state.profErr = !!pr.error; state.profiles = pr.data || []; state.profile = state.profiles.find(x => x.user_id === state.user.id) || null;   // profErr = profiles table missing: do not block the admin if (o.error || a.error) state.note = "Could not load from the online database: " + ((o.error || a.error).message || "unknown error");
   }
   // First time ever: copy the menu and settings from the project files into the database so nothing is lost.
   async function seedDb() {
@@ -46,6 +47,29 @@
     if (state.user && !state.isAdmin) { const who = state.user.email; await sb.auth.signOut(); state.user = null; return flash(state.setupErr ? "The online database is not set up yet (run supabase/setup.sql, see the roadmap)." : who + " is not on the admin list. Ask an existing admin to add that email.") }
     if (state.isAdmin) { await seedDb(); await loadAdminData(); }
     render();
+  }
+
+  // v10.17.2: admin profile = username + small round picture (resized in the browser to 160 px and kept as a tiny image in the database).
+  const initial = s => esc(((s || "?").trim()[0] || "?").toUpperCase());
+  const avatar = (p, email, big) => p && p.avatar && /^data:image\//.test(p.avatar) ? `<img class="adm-av${big ? " adm-av--lg" : ""}" src="${esc(p.avatar)}" alt="">` : `<span class="adm-av adm-av--i${big ? " adm-av--lg" : ""}" aria-hidden="true">${initial((p && p.username) || email)}</span>`;
+  const profileOf = email => state.profiles.find(x => (x.email || "").toLowerCase() === (email || "").toLowerCase());
+  const shrink = file => new Promise((res, rej) => {
+    if (!/^image\//.test(file.type)) return rej(new Error("type"));
+    const img = new Image(), u = URL.createObjectURL(file);
+    img.onload = () => { const n = 160, c = document.createElement("canvas"); c.width = c.height = n; const s = Math.min(img.width, img.height); c.getContext("2d").drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, n, n); URL.revokeObjectURL(u); res(c.toDataURL("image/jpeg", 0.82)); };
+    img.onerror = () => rej(new Error("img")); img.src = u;
+  });
+  function profileForm(first) {
+    const p = state.profile || {}, cur = state.picTmp === null ? p : { ...p, avatar: state.picTmp || null };
+    return `<form data-form="profile"><div class="adm-pic"><span id="av-prev">${avatar(cur, state.user.email, true)}</span>
+    <div><label class="btn btn--sm btn--ghost adm-file">Choose a picture<input type="file" accept="image/*" data-act="pic" hidden></label> <button type="button" class="btn btn--sm btn--ghost" data-act="pic-remove">Remove</button><p class="muted">Optional. It is cropped to a square and made small automatically.</p></div></div>
+    <label>Username</label><input name="username" value="${esc(p.username || "")}" minlength="3" maxlength="20" pattern="[A-Za-z0-9_.\-]{3,20}" autocomplete="nickname" required>
+    <p class="muted">3 to 20 letters, numbers, . _ -</p>
+    <p><button class="btn${first ? "" : " btn--sm"}" type="submit">${first ? "Save and continue" : "Save profile"}</button></p></form>`;
+  }
+  function setupView() {
+    return `<div class="adm-card adm-login"><h1>Welcome!</h1><p class="muted">Signed in as ${esc(state.user.email)}. Choose a username and, if you like, a picture. You can change both later under My account.</p>
+    ${state.note ? `<div class="msg">${esc(state.note)}</div>` : ""}${profileForm(true)}</div>`;
   }
 
   // v10.17.1: Supabase's built-in email sender only emails the project's own team and only ~2 a month-hour, so mail often never arrives.
@@ -262,12 +286,12 @@
     const a = state.admins, me = (state.user.email || "").toLowerCase();
     return `<div class="adm-split"><div class="adm-card"><h2>Add an admin</h2><form data-form="addadmin"><label>Email</label><input name="u" type="email" required>
     <p><button class="btn btn--sm" type="submit">Add admin</button></p></form><p class="muted">Use the email the person will sign in with (their Google address if they use Google). They then choose <strong>First time here?</strong> on the login page, or use Sign in with Google. Anyone not on this list is refused by the database itself.</p></div>
-    <div class="adm-card"><h2>Admins</h2><ul class="adm-list">${a.map(x => `<li><div><strong>${esc(x.email)}</strong> ${x.email.toLowerCase() === me ? '<span class="tag">you</span>' : ""}</div>
+    <div class="adm-card"><h2>Admins</h2><ul class="adm-list">${a.map(x => `<li><div class="adm-who">${avatar(profileOf(x.email), x.email)}<div>${profileOf(x.email) ? `<strong>${esc(profileOf(x.email).username)}</strong><br><span class="muted">${esc(x.email)}</span>` : `<strong>${esc(x.email)}</strong><br><span class="muted">no profile yet</span>`} ${x.email.toLowerCase() === me ? '<span class="tag">you</span>' : ""}</div></div>
     <div class="adm-actions">${x.email.toLowerCase() === me ? "" : `<button class="btn btn--sm btn--ghost" data-act="adel" data-u="${esc(x.email)}">Remove</button>`}</div></li>`).join("") || "<li>No admins found.</li>"}</ul></div></div>`;
   }
 
   function account() {
-    return `<div class="adm-card" style="max-width:460px"><h2>My account</h2><p>Signed in as <strong>${esc(state.user.email)}</strong></p><form data-form="account">
+    return `<div class="adm-card" style="max-width:460px"><h2>My account</h2><p>Signed in as <strong>${esc(state.user.email)}</strong></p>${state.profErr ? '<div class="msg msg--warn">Profiles are not set up in the database yet. Run supabase/setup.sql again.</div>' : profileForm(false)}<h3>Password</h3><form data-form="account">
     <label>New password</label><input name="p" type="password" autocomplete="new-password" minlength="6" required>
     <p><button class="btn btn--sm" type="submit">Change password</button></p></form><p class="muted">Signed in with Google? Then there is no password to change here.</p></div>`;
   }
@@ -283,12 +307,15 @@
   function dash() {
     const body = { orders, menu, look, admins: adminsView, account, publish }[state.tab]();
     const dbw = SB.dbOK ? "" : `<div class="msg msg--warn">The online database is not answering (has <code>supabase/setup.sql</code> been run?). Changes cannot be saved until it is.</div>`;
-    return `<div class="adm-top"><h1>Admin</h1><div class="adm-actions"><span class="muted">Hi, ${esc(state.user.email)}</span><a class="btn btn--sm btn--ghost" href="index.html">View site</a><button class="btn btn--sm" data-act="logout">Log out</button></div></div>
+    return `<div class="adm-top"><h1>Admin</h1><div class="adm-actions"><span class="adm-hi">${avatar(state.profile, state.user.email)}<span>Hi, ${esc((state.profile && state.profile.username) || state.user.email)}</span></span><a class="btn btn--sm btn--ghost" href="index.html">View site</a><button class="btn btn--sm" data-act="logout">Log out</button></div></div>
     <nav class="adm-nav" aria-label="Admin sections">${TABS.map(([k, n]) => `<button class="${state.tab === k ? "is-on" : ""}" ${state.tab === k ? 'aria-current="page"' : ""} data-act="tab" data-v="${k}">${n}</button>`).join("")}</nav>
     ${dbw}${state.note ? `<div class="msg">${esc(state.note)}</div>` : ""}${body}`;
   }
 
-  function render() { app.innerHTML = state.isAdmin && !state.recovering ? dash() : authView(); state.note = ""; }
+  function render() {
+    const inside = state.isAdmin && !state.recovering;
+    app.innerHTML = inside ? (!state.profile && !state.profErr ? setupView() : dash()) : authView(); state.note = "";   // first sign-in: choose a username before the panel opens
+  }
     const go = (t, note) => { state.tab = t; state.note = note || ""; app.innerHTML = dash(); state.note = ""; if (t === "look") { drawDemo(); drawSeasonEditor(); drawSeasonStatus(); } };
   const dl = (name, text, type) => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type: type || "application/json" })); a.download = name; a.click(); };
   const saveProducts = () => dbSave("products", { categories: state.data.categories, products: state.data.products });   // v10.17: saved online, live for everyone at once
@@ -325,6 +352,15 @@
       const em = v.u.trim().toLowerCase(); if (!ok(em)) return go("admins", "Type a valid email address.");
       const r = await sb.from("admins").insert({ email: em }); if (r.error) return go("admins", r.error.code === "23505" ? "That email is already an admin." : "Could not add: " + r.error.message);
       await loadAdminData(); return go("admins", em + " added. They can now create their login or use Google.");
+    }
+    if (k === "profile") {
+      const un = (v.username || "").trim(), first = !state.profile;
+      if (!/^[A-Za-z0-9_.-]{3,20}$/.test(un)) return first ? flash("Username: 3 to 20 letters, numbers, . _ -") : go("account", "Username: 3 to 20 letters, numbers, . _ -");
+      const cur = state.profile || {}, av = state.picTmp === null ? (cur.avatar || null) : (state.picTmp || null);
+      const r = await sb.from("profiles").upsert({ user_id: state.user.id, email: state.user.email, username: un, avatar: av, updated_at: new Date().toISOString() });
+      const msg = r.error ? (r.error.code === "23505" ? "That username is taken. Try another." : "Could not save: " + r.error.message) : "";
+      if (r.error) return first ? flash(msg) : go("account", msg);
+      state.picTmp = null; await loadAdminData(); return first ? render() : go("account", "Profile saved.");
     }
     if (k === "account") {
       if (v.p.length < 6) return go("account", "New password must be 6+ characters.");
@@ -367,16 +403,20 @@
   app.addEventListener("change", e => {
     const t = e.target, a = t.dataset.act;
     if (a === "filter") { state.filter = t.value; go("orders"); }
+    if (a === "pic" && t.files && t.files[0]) {
+      shrink(t.files[0]).then(d => { state.picTmp = d; const el = document.getElementById("av-prev"); if (el) el.innerHTML = avatar({ avatar: d }, state.user.email, true); }).catch(() => alert("Please choose a picture file (JPG or PNG)."));
+    }
     if (a === "ostatus") { sb.from("orders").update({ status: t.value }).eq("id", t.dataset.id).then(async r => { await loadAdminData(); go("orders", r.error ? "Could not update: " + r.error.message : ""); }); }
   });
 
   app.addEventListener("click", async e => {
     const b = e.target.closest("button[data-act]"); if (!b) return; const a = b.dataset.act, v = b.dataset.v, id = b.dataset.id, u = b.dataset.u;
     if (a === "auth") { state.authTab = v; state.note = ""; return render(); }
-    if (a === "logout") { await sb.auth.signOut(); state.user = null; state.isAdmin = false; localStorage.removeItem("sb_keep"); sessionStorage.removeItem("sb_preview"); state.authTab = "login"; return render(); }
+    if (a === "logout") { await sb.auth.signOut(); state.user = null; state.isAdmin = false; state.profile = null; state.picTmp = null; localStorage.removeItem("sb_keep"); sessionStorage.removeItem("sb_preview"); state.authTab = "login"; return render(); }
+    if (a === "pic-remove") { state.picTmp = ""; const el = document.getElementById("av-prev"); if (el) el.innerHTML = avatar({ username: (document.querySelector("input[name=username]") || {}).value }, state.user.email, true); return; }
     if (a === "google") { const f = app.querySelector("input[name=remember]"); return google(!!(f && f.checked)); }
     if (a === "psold") { const p = state.data.products.find(x => x.id === id); if (SB.isSoldOut(p)) delete p.soldOut; else p.soldOut = SB.today(); await saveProducts(); return go("menu", p.name + (p.soldOut ? " is marked sold out for today." : " is back in stock.")); }
-    if (a === "tab") { state.tab = v; if (v === "look") await prepLook(); if (v === "menu") state.edit = null; if (v === "orders" || v === "admins") await loadAdminData(); if (v !== "look") sessionStorage.removeItem("sb_preview"); return go(v); }
+    if (a === "tab") { state.tab = v; if (v === "look") await prepLook(); if (v === "menu") state.edit = null; state.picTmp = null; if (v === "orders" || v === "admins") await loadAdminData(); if (v !== "look") sessionStorage.removeItem("sb_preview"); return go(v); }
     if (a === "odel") { if (!confirm("Delete this order?")) return; const r = await sb.from("orders").delete().eq("id", id); await loadAdminData(); return go("orders", r.error ? "Could not delete: " + r.error.message : ""); }
     if (a === "cup" || a === "cdown") { const L = state.data.categories, i = L.findIndex(c => c.id === id), j = a === "cup" ? i - 1 : i + 1; if (i < 0 || j < 0 || j >= L.length) return go("menu"); [L[i], L[j]] = [L[j], L[i]]; await saveProducts(); return go("menu", L[j].name + " moved " + (a === "cup" ? "up." : "down.")); }
     if (a === "chide") { const c = state.data.categories.find(x => x.id === id); if (c.hidden) delete c.hidden; else c.hidden = true; await saveProducts(); return go("menu", c.name + (c.hidden ? " is hidden from customers." : " is showing again.")); }

@@ -32,6 +32,7 @@ Append-only. Never delete. Newest at the bottom. What is still to do is in [`ROA
 | [v10.16](#v10-16) | Menu items list as a dropdown + Supabase walkthrough (owner list 16) | 2026-11-08 |
 | [v10.17](#v10-17) | Supabase foundation: real sign-in, server-locked admin, menu + settings live online, orders saved online, backup | 2026-11-08 |
 | [v10.17.1](#v10-17-1) | Patch: admin login that works without email (the email code / link did not arrive), honest error messages | 2026-11-08 |
+| [v10.17.2](#v10-17-2) | Patch: admin profile (username + account picture) | 2026-11-08 |
 
 Full details for each version follow, oldest first.
 
@@ -342,3 +343,13 @@ Owner list 18 (1 item + "only 2 changes, the rest to the backlog"): the email co
 Files: `src/js/admin.js`, `src/css/admin.css`. No data or SQL changes, so `offline-data.js` did not change.
 Tests (headless browser, Supabase mocked): help box shows; a rate-limit error on sign-up shows the plain explanation; a normal sign-up shows the "if no email comes" note; wrong password keeps the email and a correct one signs in; the full admin regression (orders, menu save, admins, backup, log out) still passes with no script errors. Not tested against the real project (no internet here).
 Pushed to the backlog (not built): **custom email sender (SMTP)** so confirm and reset emails reach anyone (a free sender such as Brevo or Resend with a domain, set under Supabase > Authentication > Emails > SMTP Settings; should be done before customer accounts in v10.18, because customers cannot receive confirm emails without it); a 6-digit email-code sign-in option (only useful once real email works); an in-admin "create admin with password" button (needs a server function, so after hosting).
+
+<a id="v10-17-2"></a>
+## v10.17.2: patch, admin profile with username + account picture (done, 2026-11-08)
+Owner list 19 (1 request, "only 2 changes, the rest to the backlog"): after signing in the header said "Hi, email@gmail.com"; the owner wants a username and an account picture chosen the first time. Two items:
+1. **Profile set-up on first sign-in, editable later.** The first time an admin signs in, a "Welcome!" screen asks for a **username** (3 to 20 letters, numbers, . _ -, unique, case-insensitive) and an optional **picture** before the panel opens. The picture is cropped to a square, shrunk to 160 px in the browser and kept as a tiny image (about 5 to 10 KB) in the database, so there is no extra storage to set up. Admin > **My account** has the same form to change the username, change the picture or remove it (the round letter shows when there is no picture). A username that is taken says so.
+2. **It shows everywhere the admin is named.** The header now reads "Hi, <username>" with the round picture, and the **Admins** tab lists each admin with their picture, username and email ("no profile yet" until they sign in the first time).
+**Run `supabase/setup.sql` again** (section 5 is new: the `profiles` table, re-runnable, nothing is deleted). Until it is run, nothing is blocked: the panel opens as before and My account shows a note.
+Files: `supabase/setup.sql` (section 5), `src/js/admin.js`, `src/css/admin.css`. Data files unchanged, so `offline-data.js` did not change.
+Tests (headless browser, Supabase mocked): first sign-in shows the Welcome screen with no admin tabs; too-short and taken usernames are refused with a message; choosing a picture previews it (small JPEG data); saving opens the panel with "Hi, <username>" and the round picture; My account shows the saved username, and removing the picture + renaming shows the letter circle and the new name; the Admins tab shows the profile and "no profile yet" for the other admin; signing out and in again skips the Welcome screen; the earlier admin regression still passes with no script errors. Not tested against the real project (no internet here).
+Pushed to the backlog (not built): the same username + picture for **customer accounts** (belongs to "My account", v10.18, and will reuse this picture code); bigger pictures through Supabase Storage if ever wanted; show the admin's username on orders ("handled by") and in the v10.19 change log; an admin "display name" separate from the username; a picture crop / zoom tool.

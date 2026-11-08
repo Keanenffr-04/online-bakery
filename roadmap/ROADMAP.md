@@ -1,6 +1,6 @@
 # Roadmap: what is done, what is next, what is waiting
 
-**Current version:** v10.17.1 &nbsp;|&nbsp; **Next up:** v10.18 (My account page + Privacy and Terms pages; run `supabase/setup.sql` first if you have not) &nbsp;|&nbsp; Rule: **max 2 to 3 things per version.**
+**Current version:** v10.17.2 &nbsp;|&nbsp; **Next up:** v10.18 (My account page + Privacy and Terms pages; run `supabase/setup.sql` first if you have not) &nbsp;|&nbsp; Rule: **max 2 to 3 things per version.**
 
 Finished work lives in [`BACKLOG.md`](BACKLOG.md). The old, long roadmap notes are kept untouched in [`ROADMAP_ARCHIVE.md`](ROADMAP_ARCHIVE.md).
 
@@ -140,6 +140,8 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 | List | # | Request (short) | Status | Where |
 |---|---|---|---|---|
 | 17 | 1 | Use the Supabase project + publishable key; add Becca and Keanen as admins in this patch | DONE (emails in `supabase/setup.sql`; keys in `config/business.json`) | v10.17 |
+| 19 | 1 | A username and an account picture, chosen on first sign-in, shown after "Hi," | DONE (admins; customer accounts later with My account, v10.18) | v10.17.2 |
+| 19 | 2 | Only 2 changes per patch, the rest to the backlog | DONE | v10.17.2 |
 | 18 | 1 | The email code / confirm email does not work, so the admin cannot be entered: fix | DONE (no-email login via the Supabase dashboard + honest messages; real email needs a custom SMTP sender, see v10.18 note) | v10.17.1 |
 | 18 | 2 | Only 2 changes per patch, the rest to the backlog | DONE | v10.17.1 |
 | 17 | 2 | Only 3 changes per version, everything else to the backlog | DONE (rule kept; leftovers listed in the v10.17 backlog entry) | v10.17 |

@@ -62,3 +62,21 @@ create policy "customers add orders"   on public.orders    for insert to anon, a
   with check (source in ('cart', 'custom') and status = 'pending');
 drop policy if exists "admins manage orders"   on public.orders;
 create policy "admins manage orders"   on public.orders    for all using (public.is_admin()) with check (public.is_admin());
+
+-- 5. (v10.17.2) Admin profiles: a username and a small account picture for each admin.
+create table if not exists public.profiles (
+  user_id    uuid primary key default auth.uid(),
+  email      text,
+  username   text not null check (username ~ '^[A-Za-z0-9_.-]{3,20}$'),
+  avatar     text check (avatar is null or (avatar like 'data:image/%' and char_length(avatar) <= 60000)),
+  updated_at timestamptz not null default now()
+);
+create unique index if not exists profiles_username_key on public.profiles (lower(username));
+alter table public.profiles enable row level security;
+
+drop policy if exists "admins read profiles"  on public.profiles;
+create policy "admins read profiles"  on public.profiles for select using (public.is_admin());
+drop policy if exists "own profile insert"    on public.profiles;
+create policy "own profile insert"    on public.profiles for insert with check (public.is_admin() and user_id = auth.uid());
+drop policy if exists "own profile update"    on public.profiles;
+create policy "own profile update"    on public.profiles for update using (public.is_admin() and user_id = auth.uid()) with check (public.is_admin() and user_id = auth.uid());
