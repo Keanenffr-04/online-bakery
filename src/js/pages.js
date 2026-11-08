@@ -25,7 +25,9 @@ SB.load().then(({ biz, settings: s, shownCategories: cs, shownProducts: vis, sea
         if (!list.length) return row.remove();
         grid.classList.toggle("menu--glass", s.featuredStyle !== "plain"); grid.innerHTML = list.map(p => SB.card(p, biz)).join("");
       });
-      if (!fresh.querySelector("[data-row]")) fresh.remove(); else fresh.classList.toggle("section--glass", s.featuredStyle !== "plain");
+      // v10.17.3: one row left = a single, narrower column instead of a stretched one.
+      const left = fresh.querySelectorAll("[data-row]").length;
+      if (!left) fresh.remove(); else { fresh.classList.toggle("section--glass", s.featuredStyle !== "plain"); fresh.querySelector(".fresh").classList.toggle("fresh--one", left === 1); }
     }
     // v10.12: "Shop by treat": one tile per menu section that has visible items (link opens the Menu on that section) + a Custom cake tile.
     const sh = document.getElementById("shop-tiles");
