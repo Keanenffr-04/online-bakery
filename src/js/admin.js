@@ -181,7 +181,7 @@
     ul{list-style:none;margin:0;padding:0}li{padding:5px 0;border-bottom:1px dotted #bbb;display:flex;gap:10px;align-items:center}.bx{width:14px;height:14px;border:1.5px solid #111;border-radius:3px;flex:none}
     .tot{font-size:18px;font-weight:700;margin-top:14px;text-align:right}@media print{body{padding:0}}</style></head><body>
     <div class="top"><div><h1>${esc(biz.name || "The Sweetest Bakery")}</h1><div>Order slip</div></div><div class="ref">#${esc(String(o.id).slice(0, 8).toUpperCase())}</div></div>
-    <h2>Customer</h2><table><tr><th>Name</th><td>${esc(o.name || "-")}</td></tr><tr><th>Phone</th><td>${esc(o.phone ? "+" + String(o.phone).replace(/\D/g, "") : "-")}</td></tr><tr><th>Needed on</th><td><strong>${esc(o.date || "not given")}</strong></td></tr><tr><th>Placed</th><td>${esc(placed(o))}</td></tr><tr><th>Status</th><td>${esc(o.status)}</td></tr>${extra}</table>
+    <h2>Customer</h2><table><tr><th>Name</th><td>${esc(o.name || "-")}</td></tr><tr><th>Phone</th><td>${esc(o.phone ? "+" + String(o.phone).replace(/\D/g, "") : "-")}</td></tr><tr><th>Needed on</th><td><strong>${esc(o.date || "not given")}</strong></td></tr><tr><th>Placed</th><td>${esc(placed(o))}</td></tr><tr><th>Status</th><td>${esc(o.status)}</td></tr>${det.delivery && det.delivery.area ? `<tr><th>Delivery</th><td>${esc(det.delivery.area)}${+det.delivery.fee ? " (fee " + esc(money(+det.delivery.fee)) + ")" : ""}</td></tr>` : ""}${extra}</table>
     <h2>What to make</h2><ul>${items || "<li>-</li>"}</ul>${+o.total ? `<div class="tot">Total: ${esc(money(+o.total))}</div>` : ""}</body></html>`;
   }
 
@@ -205,16 +205,27 @@
   const waLabel = { confirmed: "Send: confirmed", ready: "Send: ready", completed: "Send: thank you", cancelled: "Send: cancelled" };
   const waLink = o => "https://wa.me/" + String(o.phone).replace(/\D/g, "") + "?text=" + encodeURIComponent(waText(o));
 
+  // v10.21: the next 14 days at a glance: how many orders are booked against the daily limit, and which days are closed or blocked.
+  function calBox() {
+    const c = (state.draft || state.data.settings).calendar || {}, lim = +c.dailyLimit || 0, o = (state.orders || []).filter(x => x.status !== "cancelled" && /^\d{4}-\d{2}-\d{2}$/.test(x.date || ""));
+    const d = new Date(SB.today() + "T12:00"), rows = [];
+    for (let i = 0; i < 14; i++, d.setDate(d.getDate() + 1)) {
+      const iso = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"), n = o.filter(x => x.date === iso).length;
+      const off = c.enabled !== false && ((c.blocked || []).includes(iso) ? "blocked" : (c.closedDays || []).includes(d.getDay()) ? "closed" : "");
+      rows.push(`<li><strong>${esc(d.toLocaleDateString("en-ZA", { weekday: "short", day: "numeric", month: "short" }))}</strong> <span class="tag${off ? "" : n && lim && n >= lim ? " tag--cancelled" : ""}">${off ? off : n + (lim ? " of " + lim : "") + (n === 1 ? " order" : " orders")}</span></li>`);
+    }
+    return sec("ocal", "Upcoming dates", c.enabled === false ? "calendar off" : (lim ? lim + " orders a day" : "no daily limit"), `<ul class="adm-list">${rows.join("")}</ul><p class="muted">Counts orders (not cancelled) by the date the customer needs them. Change the rules in Theme &amp; layout > Order calendar &amp; delivery.</p>`);
+  }
   function orders() {
     const o = state.orders || [], f = state.filter || "pending", list = o.filter(x => f === "all" || x.status === f), nper = state.nper || "week";
     const cnt = s => s === "all" ? o.length : o.filter(x => x.status === s).length;
-    return `${numbers(nper)}<div class="adm-split"><div class="adm-card"><h2>Add an order</h2>
+    return `${numbers(nper)}${calBox()}<div class="adm-split"><div class="adm-card"><h2>Add an order</h2>
     <form data-form="order"><label>Customer</label><input name="name" required>${SB.phoneField("o-phone", { label: "Phone" })}
     <label>What they ordered</label><textarea name="items" required></textarea><div class="adm-row"><div><label>Needed on</label><input name="date" type="date"></div><div><label>Total (R)</label><input name="total" type="number" min="0"></div></div>
     <p><button class="btn btn--sm" type="submit">Save order</button></p></form></div>
     <div class="adm-card"><div class="adm-top"><h2>${list.length} ${f === "all" ? "" : f} order${list.length === 1 ? "" : "s"}</h2>
     <select data-act="filter" style="width:auto" aria-label="Show orders">${["all", ...ST].map(s => `<option value="${s}" ${s === f ? "selected" : ""}>${s} (${cnt(s)})</option>`).join("")}</select></div>
-    <ul class="adm-list">${list.map(x => `<li><div><strong>${esc(x.name)}</strong> <span class="tag tag--${x.status}">${x.status}</span><br><span class="muted">${esc(x.items)}${x.date ? " &middot; for " + esc(x.date) : ""}${x.source && x.source !== "admin" ? " &middot; from the website (" + (x.source === "cart" ? "cart" : "custom order") + ")" : ""}${x.total ? " &middot; R " + esc(x.total) : ""}<br>Placed ${esc(placed(x))}</span>${lastChange(x.id)}</div>
+    <ul class="adm-list">${list.map(x => `<li><div><strong>${esc(x.name)}</strong> <span class="tag tag--${x.status}">${x.status}</span><br><span class="muted">${esc(x.items)}${x.date ? " &middot; for " + esc(x.date) : ""}${x.source && x.source !== "admin" ? " &middot; from the website (" + (x.source === "cart" ? "cart" : "custom order") + ")" : ""}${x.details && x.details.delivery && x.details.delivery.area ? " &middot; delivery to " + esc(x.details.delivery.area) + (+x.details.delivery.fee ? " (R " + esc(x.details.delivery.fee) + ")" : "") : ""}${x.total ? " &middot; R " + esc(x.total) : ""}<br>Placed ${esc(placed(x))}</span>${lastChange(x.id)}</div>
     <div class="adm-actions">${NEXT[x.status] ? `<button class="btn btn--sm" data-act="onext" data-id="${x.id}" data-v="${NEXT[x.status][0]}">${NEXT[x.status][1]}</button>` : ""}<select data-act="ostatus" data-id="${x.id}" style="width:auto" aria-label="Change status">${ST.map(s => `<option ${s === x.status ? "selected" : ""}>${s}</option>`).join("")}</select>
     <button class="btn btn--sm btn--ghost" data-act="oslip" data-id="${x.id}">Print slip</button>
     ${x.phone ? `<a class="btn btn--sm btn--whatsapp" target="_blank" rel="noopener" title="Opens WhatsApp with the message filled in. You can change it before sending." href="${esc(waLink(x))}">${waLabel[x.status] || "WhatsApp"}</a>` : ""}
@@ -262,6 +273,27 @@
     <label class="chk"><input type="checkbox" data-act="deco" ${s.decorations !== false ? "checked" : ""}>Moving decorations (special-occasion themes only)</label>
     <div class="deco-demo" id="deco-demo" data-theme="${esc(state.peek || s.theme)}" aria-live="polite"></div>`;
   }
+  // v10.21: Order calendar + delivery settings (settings.calendar, settings.delivery). Every edit clears the "placeholder" flag of its half.
+  function rulesBox(s) {
+    const c = s.calendar || {}, d = s.delivery || {}, DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], rng = (n, cur, f) => Array.from({ length: n + 1 }, (_, i) => `<option value="${i}" ${i === cur ? "selected" : ""}>${f(i)}</option>`).join("");
+    const nice = iso => { try { return new Date(iso + "T12:00").toLocaleDateString("en-ZA", { weekday: "short", day: "numeric", month: "long", year: "numeric" }); } catch (e) { return iso; } };
+    return `${c.draft || d.draft ? `<div class="msg msg--warn">These are <strong>placeholder numbers</strong> (notice, daily limit, delivery areas and fees). Change them to your real ones, then Save.</div>` : ""}
+    <p class="adm-sub">Order calendar</p>
+    <label class="chk"><input type="checkbox" data-act="cal-on" ${c.enabled !== false ? "checked" : ""}>Use the order calendar (customers cannot pick a date that breaks these rules)</label>
+    <div class="adm-row"><div><label>Notice for cart orders</label><select data-act="cal-cd">${rng(14, +c.cartDays || 0, i => i ? i + (i === 1 ? " day" : " days") : "None")}</select></div>
+    <div><label>Notice for custom orders</label><select data-act="cal-xn">${rng(30, +c.customDays || 0, i => i ? i + (i === 1 ? " day" : " days") : "None")}</select></div>
+    <div><label>Orders per day <span class="muted">(0 = no limit)</span></label><input type="number" min="0" max="50" data-act="cal-lim" value="${+c.dailyLimit || 0}"></div></div>
+    <fieldset class="adm-fs"><legend>Days you do not take orders</legend><div class="adm-tags">${DAYS.map((n, i) => `<label class="chk"><input type="checkbox" data-act="cal-xd" data-d="${i}" ${(c.closedDays || []).includes(i) ? "checked" : ""}>${n}</label>`).join("")}</div></fieldset>
+    <label for="cal-blk">Block a date <span class="muted">(holiday, fully booked, away)</span></label><div class="csec"><input id="cal-blk" type="date" min="${SB.today()}"><button class="btn btn--sm" type="button" data-act="cal-blk-add">Block</button></div>
+    ${(c.blocked || []).length ? `<ul class="adm-list">${(c.blocked || []).map(iso => `<li><span>${esc(nice(iso))}</span><button class="btn btn--sm btn--ghost" type="button" data-act="cal-blk-rm" data-v="${esc(iso)}" aria-label="Unblock ${esc(nice(iso))}">Remove</button></li>`).join("")}</ul>` : `<p class="muted">No blocked dates.</p>`}
+    <p class="adm-sub">Delivery or collection</p>
+    <label class="chk"><input type="checkbox" data-act="dl-on" ${d.enabled !== false ? "checked" : ""}>Ask delivery customers for their area and add the fee</label>
+    <ul class="adm-list">${(d.areas || []).map((a, i) => `<li><div class="csec"><input data-act="dl-an" data-i="${i}" value="${esc(a.name)}" maxlength="40" aria-label="Area name" placeholder="Area name"><input type="number" min="0" max="5000" data-act="dl-af" data-i="${i}" value="${+a.fee || 0}" aria-label="Fee in rand"></div><button class="btn btn--sm btn--ghost" type="button" data-act="dl-rm" data-i="${i}" aria-label="Remove ${esc(a.name)}">Remove</button></li>`).join("") || "<li>No areas yet. Delivery customers will not be asked for one.</li>"}</ul>
+    <p><button class="btn btn--sm btn--ghost" type="button" data-act="dl-add">Add an area</button></p>
+    <div class="adm-row"><div><label>Free delivery on orders from R <span class="muted">(0 = never free)</span></label><input type="number" min="0" data-act="dl-free" value="${+d.freeOver || 0}"></div></div>
+    <label>Collection message <span class="muted">(shown when a customer picks Collection)</span></label><input data-act="dl-note" maxlength="160" value="${esc(d.collectionNote || "")}">
+    <p class="muted">Cart orders add the fee to the total. Custom orders show \"from R fee\" and you confirm the final fee in your quote.</p>`;
+  }
   function look() {
     const s = state.draft, pg = (v, n) => `<button class="btn btn--sm ${state.page === v ? "" : "btn--ghost"}" data-act="ppage" data-v="${v}">${n}</button>`;
     const HN = { hero: "Hero (top banner)", shop: "Shop by treat (section tiles)", featured: "Featured items (best sellers)", fresh: "New and popular", reviews: "What people say (reviews)", meet: "Meet Becca", steps: "How ordering works", cta: "Order banner" };
@@ -287,6 +319,7 @@
     ${sec("theme", "Theme", themeName(s.theme), themeBox(s))}
     ${sec("seasons", "Automatic seasons", (s.autoTheme || {}).enabled === false ? "off" : "on", seasonsBox(s))}
     ${sec("home", "Home page", "what shows and how many", homeBox)}
+    ${sec("rules", "Order calendar & delivery", (s.calendar || {}).enabled === false ? "calendar off" : ((s.calendar || {}).draft || (s.delivery || {}).draft ? "placeholder numbers" : "notice, limit, areas"), rulesBox(s))}
     ${sec("strips", "Top and bottom strips", "specials and order messages", stripBox)}
     ${sec("menu", "Menu page", s.menuLayout === "list" ? "list" : "grid", menuBox)}
     <div class="adm-save"><button class="btn btn--sm" data-act="lsave">Save to this device</button> <button class="btn btn--sm btn--ghost" data-act="lreset">Reset</button><span class="muted">Then use Publish to make it live.</span></div></div>
@@ -455,6 +488,12 @@
       }
       draftKey(); refreshSeasonLabels(); return drawSeasonStatus();
     }
+    if (a.startsWith("cal-") || a.startsWith("dl-")) {   // v10.21
+      const c = s.calendar = s.calendar || {}, d = s.delivery = s.delivery || {}, num = (x, lo, hi) => Math.min(hi, Math.max(lo, Math.floor(+x) || 0));
+      if (a.startsWith("cal-")) { c.draft = false; if (a === "cal-on") c.enabled = t.checked; else if (a === "cal-cd") c.cartDays = num(t.value, 0, 14); else if (a === "cal-xn") c.customDays = num(t.value, 0, 30); else if (a === "cal-lim") c.dailyLimit = num(t.value, 0, 50); else if (a === "cal-xd") { const n = +t.dataset.d, set = new Set(c.closedDays || []); if (t.checked) set.add(n); else set.delete(n); c.closedDays = [...set].sort(); } else return; }
+      else { d.draft = false; d.areas = d.areas || []; const ar = d.areas[+t.dataset.i]; if (a === "dl-on") d.enabled = t.checked; else if (a === "dl-an" && ar) ar.name = t.value.slice(0, 40); else if (a === "dl-af" && ar) ar.fee = num(t.value, 0, 5000); else if (a === "dl-free") d.freeOver = num(t.value, 0, 100000); else if (a === "dl-note") d.collectionNote = t.value.slice(0, 160); else return; }
+      draftKey(); return;
+    }
     if (a === "mh") (s.meet = s.meet || {}).heading = t.value; else if (a === "mt") { s.meet = s.meet || {}; s.meet.text = t.value; s.meet.draft = false; }   // v10.13: editing the story removes the placeholder "Draft text" tag
     else if (a === "tag") s.tagline = t.value; else if (a === "gr") s.greeting = t.value; else if (a === "hs") s.heroStyle = t.value; else if (a === "fc") s.featuredCount = +t.value; else if (a === "fs") s.featuredStyle = t.value; else if (a === "rc") s.recentCount = +t.value; else if (a === "pc") s.popularCount = +t.value; else if (a === "pauto") s.popularAuto = t.value === "auto"; else if (a === "nd") s.newDays = +t.value; else if (a === "deco") s.decorations = t.checked; else if (a === "ml") s.menuLayout = t.value; else if (a === "home") s.home[t.dataset.k] = t.checked; else if (a === "spon") (s.specials = s.specials || {}).enabled = t.checked; else if (a === "oron") (s.orders = s.orders || {}).enabled = t.checked; else if (a === "ortxt") (s.orders = s.orders || {}).items = t.value.split("\n").map(x => x.trim()).filter(Boolean).slice(0, 6); else if (a === "sptxt") (s.specials = s.specials || {}).items = t.value.split("\n").map(x => x.trim()).filter(Boolean).slice(0, 6); else return;
     draftKey();
@@ -511,6 +550,14 @@
     if (a === "pedit") { state.edit = id; return go("menu"); }
     if (a === "pcancel") { state.edit = null; return go("menu"); }
     if (a === "pdel") { if (confirm("Delete this item?")) { state.data.products = state.data.products.filter(p => p.id !== id); await saveProducts(); } return go("menu"); }
+    if (a === "cal-blk-add" || a === "cal-blk-rm" || a === "dl-add" || a === "dl-rm") {   // v10.21
+      const sd = state.draft; if (!sd) return; const c = sd.calendar = sd.calendar || {}, d = sd.delivery = sd.delivery || {}; state.open.rules = true;
+      if (a === "cal-blk-add") { const iso = (document.getElementById("cal-blk") || {}).value; if (!/^\d{4}-\d{2}-\d{2}$/.test(iso || "")) return; c.blocked = [...new Set([...(c.blocked || []), iso])].sort(); c.draft = false; }
+      else if (a === "cal-blk-rm") { c.blocked = (c.blocked || []).filter(x => x !== v); c.draft = false; }
+      else if (a === "dl-add") { d.areas = [...(d.areas || []), { name: "", fee: 0 }].slice(0, 12); d.draft = false; }
+      else { d.areas = (d.areas || []).filter((_, i) => i !== +b.dataset.i); d.draft = false; }
+      draftKey(); go("look"); return;
+    }
     if (a === "hmove") { const o = SB.homeOrder(state.draft.homeOrder), k = b.dataset.k, i = o.indexOf(k), j = i + +b.dataset.d; if (j < 0 || j >= o.length) return; o.splice(j, 0, o.splice(i, 1)[0]); state.draft.homeOrder = o; state.page = "index.html"; draftKey(); go("look"); const nb = document.querySelector(`[data-act="hmove"][data-k="${k}"][data-d="${b.dataset.d}"]`) || document.querySelector(`[data-act="hmove"][data-k="${k}"]`); if (nb) nb.focus(); return; }   // v10.17.4
     if (a === "theme") { state.draft.theme = v; state.peek = null; draftKey(); return go("look"); }
     if (a === "speek") { state.peek = v; draftKey(); return go("look"); }   // look at a season's theme without changing the saved one

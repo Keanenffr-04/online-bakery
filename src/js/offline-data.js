@@ -193,7 +193,32 @@ window.SB_OFFLINE = {
         "draft": true
       }
     ],
-    "reviews": []
+    "reviews": [],
+    "calendar": {
+      "enabled": true,
+      "draft": true,
+      "cartDays": 3,
+      "customDays": 7,
+      "dailyLimit": 6,
+      "closedDays": [],
+      "blocked": []
+    },
+    "delivery": {
+      "enabled": true,
+      "draft": true,
+      "areas": [
+        {
+          "name": "Close to the bakery",
+          "fee": 50
+        },
+        {
+          "name": "Further out",
+          "fee": 90
+        }
+      ],
+      "freeOver": 0,
+      "collectionNote": "Collection is free. Becca shares the pick-up details when she confirms."
+    }
   },
   "products": {
     "_note": "SAMPLE menu and prices. Replace with Becca's real menu (or export from the admin page).",

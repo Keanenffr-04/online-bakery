@@ -1,6 +1,6 @@
 # Roadmap: what is done, what is next, what is waiting
 
-**Current version:** v10.20 &nbsp;|&nbsp; **Next up:** v10.21 (order calendar with lead times and a daily limit + delivery or collection with fees by area; needs your real lead times, areas and prices) &nbsp;|&nbsp; Rule: **max 2 to 3 things per version.**
+**Current version:** v10.21 &nbsp;|&nbsp; **Next up:** v10.22 (cake price guide / quote helper + "Order again" on the thank-you page; needs your real cake prices) &nbsp;|&nbsp; Rule: **max 2 to 3 things per version.**
 
 Finished work lives in [`BACKLOG.md`](BACKLOG.md). The old, long roadmap notes are kept untouched in [`ROADMAP_ARCHIVE.md`](ROADMAP_ARCHIVE.md).
 
@@ -35,8 +35,8 @@ Owner's list always comes first; older scheduled items slide back. Photos and la
 | v10.19 | DONE | **Order tools, part 1**: colour-coded statuses with a one-tap next step (Confirm, Mark ready, Mark done) + a **printable order slip** + **"Numbers"** (this week / this month / last month / all time, with a CSV) + **"Most popular" ranked automatically from real orders** (SQL section 7) | Needs v10.17 (done). The thank-you page and the change log did not fit the 3-things rule and moved to v10.19.1 |
 | v10.19.1 | DONE | **Patch: order thank-you page** (shows what was just sent, honest "not confirmed yet", Open WhatsApp, Empty my cart) + **change log** (who changed what on orders, SQL section 8) | Pushed from v10.19 |
 | v10.20 | DONE | **More occasion themes** (New Year, Women's Day, Black Friday, Diwali, Eid; Visitors still never switch themes) + **WhatsApp order-status buttons** (confirmed / ready / thank you / cancelled messages filled in for Becca to send) | Top 10 #4. Diwali and Eid dates move each year, so their automatic seasons start switched off |
-| **v10.21** | **NEXT** | **Top 10 #1: order calendar** (lead times, daily limit, blocked dates) + **#2: delivery or collection with fees by area** | Needs your real lead times, areas and prices |
-| v10.22 | PLANNED | **Top 10 #6: cake price guide / quote helper** + **"Order again" button** | Needs real prices; order again needs v10.18 |
+| v10.21 | DONE | **Top 10 #1: order calendar** (notice days, closed weekdays, blocked dates, orders-per-day limit, "Upcoming dates" box in Orders) + **#2: delivery or collection with fees by area** (fee added to the Cart total, area on Custom Orders) | Built with **placeholder numbers** (3 / 7 days notice, 6 orders a day, two sample areas) that Becca replaces in admin; SQL section 9 |
+| **v10.22** | **NEXT** | **Top 10 #6: cake price guide / quote helper** + **"Order again" button** | Needs real prices; order again needs v10.18 |
 | v10.23 | PLANNED | **Top 10 #7: gift vouchers** + **#8: loyalty reward / referral** | Needs accounts (v10.17) and your rules |
 | v10.24 | PLANNED | **Top 10 #3: deposits / online payment** (Yoco / PayFast / Ozow) on its own, because it handles real money | Needs a payment account opened by the owner |
 | v10.25 | PLANNED | **Top 10 #10: opt-in specials broadcast list** (POPIA-friendly) + home page round 3 | Needs accounts + Privacy page |
@@ -62,6 +62,16 @@ Why not the backend right now: every admin change still needs a manual Publish u
 | v10.18 | "My account" page (details, past orders, order again, delete my account) plus the Privacy (POPIA) and Terms pages. |
 | v10.19 (done) | Order tools: one-tap statuses, a printable slip, weekly / monthly numbers, and "Most popular" worked out from real orders. (Thank-you page and change log: v10.19.1.) |
 After that: v10.20 to v10.25 are the more occasion themes and your approved top-10 list (see the plan table). Visitors never change the theme themselves.
+
+### 1j. The next five, at a glance (answer to "what will you add in the next 5 v/patches?", after v10.21)
+| Version | Plain-English summary | Needs from you |
+|---|---|---|
+| v10.22 | **Cake price guide / quote helper** (pick size, servings and flavour on Custom Orders and see an estimated price, so fewer back-and-forth messages) + **Order again on the thank-you page** (My account already has it) | Your real cake sizes, servings and prices |
+| v10.23 | **Gift vouchers** (Becca issues a code, the customer enters it in the Cart, it comes off the total) + **loyalty reward** (e.g. every 10th order a free cupcake box, tracked per signed-in customer) | Your voucher and loyalty rules |
+| v10.24 | **Deposits / online payment** (Yoco, PayFast or Ozow) on its own, because it handles real money: a deposit secures the date | A payment account opened by you |
+| v10.25 | **Opt-in specials list** (customers who tick "yes, send me specials"; POPIA-friendly, one-tap unsubscribe, Becca copies the list to WhatsApp broadcast) + **Home page round 3** | Nothing new; uses accounts + Privacy page |
+| When photos exist | **Real product photos** instead of emoji + **"Our work" gallery** | Your photos (same light and background for every photo) |
+After that only the launch version (v11: hosting, favicon, search tidy-up, Google Business Profile, share image, custom domain) is left. Anything you send in a change list goes first and pushes these back by one.
 
 ### 1d. Supabase or Firebase? (answer to owner list 12 item 1)
 **Recommendation: Supabase**, free plan for now. Checked against the providers' 2026 pricing pages:
@@ -150,6 +160,7 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 
 | List | # | Request (short) | Status | Where |
 |---|---|---|---|---|
+| - | - | (Owner said "follow the roadmap" and asked for the next 5 versions, so the version marked NEXT was built with placeholder numbers: order calendar + delivery fees; next 5 listed in section 1j) | DONE | v10.21 |
 | - | - | (No change list came with "start next v/patch", so the version marked NEXT was built: five more occasion themes + WhatsApp order-status buttons) | DONE | v10.20 |
 | - | - | (No change list came with "start next v/patch", so the version marked NEXT was built: thank-you page + change log) | DONE | v10.19.1 |
 | - | - | (No change list came with "start the next v/patch", so the version marked NEXT was built: statuses + printable slip, Numbers, automatic "Most popular"; thank-you page + change log pushed to v10.19.1 to keep to 3 things) | DONE | v10.19 |
@@ -226,7 +237,8 @@ Nothing below can be built or guessed by us. Send it whenever you have it.
 | **v10.18 first run:** (1) Supabase > SQL Editor > run `supabase/setup.sql` again (new section 6: customer accounts, your past orders, delete my account). (2) Read the Privacy and Terms pages and fix anything that is not true for the bakery (they are marked Draft): the **region** your Supabase data sits in (Project Settings > General), whether Becca is the information officer, notice and cancellation wording. (3) Email sender for customers: section 1i. | Customer accounts working for real | now |
 | **v10.19 first run:** Supabase > SQL Editor > paste the **whole** new `supabase/setup.sql` over the old text (or into a new query) > Run (new section 7: the "Most popular" ranking). Nothing is deleted. Until you do, Most popular quietly keeps using the items you tick. | Automatic "Most popular" working for real | now |
 | **v10.19.1 first run:** Supabase > SQL Editor > paste the whole new `supabase/setup.sql` > Run (new section 8: the order change log). Until then the log box says "needs setup" and everything else works. | Change log working | now |
-| For the top-10 items: real lead times and daily limit, delivery areas and fees, which payment provider (Yoco / PayFast / Ozow), voucher and loyalty rules | v10.21 to v10.24 | when we reach each one |
+| **v10.21 first run:** (1) Supabase > SQL Editor > paste the whole new `supabase/setup.sql` > Run (new section 9: the daily-limit count; until then dates are still checked for notice, closed days and blocked dates, only the daily limit is skipped). (2) **Admin > Theme & layout > Order calendar & delivery:** replace the placeholder numbers (notice days, orders per day, closed weekdays, delivery areas and fees, free-delivery amount, collection message) and Save. | Order calendar + delivery fees working for real | now |
+| For the top-10 items: real cake prices (v10.22), which payment provider (Yoco / PayFast / Ozow), voucher and loyalty rules | v10.21 to v10.24 | when we reach each one |
 
 ## 4. Needs the backend
 (v10.17 added the backend: sign-in, database, locks. What is left below is built on top of it.)

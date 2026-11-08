@@ -1,4 +1,4 @@
--- The Sweetest Bakery, v10.19: online database setup (sections 1 to 8).
+-- The Sweetest Bakery, v10.21: online database setup (sections 1 to 9).
 -- Run ONCE: Supabase dashboard > SQL Editor > New query > paste this whole file > Run.
 -- Safe to run again (it never deletes your data).
 
@@ -154,3 +154,21 @@ drop policy if exists "admins read log" on public.order_log;
 create policy "admins read log" on public.order_log for select using (public.is_admin());
 drop policy if exists "admins add log" on public.order_log;
 create policy "admins add log" on public.order_log for insert with check (public.is_admin());
+
+-- 9. (v10.21) Order calendar: how many orders are already booked per date. Re-runnable.
+-- Public on purpose, but it only ever returns a date + a count (upcoming dates only, cancelled orders ignored).
+-- No names, phones or order details leave the database. Bad dates in an order are ignored and can never make it fail.
+create or replace function public.booked_dates()
+returns table (day text, n bigint)
+language sql stable security definer set search_path = public as $$
+  select o.date as day, count(*)::bigint as n
+  from public.orders o
+  where o.status <> 'cancelled'
+    and o.date ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'
+    and o.date >= to_char(now() at time zone 'Africa/Johannesburg', 'YYYY-MM-DD')
+  group by o.date
+  order by o.date
+  limit 400;
+$$;
+revoke all on function public.booked_dates() from public;
+grant execute on function public.booked_dates() to anon, authenticated;

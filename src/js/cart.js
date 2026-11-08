@@ -35,7 +35,9 @@
       const owner = (biz.owner || "").split(" ")[0] || "there", out = [];
       out.push(`Hi ${owner}! I'd like to order from ${biz.name || "The Sweetest Bakery"}:`, "");
       lines.forEach(l => out.push(`${l.q} x ${l.p.name} (${money(price(l.p))} each) = ${money(l.sub)}${l.soldOut ? " [marked sold out today, please confirm]" : ""}`));
-      out.push("", `Total: ${money(total)}`, "");
+      out.push("", `Total: ${money(total)}`);
+      if (meta.area) out.push(`Delivery to ${meta.area}: ${meta.fee ? money(meta.fee) : "free"}`, `Total with delivery: ${money(total + (meta.fee || 0))}`);   // v10.21
+      out.push("");
       if (meta.name) out.push(`Name: ${meta.name}`);
       if (meta.phone) out.push(`Phone: ${meta.phone}`);
       if (meta.date) out.push(`Date needed: ${meta.date}`);

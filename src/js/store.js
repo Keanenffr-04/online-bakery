@@ -40,7 +40,10 @@
   };
   // Placeholder for the "Meet Becca" section until Becca writes her own (shows a small "Draft text" tag; the tag goes when she edits it in admin).
   const MEET_TEXT = "Hi, I'm Becca, the baker behind The Sweetest Bakery. Everything here is handmade and baked fresh to order, so nothing sits on a shelf waiting for you.\n\nTell me what you're celebrating and I'll bake something sweet for it.";
-  const D = { theme: "classic", tagline: "", heroStyle: "logo", greeting: "Welcome in, something sweet is baking.", home: { hero: true, shop: true, featured: true, fresh: true, meet: true, steps: true, cta: true }, homeOrder: ["hero", "shop", "featured", "fresh", "reviews", "meet", "steps", "cta"], meet: { heading: "Meet Becca", text: MEET_TEXT, draft: true }, featuredCount: 3, featuredStyle: "glass", recentCount: 3, popularCount: 3, popularAuto: true, newDays: 14, decorations: true, autoTheme: { enabled: true, rules: SEASON_RULES }, menuLayout: "grid", faq: [], reviews: [], specials: { enabled: true, items: ["Today's specials: ask Becca on WhatsApp", "Custom cakes for every occasion, order online"] }, orders: { enabled: true, items: ["How to order: message Becca on WhatsApp", "Tell us what you'd like, the date you need it and any notes"] } };
+  const D = { theme: "classic", tagline: "", heroStyle: "logo", greeting: "Welcome in, something sweet is baking.", home: { hero: true, shop: true, featured: true, fresh: true, meet: true, steps: true, cta: true }, homeOrder: ["hero", "shop", "featured", "fresh", "reviews", "meet", "steps", "cta"], meet: { heading: "Meet Becca", text: MEET_TEXT, draft: true }, featuredCount: 3, featuredStyle: "glass", recentCount: 3, popularCount: 3, popularAuto: true, newDays: 14, decorations: true, autoTheme: { enabled: true, rules: SEASON_RULES }, menuLayout: "grid", faq: [], reviews: [], specials: { enabled: true, items: ["Today's specials: ask Becca on WhatsApp", "Custom cakes for every occasion, order online"] }, orders: { enabled: true, items: ["How to order: message Becca on WhatsApp", "Tell us what you'd like, the date you need it and any notes"] },
+    // v10.21: order calendar + delivery fees. PLACEHOLDER numbers (draft: true) until Becca sets her real ones in Admin > Theme & layout > Order calendar & delivery.
+    calendar: { enabled: true, draft: true, cartDays: 3, customDays: 7, dailyLimit: 6, closedDays: [], blocked: [] },
+    delivery: { enabled: true, draft: true, areas: [{ name: "Close to the bakery", fee: 50 }, { name: "Further out", fee: 90 }], freeOver: 0, collectionNote: "Collection is free. Becca shares the pick-up details when she confirms." } };
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const SB = window.SB = {
     esc, TAGS: [["vegan", "Vegan"], ["gluten-free", "Gluten-free"], ["nut-free", "Nut-free"], ["dairy-free", "Dairy-free"]],
@@ -122,6 +125,48 @@
         if (!r.ok) return null; const o = {}; (await r.json()).forEach(x => { o[x.key] = x.value; }); return o;
       } catch (e) { return null; }
     },
+    // v10.21: how many orders are already booked per date (upcoming, cancelled ignored): {"2026-11-20": 3} or null if unavailable. Needs setup.sql section 9.
+    // Only dates + counts are public, never names or phones. Never throws.
+    async bookedDates(cfg) {
+      if (SB._booked !== undefined) return SB._booked;
+      cfg = cfg || (SB._biz || {}).supabase; if (!cfg || !cfg.url || !cfg.key || location.protocol === "file:") return (SB._booked = null);
+      try {
+        const c = new AbortController(), tm = setTimeout(() => c.abort(), 4000);
+        const r = await fetch(cfg.url + "/rest/v1/rpc/booked_dates", { method: "POST", headers: { apikey: cfg.key, "Content-Type": "application/json" }, body: "{}", signal: c.signal }); clearTimeout(tm);
+        if (!r.ok) return (SB._booked = null); const a = await r.json(); if (!Array.isArray(a)) return (SB._booked = null);
+        const o = {}; a.forEach(x => { if (/^\d{4}-\d{2}-\d{2}$/.test(x.day)) o[x.day] = +x.n || 0; }); return (SB._booked = o);
+      } catch (e) { return (SB._booked = null); }
+    },
+    // v10.21: is this date OK for an order? kind = "cart" | "custom". Returns { ok, reason }. Rules come from settings.calendar (notice days, closed weekdays, blocked dates, daily limit).
+    dateCheck(iso, kind, cal, booked) {
+      if (!iso || !cal || cal.enabled === false) return { ok: true };
+      const t = new Date(iso + "T12:00"), today = new Date(SB.today() + "T12:00"); if (isNaN(t)) return { ok: true };
+      const days = Math.max(0, +(kind === "custom" ? cal.customDays : cal.cartDays) || 0), diff = Math.round((t - today) / 864e5);
+      const nice = d => d.toLocaleDateString("en-ZA", { weekday: "long", day: "numeric", month: "long" });
+      if (diff < 0) return { ok: false, reason: "That date has passed." };
+      if (diff < days) return { ok: false, reason: (kind === "custom" ? "Custom orders" : "Orders") + " need " + days + (days === 1 ? " day" : " days") + " notice." };
+      if ((cal.blocked || []).includes(iso)) return { ok: false, reason: "Becca is not taking orders on " + nice(t) + "." };
+      if ((cal.closedDays || []).includes(t.getDay())) return { ok: false, reason: "Becca does not do orders on " + t.toLocaleDateString("en-ZA", { weekday: "long" }) + "s." };
+      const lim = +cal.dailyLimit || 0; if (lim && booked && (booked[iso] || 0) >= lim) return { ok: false, reason: nice(t) + " is fully booked." };
+      return { ok: true };
+    },
+    // First date from today that passes dateCheck (looks 180 days ahead), as ISO, or "".
+    nextFreeDate(kind, cal, booked) {
+      const d = new Date(SB.today() + "T12:00");
+      for (let i = 0; i < 180; i++, d.setDate(d.getDate() + 1)) { const iso = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); if (SB.dateCheck(iso, kind, cal, booked).ok) return iso; }
+      return "";
+    },
+    // The sentence shown when a date does not work: the reason + the first date that does.
+    dateMsg(iso, kind, cal, booked) {
+      const r = SB.dateCheck(iso, kind, cal, booked); if (r.ok) return "";
+      const n = SB.nextFreeDate(kind, cal, booked);
+      return r.reason + (n ? " The first free date is " + new Date(n + "T12:00").toLocaleDateString("en-ZA", { weekday: "long", day: "numeric", month: "long" }) + "." : "");
+    },
+    // v10.21: delivery fee for an area (0 when the order is over the free-delivery amount). Returns { fee, free } or null if the area is not on the list.
+    deliveryFee(dl, area, total) {
+      if (!dl || dl.enabled === false) return null; const a = (dl.areas || []).find(x => x.name === area); if (!a) return null;
+      const free = +dl.freeOver > 0 && total >= +dl.freeOver; return { fee: free ? 0 : Math.max(0, +a.fee || 0), free };
+    },
     // v10.19: the items ordered most (last 90 days, cancelled orders ignored): [{id, qty}] or null if unavailable. Needs setup.sql section 7.
     // Only item ids and counts are public, never names or phone numbers. Never throws.
     async popularRank(cfg) {
@@ -169,7 +214,8 @@
         const pubSet = (db && db.settings) || fSet, pubProd = (db && db.products) || fProd;
         const pv = window.top !== window ? J(sessionStorage, "sb_preview") : null;
         const base = { ...D, ...(pubSet || {}) }, own = (pv && pv.settings) || (SB.dbOK ? null : J(localStorage, "sb_settings")) || {};
-        const settings = { ...base, ...own, home: { ...D.home, ...(base.home || {}), ...(own.home || {}) }, meet: { ...D.meet, ...(base.meet || {}), ...(own.meet || {}) }, specials: { ...D.specials, ...(base.specials || {}), ...(own.specials || {}) }, orders: { ...D.orders, ...(base.orders || {}), ...(own.orders || {}) }, autoTheme: { ...D.autoTheme, ...(base.autoTheme || {}), ...(own.autoTheme || {}) } };
+        const settings = { ...base, ...own, home: { ...D.home, ...(base.home || {}), ...(own.home || {}) }, meet: { ...D.meet, ...(base.meet || {}), ...(own.meet || {}) }, specials: { ...D.specials, ...(base.specials || {}), ...(own.specials || {}) }, orders: { ...D.orders, ...(base.orders || {}), ...(own.orders || {}) }, autoTheme: { ...D.autoTheme, ...(base.autoTheme || {}), ...(own.autoTheme || {}) },
+          calendar: { ...D.calendar, ...(base.calendar || {}), ...(own.calendar || {}) }, delivery: { ...D.delivery, ...(base.delivery || {}), ...(own.delivery || {}) } };   // v10.21
         // v10.20: seasons added in later versions reach already-saved settings too (added at the end, nothing Becca chose is changed).
         { const au = settings.autoTheme, have = new Set((au.rules || []).map(r => r.theme)); au.rules = [...(au.rules || []), ...SEASON_RULES.filter(r => !have.has(r.theme)).map(r => ({ ...r }))]; }
         const data = (SB.dbOK ? null : J(localStorage, "sb_products")) || pubProd || { categories: [], products: [] };

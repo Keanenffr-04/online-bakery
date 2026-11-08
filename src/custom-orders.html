@@ -34,10 +34,11 @@
             </select></div>
         </div>
         <div class="form__row">
-          <div><label for="co-date">Date you need it <span class="req" aria-hidden="true">*</span></label><input id="co-date" name="date" type="date" required></div>
+          <div><label for="co-date">Date you need it <span class="req" aria-hidden="true">*</span></label><input id="co-date" name="date" type="date" required><p class="form__error form__error--inline" id="co-date-msg" role="alert" hidden></p><p class="muted small" id="co-date-note" hidden></p></div>
           <div><label for="co-method">Collection or delivery</label>
             <select id="co-method" name="method"><option>Not sure yet</option><option>Collection</option><option>Delivery</option></select></div>
         </div>
+        <div id="co-area-wrap" hidden><label for="co-area">Delivery area</label><select id="co-area" name="area"></select><p class="muted small" id="co-area-note"></p></div>
         <div class="form__row">
           <div><label for="co-what">What would you like?</label>
             <select id="co-what" name="what"><option>Cake</option><option>Cupcakes</option><option>Cookies</option><option>Bread</option><option>A mix of things</option><option>Something else</option></select></div>
