@@ -441,3 +441,8 @@ button.btn:disabled{opacity:.6;cursor:not-allowed}
 /* v10.19.1: thank-you page */
 .thanks{max-width:640px}.thanks__box{background:var(--surface-alt);border:1px solid var(--border);border-radius:var(--radius-card);padding:1rem 1.25rem;margin:1rem 0}
 .thanks__box h2{font-size:1rem;margin:0 0 .4rem}.thanks__box ul{margin:0 0 .6rem;padding-left:1.1rem}.thanks__actions{display:flex;gap:.6rem;flex-wrap:wrap}
+
+/* v10.22: cake price guide (Custom Orders) + Order again message (thank-you page) */
+.guide{max-width:720px;margin:0 auto 1.25rem}.guide .form__row:first-of-type>div>label:first-child{margin-top:1rem}.guide .btn{margin-top:.6rem}.guide h2{font-size:1.15rem;margin:0 0 .3rem;display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.guide__price{font-size:1.15rem;margin:.8rem 0 .3rem}
+.thanks__msg{background:var(--surface-alt);border:1px solid var(--border);border-radius:var(--radius-card);padding:.7rem 1rem;margin:.4rem 0}

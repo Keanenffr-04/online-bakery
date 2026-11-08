@@ -196,5 +196,45 @@
     ],
     "freeOver": 0,
     "collectionNote": "Collection is free. Becca shares the pick-up details when she confirms."
+  },
+  "priceGuide": {
+    "enabled": true,
+    "draft": true,
+    "note": "This is a guide only. Becca confirms the final price in her quote (designs, extra decoration and delivery can change it).",
+    "sizes": [
+      {
+        "name": "Small (15 cm round)",
+        "serves": 10,
+        "price": 350
+      },
+      {
+        "name": "Medium (20 cm round)",
+        "serves": 16,
+        "price": 550
+      },
+      {
+        "name": "Large (25 cm round)",
+        "serves": 25,
+        "price": 800
+      }
+    ],
+    "flavours": [
+      {
+        "name": "Vanilla",
+        "extra": 0
+      },
+      {
+        "name": "Chocolate",
+        "extra": 0
+      },
+      {
+        "name": "Red velvet",
+        "extra": 40
+      },
+      {
+        "name": "Carrot",
+        "extra": 30
+      }
+    ]
   }
 }

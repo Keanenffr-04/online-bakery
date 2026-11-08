@@ -1,10 +1,10 @@
 # online-bakery 🐇🍰
 Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
 
-**Current version:** v10.21.2. The latest three versions:
-- **v10.21.2** (patch): a list of 60 ideas to make the website better than the others. Pick the numbers you like (roadmap section 4c). Nothing on the website itself changed.
+**Current version:** v10.22. The latest three versions:
+- **v10.22:** a **cake price guide** on the Custom Orders page and **Order the same again** on the thank-you page. The sizes and prices are samples until you set yours.
+- **v10.21.2** (patch): a list of 60 ideas to make the website better than the others (roadmap section 4c). Nothing on the website itself changed.
 - **v10.21.1** (patch): a plain-English roadmap, backlog and this README.
-- **v10.21:** order calendar (notice days, days off, blocked dates, daily limit) and delivery or collection fees by area. The numbers are samples until you set yours.
 
 Every version, in plain English, is in [`roadmap/BACKLOG.md`](roadmap/BACKLOG.md).
 
@@ -43,6 +43,7 @@ When you press **Save**, the change is live for everyone straight away. *(Some w
 | Mark something as sold out for today | Admin > **Menu items** > **Sold out today** (it switches itself back on at midnight) |
 | Add a cake, change a price or hide an item | Admin > **Menu items** (use **Menu sections** to add or reorder the groups) |
 | Close a day, set notice days, a daily limit or delivery fees | Admin > **Theme & layout** > **Order calendar & delivery** |
+| Change cake sizes, flavours or prices in the price guide | Admin > **Theme & layout** > **Cake price guide** |
 | Change the look, the season dates or the Home page order | Admin > **Theme & layout** |
 | Change the scrolling words at the top or bottom | Admin > Theme & layout > **Top and bottom strips** |
 | Keep a safe copy of everything | Admin > **Backup & files** > download a backup |
@@ -50,14 +51,14 @@ When you press **Save**, the change is live for everyone straight away. *(Some w
 ### Getting the next version built
 1. Write what you want in a file called **`Changes for next version.md`** (Notepad is fine, a numbered list works well).
 2. Send it together with the **newest zip** and say **"start next v/patch"**. If you send no list, the next item on the roadmap is built.
-3. **Two to three changes per version.** Anything extra is saved on the ideas list (roadmap section 4) so nothing is lost.
+3. **Two changes per version.** Anything extra is saved on the ideas list (roadmap section 4) so nothing is lost.
 4. You get back a new zip named like `online-bakery-v10.22.zip`. **Keep every zip.** The newest one is always the whole website with everything in it.
 5. A **version** such as v10.22 is a bigger step. A **patch** such as v10.21.1 is a small fix on top of it.
 
 ### Things only you can do
 The full checklist is in [`roadmap/ROADMAP.md`, section 2](roadmap/ROADMAP.md#need). The short version:
 - Update the online database when a version says so (about 2 minutes, steps are in the roadmap).
-- Replace the sample numbers: notice days, orders per day, delivery areas and fees, prices.
+- Replace the sample numbers: notice days, orders per day, delivery areas and fees, prices, and the cake sizes and prices in the price guide.
 - Send real FAQ answers, reviews, your story and your Instagram and Facebook names.
 - Read the Privacy and Terms pages and fix anything that is not true for your bakery.
 - Send photos when you have them, and tell us when you are happy so we can put it online.
@@ -90,6 +91,7 @@ The full checklist is in [`roadmap/ROADMAP.md`, section 2](roadmap/ROADMAP.md#ne
 | **`setup.sql`** | A small file of instructions you paste into Supabase once in a while. It never deletes anything. |
 | **Publish** | An old step from before v10.17. You do not need it any more: Save is already live. |
 | **Placeholder / Draft** | A sample that should be replaced with your real details (for example the sample delivery fees). |
+| **Price guide** | The box on the Custom Orders page where a customer picks a cake size and flavour and sees a rough price. The prices are yours to set in the admin. |
 | **Order calendar** | The rules about which dates customers may choose: notice days, days off, blocked dates and a daily limit. |
 | **Email sender (SMTP)** | A service that sends the confirm and reset emails to customers. We set it up with your own web address. |
 | **POPIA** | South Africa's law about protecting people's personal information. The Privacy page follows it. |
@@ -121,7 +123,7 @@ online-bakery/
 ## For whoever builds the site: working rules (important)
 *Becca: you can skip this part. It is the instruction sheet for Claude or a developer.*
 
-1. 2 to 3 things per version. No more. **Versions after v10 are numbered v10.1, v10.2, v10.3 ... (owner's choice, v10.1).** The zip is named `online-bakery-v10.1.zip` etc.
+1. 2 things per version. No more. **Versions after v10 are numbered v10.1, v10.2, v10.3 ... (owner's choice, v10.1).** The zip is named `online-bakery-v10.1.zip` etc.
 2. Roadmap and backlog are **append-only**. Never delete. Versions may be pushed forward.
 3. Finished work moves to the backlog tagged with its version number.
 4. New ideas go in the roadmap "Ideas for later" list, section 4 (or a specific version if it fits).

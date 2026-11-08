@@ -274,6 +274,19 @@
     <div class="deco-demo" id="deco-demo" data-theme="${esc(state.peek || s.theme)}" aria-live="polite"></div>`;
   }
   // v10.21: Order calendar + delivery settings (settings.calendar, settings.delivery). Every edit clears the "placeholder" flag of its half.
+  function guideBox(s) {   // v10.22: cake price guide (sizes, flavours, prices)
+    const g = s.priceGuide || {}, sz = g.sizes || [], fl = g.flavours || [];
+    return `${g.draft ? `<div class="msg msg--warn">These are <strong>sample sizes and prices</strong>. Customers see a "Sample prices" tag until you change something here, then Save.</div>` : ""}
+    <label class="chk"><input type="checkbox" data-act="pg-on" ${g.enabled !== false ? "checked" : ""}>Show the cake price guide on the Custom Orders page</label>
+    <p class="adm-sub">Sizes <span class="muted">(name, people it serves, price in rand)</span></p>
+    <ul class="adm-list">${sz.map((z, i) => `<li><div class="csec"><input data-act="pg-sn" data-i="${i}" value="${esc(z.name)}" maxlength="40" aria-label="Size name" placeholder="e.g. Medium (20 cm round)"><input type="number" min="1" max="1000" data-act="pg-ss" data-i="${i}" value="${+z.serves || 1}" aria-label="Serves"><input type="number" min="0" max="100000" data-act="pg-sp" data-i="${i}" value="${+z.price || 0}" aria-label="Price in rand"></div><button class="btn btn--sm btn--ghost" type="button" data-act="pg-srm" data-i="${i}" aria-label="Remove ${esc(z.name)}">Remove</button></li>`).join("") || "<li>No sizes yet, so the guide is hidden.</li>"}</ul>
+    <p><button class="btn btn--sm btn--ghost" type="button" data-act="pg-sadd">Add a size</button></p>
+    <p class="adm-sub">Flavours <span class="muted">(name, extra cost in rand, 0 = none)</span></p>
+    <ul class="adm-list">${fl.map((x, i) => `<li><div class="csec"><input data-act="pg-fn" data-i="${i}" value="${esc(x.name)}" maxlength="40" aria-label="Flavour name" placeholder="e.g. Red velvet"><input type="number" min="0" max="10000" data-act="pg-fx" data-i="${i}" value="${+x.extra || 0}" aria-label="Extra cost in rand"></div><button class="btn btn--sm btn--ghost" type="button" data-act="pg-frm" data-i="${i}" aria-label="Remove ${esc(x.name)}">Remove</button></li>`).join("") || "<li>No flavours yet. Customers will only choose a size.</li>"}</ul>
+    <p><button class="btn btn--sm btn--ghost" type="button" data-act="pg-fadd">Add a flavour</button></p>
+    <label>Note under the price <span class="muted">(shown to customers)</span></label><input data-act="pg-note" maxlength="200" value="${esc(g.note || "")}">
+    <p class="muted">The price shown is the size price plus the flavour extra. It is only a guide: the Custom Order message tells you which size and flavour the customer chose, and you confirm the final price.</p>`;
+  }
   function rulesBox(s) {
     const c = s.calendar || {}, d = s.delivery || {}, DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], rng = (n, cur, f) => Array.from({ length: n + 1 }, (_, i) => `<option value="${i}" ${i === cur ? "selected" : ""}>${f(i)}</option>`).join("");
     const nice = iso => { try { return new Date(iso + "T12:00").toLocaleDateString("en-ZA", { weekday: "short", day: "numeric", month: "long", year: "numeric" }); } catch (e) { return iso; } };
@@ -320,6 +333,7 @@
     ${sec("seasons", "Automatic seasons", (s.autoTheme || {}).enabled === false ? "off" : "on", seasonsBox(s))}
     ${sec("home", "Home page", "what shows and how many", homeBox)}
     ${sec("rules", "Order calendar & delivery", (s.calendar || {}).enabled === false ? "calendar off" : ((s.calendar || {}).draft || (s.delivery || {}).draft ? "placeholder numbers" : "notice, limit, areas"), rulesBox(s))}
+    ${sec("guide", "Cake price guide", (s.priceGuide || {}).enabled === false ? "off" : ((s.priceGuide || {}).draft ? "sample prices" : ((s.priceGuide || {}).sizes || []).length + " sizes"), guideBox(s))}
     ${sec("strips", "Top and bottom strips", "specials and order messages", stripBox)}
     ${sec("menu", "Menu page", s.menuLayout === "list" ? "list" : "grid", menuBox)}
     <div class="adm-save"><button class="btn btn--sm" data-act="lsave">Save to this device</button> <button class="btn btn--sm btn--ghost" data-act="lreset">Reset</button><span class="muted">Then use Publish to make it live.</span></div></div>
@@ -488,6 +502,13 @@
       }
       draftKey(); refreshSeasonLabels(); return drawSeasonStatus();
     }
+    if (a.startsWith("pg-")) {   // v10.22: price guide fields
+      const g = s.priceGuide = s.priceGuide || {}, num = (x, lo, hi) => Math.min(hi, Math.max(lo, Math.floor(+x) || 0)), i = +t.dataset.i, z = (g.sizes || [])[i], fx = (g.flavours || [])[i];
+      g.draft = false;
+      if (a === "pg-on") g.enabled = t.checked; else if (a === "pg-sn" && z) z.name = t.value.slice(0, 40); else if (a === "pg-ss" && z) z.serves = num(t.value, 1, 1000); else if (a === "pg-sp" && z) z.price = num(t.value, 0, 100000);
+      else if (a === "pg-fn" && fx) fx.name = t.value.slice(0, 40); else if (a === "pg-fx" && fx) fx.extra = num(t.value, 0, 10000); else if (a === "pg-note") g.note = t.value.slice(0, 200); else return;
+      draftKey(); return;
+    }
     if (a.startsWith("cal-") || a.startsWith("dl-")) {   // v10.21
       const c = s.calendar = s.calendar || {}, d = s.delivery = s.delivery || {}, num = (x, lo, hi) => Math.min(hi, Math.max(lo, Math.floor(+x) || 0));
       if (a.startsWith("cal-")) { c.draft = false; if (a === "cal-on") c.enabled = t.checked; else if (a === "cal-cd") c.cartDays = num(t.value, 0, 14); else if (a === "cal-xn") c.customDays = num(t.value, 0, 30); else if (a === "cal-lim") c.dailyLimit = num(t.value, 0, 50); else if (a === "cal-xd") { const n = +t.dataset.d, set = new Set(c.closedDays || []); if (t.checked) set.add(n); else set.delete(n); c.closedDays = [...set].sort(); } else return; }
@@ -550,6 +571,12 @@
     if (a === "pedit") { state.edit = id; return go("menu"); }
     if (a === "pcancel") { state.edit = null; return go("menu"); }
     if (a === "pdel") { if (confirm("Delete this item?")) { state.data.products = state.data.products.filter(p => p.id !== id); await saveProducts(); } return go("menu"); }
+    if (a === "pg-sadd" || a === "pg-srm" || a === "pg-fadd" || a === "pg-frm") {   // v10.22
+      const sd = state.draft; if (!sd) return; const g = sd.priceGuide = sd.priceGuide || {}; state.open.guide = true; g.draft = false; g.sizes = g.sizes || []; g.flavours = g.flavours || [];
+      if (a === "pg-sadd") g.sizes = [...g.sizes, { name: "", serves: 10, price: 0 }].slice(0, 10); else if (a === "pg-srm") g.sizes = g.sizes.filter((_, i) => i !== +b.dataset.i);
+      else if (a === "pg-fadd") g.flavours = [...g.flavours, { name: "", extra: 0 }].slice(0, 15); else g.flavours = g.flavours.filter((_, i) => i !== +b.dataset.i);
+      draftKey(); go("look"); return;
+    }
     if (a === "cal-blk-add" || a === "cal-blk-rm" || a === "dl-add" || a === "dl-rm") {   // v10.21
       const sd = state.draft; if (!sd) return; const c = sd.calendar = sd.calendar || {}, d = sd.delivery = sd.delivery || {}; state.open.rules = true;
       if (a === "cal-blk-add") { const iso = (document.getElementById("cal-blk") || {}).value; if (!/^\d{4}-\d{2}-\d{2}$/.test(iso || "")) return; c.blocked = [...new Set([...(c.blocked || []), iso])].sort(); c.draft = false; }

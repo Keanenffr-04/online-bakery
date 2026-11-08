@@ -43,7 +43,9 @@
   const D = { theme: "classic", tagline: "", heroStyle: "logo", greeting: "Welcome in, something sweet is baking.", home: { hero: true, shop: true, featured: true, fresh: true, meet: true, steps: true, cta: true }, homeOrder: ["hero", "shop", "featured", "fresh", "reviews", "meet", "steps", "cta"], meet: { heading: "Meet Becca", text: MEET_TEXT, draft: true }, featuredCount: 3, featuredStyle: "glass", recentCount: 3, popularCount: 3, popularAuto: true, newDays: 14, decorations: true, autoTheme: { enabled: true, rules: SEASON_RULES }, menuLayout: "grid", faq: [], reviews: [], specials: { enabled: true, items: ["Today's specials: ask Becca on WhatsApp", "Custom cakes for every occasion, order online"] }, orders: { enabled: true, items: ["How to order: message Becca on WhatsApp", "Tell us what you'd like, the date you need it and any notes"] },
     // v10.21: order calendar + delivery fees. PLACEHOLDER numbers (draft: true) until Becca sets her real ones in Admin > Theme & layout > Order calendar & delivery.
     calendar: { enabled: true, draft: true, cartDays: 3, customDays: 7, dailyLimit: 6, closedDays: [], blocked: [] },
-    delivery: { enabled: true, draft: true, areas: [{ name: "Close to the bakery", fee: 50 }, { name: "Further out", fee: 90 }], freeOver: 0, collectionNote: "Collection is free. Becca shares the pick-up details when she confirms." } };
+    delivery: { enabled: true, draft: true, areas: [{ name: "Close to the bakery", fee: 50 }, { name: "Further out", fee: 90 }], freeOver: 0, collectionNote: "Collection is free. Becca shares the pick-up details when she confirms." },
+    // v10.22: cake price guide. PLACEHOLDER sizes and prices (draft: true) until Becca sets her real ones in Admin > Theme & layout > Cake price guide.
+    priceGuide: { enabled: true, draft: true, note: "This is a guide only. Becca confirms the final price in her quote (designs, extra decoration and delivery can change it).", sizes: [{ name: "Small (15 cm round)", serves: 10, price: 350 }, { name: "Medium (20 cm round)", serves: 16, price: 550 }, { name: "Large (25 cm round)", serves: 25, price: 800 }], flavours: [{ name: "Vanilla", extra: 0 }, { name: "Chocolate", extra: 0 }, { name: "Red velvet", extra: 40 }, { name: "Carrot", extra: 30 }] } };
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const SB = window.SB = {
     esc, TAGS: [["vegan", "Vegan"], ["gluten-free", "Gluten-free"], ["nut-free", "Nut-free"], ["dairy-free", "Dairy-free"]],
@@ -162,6 +164,12 @@
       const n = SB.nextFreeDate(kind, cal, booked);
       return r.reason + (n ? " The first free date is " + new Date(n + "T12:00").toLocaleDateString("en-ZA", { weekday: "long", day: "numeric", month: "long" }) + "." : "");
     },
+    // v10.22: price guide estimate. pg = settings.priceGuide, si / fi = chosen size and flavour (numbers). Returns { size, serves, flavour, price } or null.
+    guidePrice(pg, si, fi) {
+      const z = ((pg && pg.sizes) || [])[si], f = ((pg && pg.flavours) || [])[fi]; if (!z) return null;
+      const price = Math.max(0, Math.round((+z.price || 0) + (f ? +f.extra || 0 : 0)));
+      return { size: z.name, serves: Math.max(1, Math.round(+z.serves || 1)), flavour: f ? f.name : "", price };
+    },
     // v10.21: delivery fee for an area (0 when the order is over the free-delivery amount). Returns { fee, free } or null if the area is not on the list.
     deliveryFee(dl, area, total) {
       if (!dl || dl.enabled === false) return null; const a = (dl.areas || []).find(x => x.name === area); if (!a) return null;
@@ -215,7 +223,8 @@
         const pv = window.top !== window ? J(sessionStorage, "sb_preview") : null;
         const base = { ...D, ...(pubSet || {}) }, own = (pv && pv.settings) || (SB.dbOK ? null : J(localStorage, "sb_settings")) || {};
         const settings = { ...base, ...own, home: { ...D.home, ...(base.home || {}), ...(own.home || {}) }, meet: { ...D.meet, ...(base.meet || {}), ...(own.meet || {}) }, specials: { ...D.specials, ...(base.specials || {}), ...(own.specials || {}) }, orders: { ...D.orders, ...(base.orders || {}), ...(own.orders || {}) }, autoTheme: { ...D.autoTheme, ...(base.autoTheme || {}), ...(own.autoTheme || {}) },
-          calendar: { ...D.calendar, ...(base.calendar || {}), ...(own.calendar || {}) }, delivery: { ...D.delivery, ...(base.delivery || {}), ...(own.delivery || {}) } };   // v10.21
+          calendar: { ...D.calendar, ...(base.calendar || {}), ...(own.calendar || {}) }, delivery: { ...D.delivery, ...(base.delivery || {}), ...(own.delivery || {}) },   // v10.21
+          priceGuide: { ...D.priceGuide, ...(base.priceGuide || {}), ...(own.priceGuide || {}) } };   // v10.22
         // v10.20: seasons added in later versions reach already-saved settings too (added at the end, nothing Becca chose is changed).
         { const au = settings.autoTheme, have = new Set((au.rules || []).map(r => r.theme)); au.rules = [...(au.rules || []), ...SEASON_RULES.filter(r => !have.has(r.theme)).map(r => ({ ...r }))]; }
         const data = (SB.dbOK ? null : J(localStorage, "sb_products")) || pubProd || { categories: [], products: [] };

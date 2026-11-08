@@ -2,7 +2,7 @@
 
 *Written for Becca. This page is the list of **finished** work. What is still to do is in [`ROADMAP.md`](ROADMAP.md). New entries are added at the bottom and nothing is ever deleted.*
 
-**Latest version:** v10.21.2
+**Latest version:** v10.22
 
 ## Contents
 1. [What the website can do today](#today)
@@ -17,9 +17,10 @@
 ### For your customers
 - **Browse the Menu:** sections, a search box, dietary tags with filters (once items are tagged), a "New" badge on recent items, and a "Sold out today" label.
 - **Order in two ways.** Add items to the **Cart**, or fill in the **Custom Order** form for cakes and events. Either one opens **one WhatsApp message** to Becca with everything typed in. A copy is also saved so Becca can find it in the admin.
+- **Cake price guide:** on the Custom Orders page a customer picks a size and flavour, sees an estimated price and presses **Use this in my request** to fill the form. The guess goes into the WhatsApp message so Becca sees what they chose. *(Sizes and prices are samples until Becca sets hers; customers see a "Sample prices" tag.)*
 - **Order calendar:** a customer cannot choose a date that is too soon, on a day off, blocked, or already full. The page says why and suggests the first free date. *(Numbers are samples until Becca sets hers.)*
 - **Delivery or collection:** delivery asks for an area and adds that area's fee to the cart total. *(Areas and fees are samples until Becca sets hers.)*
-- **A thank-you page** after ordering, and one floating WhatsApp button on every page.
+- **A thank-you page** after ordering, with **Order the same again** (puts the same items back in the cart), and one floating WhatsApp button on every page.
 - **My account:** sign in with email or Google, see past orders, press **Order again**, keep their details, change password or delete their account.
 - **Remember my details** on their own phone or computer, so they do not retype their name and number.
 - **FAQ, About, Contact, Privacy and Terms** pages, plus Instagram and Facebook links in the footer. Customer reviews appear once real ones are added.
@@ -35,6 +36,7 @@
 - **Orders:** colour-coded statuses, a one-tap next step (Confirm, Mark ready, Mark done), a ready-made **WhatsApp message** for each status, a **printable order slip**, **Numbers** (this week, this month, last month, all time, with a spreadsheet download), a **change log**, and an **Upcoming dates** box showing how full the next 14 days are.
 - **Menu items and sections:** add, edit, hide, reorder, tag, "Sold out today".
 - **Theme & layout:** theme, automatic seasons, Home page sections, the two strips, and the **Order calendar & delivery** rules.
+- **Cake price guide:** edit sizes (name, servings, price), flavours (extra cost) and the note customers see, or switch the guide off (Theme & layout).
 - **Backup & files:** download a backup of the menu, settings and orders.
 - Everything you save is **live for everyone straight away** (there is no separate Publish step any more).
 
@@ -84,6 +86,7 @@ Oldest first. Click a version to jump to its detailed record. A version like **v
 | [v10.21](#v10-21) | 2026-11-08 | Order calendar (notice days, days off, blocked dates, daily limit) and delivery or collection fees by area. |
 | [v10.21.1](#v10-21-1) | 2026-11-08 | Patch: this tidy-up. A plain-English roadmap, backlog and README for Becca. |
 | [v10.21.2](#v10-21-2) | 2026-11-08 | Patch: the big "what else could we add" list (60 ideas, pick by number). No website change. |
+| [v10.22](#v10-22) | 2026-11-08 | Cake price guide on Custom Orders (size + flavour = estimated price) and "Order the same again" on the thank-you page. Sample prices until you set yours. |
 
 ---
 
@@ -505,3 +508,13 @@ Files: `roadmap/ROADMAP.md` (section 4c, "Where we are", tracker row, pointer in
 Checks: the new links and the anchor `#v10-21-2` resolve; no existing roadmap or backlog text was removed.
 Notes: (a) Honest flag, item 46: every Supabase-backed feature since v10.17 (orders, accounts, statuses, calendar limit, Most popular) was only tested against a pretend database; a short real-world test with the owner is the most valuable next step before launch. (b) The owner's list contained one request, so nothing else was added to this patch (the "Publish" wording fix is item 45).
 Pushed to the backlog (not built): all 60 ideas in `ROADMAP.md` section 4c.
+
+<a id="v10-22"></a>
+## v10.22: Cake price guide + Order again on the thank-you page (done, 2026-11-08)
+The owner said "lets do it your way, start next v/patch", so the first version of the agreed build order was built (two items; see ROADMAP section 1). Nothing to run in Supabase this time: the guide lives in the existing `settings` row.
+1. **Cake price guide** (Custom Orders page, above the form). The customer picks a **size** (name, "serves about N") and a **flavour** (some add an extra cost) and sees **Estimated price: R x**, which is the size price plus the flavour extra. **Use this in my request** fills the form (What = Cake, servings = the size's servings, flavours = the flavour) and scrolls to it. If it was used, the WhatsApp message carries a line "Price guide estimate: R x (size, flavour). This is only a guide, please confirm.", the saved order has `details.guide = {size, flavour, estimate}` and the thank-you page lists the estimate "to be confirmed". Nothing is added to the order total (custom orders still get no total until Becca quotes). **The numbers are placeholders** (3 sizes, 4 flavours) and the heading shows a **"Sample prices, to be confirmed by Becca"** tag until Becca changes anything in admin, the same idea as the FAQ drafts. Admin > Theme & layout > **Cake price guide**: on / off tick, add / edit / remove sizes (name, servings, price) and flavours (name, extra cost), and the note under the price. With no sizes the guide hides. Settings: `priceGuide {enabled, draft, note, sizes[{name, serves, price}], flavours[{name, extra}]}` merged in `SB.load()` over the defaults in `store.js`; estimate maths in `SB.guidePrice(pg, sizeIndex, flavourIndex)`.
+2. **Order again on the thank-you page.** After a cart order the thank-you page has **Order the same again**. It puts the same items (and quantities) back in the cart, **replacing** what is there (the cart is not emptied automatically after sending, so adding would have doubled it), skips items that are no longer on the menu or are sold out today and says how many, and links to the cart. If nothing can be added the cart is left alone. The cart page now keeps `lines [{id, q}]` in the just-sent order (`sb_last`). After a custom request the page offers **Make another custom request** instead. (My account already had Order again since v10.18.)
+Files: `src/js/store.js`, `src/js/custom-order.js`, `src/custom-orders.html`, `src/js/cart-page.js`, `src/js/thanks.js`, `src/js/admin.js` (`guideBox`, handlers), `src/css/site.css`, `config/site-settings.json` + `src/js/offline-data.js` (regenerated), `README.md`, `roadmap/ROADMAP.md`, `roadmap/BACKLOG.md`, `docs/AI_HANDOFF.md`, `VERSION`.
+Tests (headless browser): file://: guide shows with the Draft tag, size and flavour change the estimate (R 350, then R 590 for Medium + Red velvet), the button fills servings, flavour and What, the WhatsApp text and the saved `sb_last` carry the estimate, the thank-you page lists it; at 320 px the guide fits with no sideways scroll; Order again: items replaced not doubled, a gone item is skipped with the right wording, nothing available leaves the cart alone, no button when there are no saved lines, no sideways scroll at 390 px. Admin (Supabase **mocked**, because the build sandbox has no internet; **not tested against the real project**): the box lists 3 sizes and 4 flavours with the sample warning, add / edit / remove keep the section open, the warning goes after the first edit, Save writes `priceGuide` with `draft: false`, a public Custom Orders page built from the saved settings shows the new sizes and flavours with no Draft tag and the right price (R 1 800 for the new tiered size), switching the guide off hides it; all 16 pages linked from `preview.html` open with no empty page and no script errors.
+Notes and honest limits: (a) the estimate is size price plus flavour extra only; decoration, tiers and delivery are for Becca's quote; (b) the guide is for cakes, not cupcakes or cookies (see ideas); (c) a customer can still type any servings, the guide only fills the box; (d) on a very small phone the size name can be cut short in the dropdown, it opens in full.
+Pushed to the backlog (not built), also in `ROADMAP.md` section 4b: price extras such as decoration level or tiers; the guide on Home or the FAQ; "Custom order again" that fills the form from the last request; counting how many requests used the guide; separate prices for cupcake and cookie boxes.

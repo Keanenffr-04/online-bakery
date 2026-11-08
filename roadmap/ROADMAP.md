@@ -1,12 +1,13 @@
 # 🗺️ Roadmap: what's next and what we need from you
 
-**Where we are:** v10.21.2 &nbsp;|&nbsp; **Next up:** v10.22 (cake price guide + "Order again" on the thank-you page) &nbsp;|&nbsp; **Rule:** 2 to 3 things per version.
+**Where we are:** v10.22 &nbsp;|&nbsp; **Next up:** v10.23 (real-world test + spam protection) &nbsp;|&nbsp; **Rule:** 2 things per version.
 
 *This page is written for Becca. No website or coding knowledge needed. Words you might not know are explained in the "Words explained" list in the [README](../README.md). Finished work is in [`BACKLOG.md`](BACKLOG.md).*
 
 ## In one minute
 - ✅ **The shop works.** Menu, cart, custom orders, WhatsApp, customer accounts, the admin, themes, order calendar and delivery fees are all built.
-- ⏭️ **Next:** the cake price guide (v10.22). It needs your real cake sizes and prices.
+- ✅ **New in v10.22:** the cake price guide on the Custom Orders page and "Order the same again" on the thank-you page. The sizes and prices are **samples** until you set yours.
+- ⏭️ **Next:** v10.23, a real-world test of the live site with you (about 20 minutes) plus spam protection. The build order for all 60 ideas is in section 1.
 - ⏳ **Waiting on you:** real prices, FAQ answers, reviews, your story, Instagram / Facebook names and photos. The full checklist is in section 2.
 - 🚀 **Last step:** putting the website online, only when you say "I'm happy with everything".
 
@@ -24,15 +25,20 @@
 
 <a id="plan"></a>
 ## 1. What is still to build (the plan)
-Your change lists always go **first**, so the versions below may slide back by one when you send a list. Photos and going online are deliberately **last**. Everything already built is listed in [`BACKLOG.md`](BACKLOG.md) (start with "What the website can do today").
+Your change lists always go **first**, so the versions below may slide back by one when you send a list. **The order below is the one you agreed in v10.22:** safe and real first (v10.23), then things that save you time, then trust, then money, then launch. Done: **v10.22** (price guide + Order again). Photos and going online are deliberately **last**. Everything already built is listed in [`BACKLOG.md`](BACKLOG.md) (start with "What the website can do today").
 
 | Version | Status | What you will get | What we need from you |
 |---|---|---|---|
-| **v10.22** | ⏭️ Next | **Cake price guide:** a customer picks size, servings and flavour and sees an estimated price, so there are fewer messages back and forth. Plus **"Order again"** on the thank-you page (My account already has it). | Your real cake sizes, servings and prices |
-| v10.23 | 📅 Planned | **Gift vouchers** (you give a code, the customer types it in the cart, it comes off the total) + a **loyalty reward** (for example every 10th order a free cupcake box) | Your voucher and loyalty rules |
-| v10.24 | 📅 Planned | **Deposits / online payment** (Yoco, PayFast or Ozow). A deposit secures the date. This one is on its own because it handles real money. | A payment account that you open |
-| v10.25 | 📅 Planned | **Specials list:** customers who tick "yes, send me specials" (POPIA-friendly, with an easy unsubscribe) + **Home page, round 3** | Nothing new |
+| **v10.23** | ⏭️ Next | **A real-world test + spam protection** (ideas 46 and 48): we walk through the live site with you (place an order, change its status, sign up, delete an account, check Most popular), then add spam protection on orders and sign-up and a keep-alive so the free database never pauses. | About 20 minutes of your time. Update the online database (2c) first |
+| v10.24 | 📅 Planned | **Bake sheet + new-order alert** (36 and 35): "what to make for Saturday" totalled across all orders and printable, and a sound or phone notice when an order arrives. | Nothing new |
+| v10.25 | 📅 Planned | **Review link + inspiration photo upload** (1 and 13): a link to a short review form you approve, and customers can attach a photo to a custom order. | Nothing new |
+| v10.26 | 📅 Planned | **EFT / SnapScan / Capitec Pay details with "upload proof of payment"** + **install on the home screen like an app** (27 and 47). | Your payment details (account or QR) |
+| v10.27 | 📅 Planned | **Shop status banner** ("on holiday until 3 Jan", pauses orders) + the **old "Publish" wording fixed** in the admin (4 and 45). | Nothing new |
+| v10.28 | 📅 Planned | **Gift vouchers** (you give a code, the customer types it in the cart, it comes off the total) + a **loyalty reward** (for example every 10th order a free cupcake box). | Your voucher and loyalty rules |
+| v10.29 | 📅 Planned | **Deposits / online payment** (Yoco, PayFast or Ozow). A deposit secures the date. On its own because it handles real money. | A payment account that you open |
+| v10.30 | 📅 Planned | **Specials list:** customers who tick "yes, send me specials" (POPIA-friendly, with an easy unsubscribe) + **Home page, round 3**. | Nothing new |
 | When photos exist | ⏳ Waiting | **Real product photos** instead of emoji + an **"Our work" gallery** | Your photos (tip: same light and background for every photo) |
+| After launch | 📅 Planned | **The rest of your 60 ideas** (section 4c), two at a time, in the order you choose. Ideas will also be added as real customers show us what they need. | Your numbers |
 | Last (v11) | ⏳ Waiting | **Put the website online:** hosting, small browser icon, search-engine tidy-up, Google Business Profile, share picture for WhatsApp / Facebook, your own web address, launch checklist | You saying "I'm happy with everything" |
 
 ---
@@ -42,9 +48,10 @@ Your change lists always go **first**, so the versions below may slide back by o
 Nothing here can be built or guessed by us. Send things whenever you have them (in your next change list is fine).
 
 ### 2a. Your to-do list
-- [ ] **Update the online database** with the newest `supabase/setup.sql` (steps in 2c). Latest change: v10.21.
+- [ ] **Update the online database** with the newest `supabase/setup.sql` (steps in 2c). Latest change: v10.21 (v10.22 needs nothing new).
 - [ ] **Replace the placeholder numbers** in Admin > Theme & layout > **Order calendar & delivery**: days of notice, orders per day, days off, delivery areas and fees. Today they are samples.
 - [ ] **Real prices and product list.** Today the menu prices are samples (Admin > Menu items).
+- [ ] **Real cake sizes, servings, flavours and prices** for the price guide (Admin > Theme & layout > **Cake price guide**). Until you change them customers see a "Sample prices" tag.
 - [ ] **FAQ answers, reviews, your "Meet Becca" story, Instagram and Facebook names** (details in 2b).
 - [ ] **Read the Privacy and Terms pages** and fix anything that is not true for your bakery. They are drafts.
 - [ ] **Which items are vegan, gluten-free, nut-free, dairy-free** (only what is definitely true).
@@ -63,6 +70,7 @@ Nothing here can be built or guessed by us. Send things whenever you have them (
 | Which products are vegan, gluten-free, nut-free, dairy-free | Tags and filters on the Menu | Admin > Menu items > Edit |
 | Your own wording for Christmas, Valentine's and other seasons (optional) | Greeting and top strip during that season | Admin > Theme & layout > Automatic seasons |
 | Real prices and product list | Menu and cart totals | Admin > Menu items |
+| Real cake sizes, servings, flavours and extra costs | Cake price guide on Custom Orders | Admin > Theme & layout > Cake price guide |
 | Real notice days, daily limit, delivery areas and fees | Order calendar and delivery | Admin > Theme & layout > Order calendar & delivery |
 | Product photos | Replace the emoji | When you are ready |
 | Voucher and loyalty rules, payment provider | v10.23 and v10.24 | When we reach those versions |
@@ -92,6 +100,7 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 
 | List | # | Request (short) | Status | Where |
 |---|---|---|---|---|
+| - | - | (Owner said "lets do it your way, start next v/patch": the first version of the agreed order was built, the cake price guide + "Order the same again" on the thank-you page. The new build order for all 60 ideas is in the plan, section 1) | DONE | v10.22 |
 | - | - | (Change list: give me a list of everything we should still add to make the website better than the others, and I will say what I like. Only 2 changes per patch, the rest to the backlog. The list is in section 4c; nothing was built) | DONE | v10.21.2 |
 | - | - | (Change list: tidy the roadmap and backlog so Becca can read them; add what is useful to the README. Two changes, ideas for later collected in section 4b) | DONE | v10.21.1 |
 | - | - | (Owner said "follow the roadmap" and asked for the next 5 versions, so the version marked NEXT was built with placeholder numbers: order calendar + delivery fees; next five listed in the plan, section 1) | DONE | v10.21 |
@@ -220,6 +229,13 @@ Every version leaves a few "good idea, but not now" notes. They used to be sprea
 - The Save bar in Admin > Theme & layout still says "Save to this device. Then use Publish". Since v10.17 pressing Save goes live straight away, so that wording is out of date.
 - The Menu sections / Menu items help text in admin still says changes reach customers "after you Publish". Same reason, same fix.
 
+**Cake price guide and Order again (v10.22)**
+- Price extras beyond size and flavour, such as a decoration level or tiers (v10.22)
+- Show the price guide on the Home page or the FAQ as well (v10.22)
+- A "Custom order again" that fills the form from your last request, for returning customers (v10.22)
+- Count how many requests used the guide, in Numbers (v10.22)
+- Different prices for cupcake and cookie boxes in the same guide (v10.22)
+
 **Helping Becca (new in v10.21.1)**
 - A one-page printable cheat sheet for the day-to-day admin jobs
 - Screenshots in the README next to each admin job
@@ -241,7 +257,7 @@ You asked for everything we think the website could still add. Nothing here is b
 10. **A page for each area you deliver to,** so local searches find you (after launch). *S*
 
 **B. Make ordering easier**
-11. ⭐ **Cake price guide:** size, servings and flavour give an estimated price. 📅 v10.22 ⏳ needs your sizes and prices. *M*
+11. ⭐ **Cake price guide:** size, servings and flavour give an estimated price. ✅ built in v10.22 (sample prices until you set yours). *M*
 12. **Cake builder, step by step:** size, flavour, filling, icing, message, with the price updating as you go. Builds on 11. *L*
 13. ⭐ **Upload an inspiration photo with a custom order.** You see it in the admin next to the order. *M*
 14. **Extras in the cart:** candles, a card, a topper, a message on the cake. *S*
@@ -254,20 +270,20 @@ You asked for everything we think the website could still add. Nothing here is b
 21. **How many are left today** for an item ("only 3 left"), going beyond "Sold out today". *M*
 22. **Different notice days per item** (cakes 3 days, cookies 1 day). *M*
 23. **Delivery fee by distance or postcode,** a time slot and an address search. *L*
-24. **"Order again" on the thank-you page.** 📅 v10.22. *S*
+24. **"Order again" on the thank-you page.** ✅ built in v10.22. *S*
 25. **Birthday and occasion reminders:** a customer saves a date, you get a list, and they can opt in to a nudge (POPIA-friendly). *M*
 
 **C. Payments**
-26. **Deposits and card payments** (Yoco, PayFast or Ozow). 📅 v10.24 ⏳ needs a payment account. *L*
+26. **Deposits and card payments** (Yoco, PayFast or Ozow). 📅 v10.29 ⏳ needs a payment account. *L*
 27. ⭐ **EFT, SnapScan or Capitec Pay details on the thank-you page,** plus "upload your proof of payment", so you stop chasing people. *M*
 28. **Quote link:** you send a custom-cake quote, the customer taps Accept and pays the deposit. Needs 26. *L*
-29. **Gift vouchers and a loyalty reward.** 📅 v10.23. *M*
+29. **Gift vouchers and a loyalty reward.** 📅 v10.28. *M*
 30. **Refer-a-friend reward.** Needs 29. *M*
 
 **D. Keep customers informed**
 31. **An order number on the thank-you page and a "track my order" link** that works without an account. *M*
 32. **Automatic confirmation the moment an order is saved.** Email needs your email sender; automatic WhatsApp needs a paid WhatsApp Business service. ⏳ *L*
-33. **Specials list** (customers who tick "send me specials", with an easy unsubscribe). 📅 v10.25. *M*
+33. **Specials list** (customers who tick "send me specials", with an easy unsubscribe). 📅 v10.30. *M*
 34. **Editable WhatsApp wording for each order status.** *S*
 
 **E. Save Becca time (admin)**
@@ -302,7 +318,7 @@ You asked for everything we think the website could still add. Nothing here is b
 59. **A QR code** for flyers, boxes and your Instagram bio that opens the menu or the review form. *S*
 60. **Tasting boxes:** a small sample box customers can order before a big cake. *S*
 
-**Our suggestion for the next versions:** v10.22 stays as planned (price guide + Order again). After that, the best "two at a time" pairs are **46 + 48** (make it safe and real before anyone relies on it), **36 + 35** (the admin starts saving you hours), and **1 + 13** (more trust and fewer messages back and forth).
+**Build order:** you agreed to our suggested order in v10.22. It is the plan table in section 1 (v10.23 onward). Items 46 and 48 come first, then 36 and 35, then 1 and 13, then 27 and 47, then 4 and 45, then vouchers, payments and the specials list, then launch.
 
 ---
 
@@ -377,7 +393,7 @@ Also nice but smaller: "Order again" button, birthday reminders, a "New" badge o
 
 <a id="rules"></a>
 ## 6. How we work together (the rules)
-1. **2 to 3 things per version**, no more. Anything else goes into the plan above or the ideas list.
+1. **2 things per version**, no more. Anything else goes into the plan above or the ideas list.
 2. **Nothing is thrown away.** Old text that is no longer current moves to [`ROADMAP_ARCHIVE.md`](ROADMAP_ARCHIVE.md). Finished work goes into [`BACKLOG.md`](BACKLOG.md).
 3. **When a version is finished** it is added to the backlog, the status here is updated and `VERSION` goes up.
 4. **Every version arrives as one `.zip`** of the whole project, named like `online-bakery-v10.21.1.zip`. You never have to apply anything by hand.
