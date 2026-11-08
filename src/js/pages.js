@@ -2,6 +2,8 @@
 SB.load().then(({ biz, settings: s, shownCategories: cs, shownProducts: vis, season }) => {
   const $ = q => document.querySelector(q);
   if ($("[data-home]")) {
+    // v10.17.4: put the sections in the order Becca chose (the two hero styles both count as "hero").
+    const wrap = $("[data-home]"); SB.homeOrder(s.homeOrder).forEach(k => (k === "hero" ? ["hero", "hero-bakes"] : [k]).forEach(n => { const e = wrap.querySelector(`:scope > [data-section="${n}"]`); if (e) wrap.appendChild(e); }));
     // Two hero styles live in index.html; keep the chosen one (or neither if the Hero box is switched off).
     const dropHero = s.home.hero === false ? ["hero", "hero-bakes"] : [s.heroStyle === "bakes" ? "hero" : "hero-bakes"];
     dropHero.forEach(k => { const e = $(`[data-section="${k}"]`); if (e) e.remove(); });

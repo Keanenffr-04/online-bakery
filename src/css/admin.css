@@ -97,3 +97,19 @@
 .adm-hi{display:inline-flex;align-items:center;gap:.5rem}
 .adm-who{display:flex;align-items:center;gap:.75rem}
 .adm-pic{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap}
+
+/* v10.17.4: Home page sections list (drag to reorder) */
+.hlist{list-style:none;margin:.6rem 0 1rem;padding:0;display:grid;gap:.4rem}
+.hlist li{display:flex;align-items:center;gap:.5rem;padding:.3rem .5rem .3rem .3rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-card)}
+.hlist .hname{flex:1;margin:0;min-width:0}
+.hlist .hname small{display:block}
+.hgrip{flex:none;width:2.2rem;height:2.2rem;display:grid;place-items:center;padding:0;border:0;border-radius:8px;background:transparent;color:var(--heading);font:700 1.05rem/1 var(--font-body);letter-spacing:-.15em;cursor:grab;touch-action:none;user-select:none}
+.hgrip:hover,.hgrip:focus-visible{background:var(--surface-alt)}
+.hgrip:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
+.hmv{flex:none;display:flex;gap:.25rem}
+.hmv .btn{min-width:2rem;padding:.25em .55em}
+.hmv .btn[disabled]{opacity:.35;pointer-events:none}
+.hlist li.hdrag{cursor:grabbing;box-shadow:0 8px 22px color-mix(in srgb,var(--heading) 25%,transparent);border-color:var(--btn-bg);position:relative;z-index:2}
+.hlist li.hdrag .hgrip{cursor:grabbing}
+.hlist span.hname{font:400 .85rem var(--font-body);padding-left:1.45rem;line-height:1.3}
+.hlist span.hname small{font-weight:400;font-size:.8rem}

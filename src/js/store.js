@@ -35,7 +35,7 @@
   };
   // Placeholder for the "Meet Becca" section until Becca writes her own (shows a small "Draft text" tag; the tag goes when she edits it in admin).
   const MEET_TEXT = "Hi, I'm Becca, the baker behind The Sweetest Bakery. Everything here is handmade and baked fresh to order, so nothing sits on a shelf waiting for you.\n\nTell me what you're celebrating and I'll bake something sweet for it.";
-  const D = { theme: "classic", tagline: "", heroStyle: "logo", greeting: "Welcome in, something sweet is baking.", home: { hero: true, shop: true, featured: true, fresh: true, meet: true, steps: true, cta: true }, meet: { heading: "Meet Becca", text: MEET_TEXT, draft: true }, featuredCount: 3, featuredStyle: "glass", recentCount: 3, popularCount: 3, newDays: 14, decorations: true, autoTheme: { enabled: true, rules: SEASON_RULES }, menuLayout: "grid", faq: [], reviews: [], specials: { enabled: true, items: ["Today's specials: ask Becca on WhatsApp", "Custom cakes for every occasion, order online"] }, orders: { enabled: true, items: ["How to order: message Becca on WhatsApp", "Tell us what you'd like, the date you need it and any notes"] } };
+  const D = { theme: "classic", tagline: "", heroStyle: "logo", greeting: "Welcome in, something sweet is baking.", home: { hero: true, shop: true, featured: true, fresh: true, meet: true, steps: true, cta: true }, homeOrder: ["hero", "shop", "featured", "fresh", "reviews", "meet", "steps", "cta"], meet: { heading: "Meet Becca", text: MEET_TEXT, draft: true }, featuredCount: 3, featuredStyle: "glass", recentCount: 3, popularCount: 3, newDays: 14, decorations: true, autoTheme: { enabled: true, rules: SEASON_RULES }, menuLayout: "grid", faq: [], reviews: [], specials: { enabled: true, items: ["Today's specials: ask Becca on WhatsApp", "Custom cakes for every occasion, order online"] }, orders: { enabled: true, items: ["How to order: message Becca on WhatsApp", "Tell us what you'd like, the date you need it and any notes"] } };
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const SB = window.SB = {
     esc, TAGS: [["vegan", "Vegan"], ["gluten-free", "Gluten-free"], ["nut-free", "Nut-free"], ["dairy-free", "Dairy-free"]],
@@ -70,6 +70,10 @@
     today() { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); },
     // "Sold out today": the item carries the DATE it was marked (p.soldOut = "2026-11-08"). It only counts on that day, so it switches itself
     // off at midnight, even on a published site nobody touches.
+    // v10.17.4: the order of the Home page sections (setting homeOrder, dragged in Admin > Theme & layout > Home page). Always returns every section once:
+    // unknown names are dropped, sections missing from a saved list (e.g. added in a later version) go at the end in the default order.
+    HOME_ORDER: ["hero", "shop", "featured", "fresh", "reviews", "meet", "steps", "cta"],
+    homeOrder(list) { const D = SB.HOME_ORDER, seen = new Set(), out = []; (Array.isArray(list) ? list : []).concat(D).forEach(k => { if (D.includes(k) && !seen.has(k)) { seen.add(k); out.push(k); } }); return out; },
     isSoldOut(p) { return !!p && p.soldOut === SB.today(); },
     // v10.15: "New" badge for items added in the last SB.newDays days (setting newDays, default 14, 0 = off). p.added is a YYYY-MM-DD date set when the item is created.
     isNew(p) { const n = SB.newDays == null ? 14 : SB.newDays; if (!p || !p.added || !n) return false; const d = Math.round((new Date(SB.today() + "T00:00") - new Date(p.added + "T00:00")) / 864e5); return d >= 0 && d < n; },

@@ -197,7 +197,10 @@
   }
   function look() {
     const s = state.draft, pg = (v, n) => `<button class="btn btn--sm ${state.page === v ? "" : "btn--ghost"}" data-act="ppage" data-v="${v}">${n}</button>`;
-    const homeBox = `${[["hero", "Hero"], ["shop", "Shop by treat (section tiles)"], ["featured", "Featured items"], ["fresh", "New and popular"], ["meet", "Meet Becca"], ["steps", "How ordering works"], ["cta", "Order banner"]].map(([k, n]) => `<label class="chk"><input type="checkbox" data-act="home" data-k="${k}" ${s.home[k] !== false ? "checked" : ""}>${n}</label>`).join("")}
+    const HN = { hero: "Hero (top banner)", shop: "Shop by treat (section tiles)", featured: "Featured items (best sellers)", fresh: "New and popular", reviews: "What people say (reviews)", meet: "Meet Becca", steps: "How ordering works", cta: "Order banner" };
+    const ord = SB.homeOrder(s.homeOrder);
+    const homeBox = `<p class="muted">Hold the <strong>&#8942;&#8942;</strong> handle and drag a section up or down, or use the arrows. The preview follows.</p>
+    <ul class="hlist" id="hlist">${ord.map((k, i) => `<li data-k="${k}"><button type="button" class="hgrip" data-act="hgrip" aria-label="Drag ${esc(HN[k])} to move it" title="Hold and drag">&#8942;&#8942;</button>${k === "reviews" ? `<span class="hname">${HN[k]}<small class="muted"> shows by itself once you have reviews</small></span>` : `<label class="chk hname"><input type="checkbox" data-act="home" data-k="${k}" ${s.home[k] !== false ? "checked" : ""}>${HN[k]}</label>`}<span class="hmv"><button type="button" class="btn btn--sm btn--ghost" data-act="hmove" data-k="${k}" data-d="-1" aria-label="Move ${esc(HN[k])} up" ${i === 0 ? "disabled" : ""}>&uarr;</button><button type="button" class="btn btn--sm btn--ghost" data-act="hmove" data-k="${k}" data-d="1" aria-label="Move ${esc(HN[k])} down" ${i === ord.length - 1 ? "disabled" : ""}>&darr;</button></span></li>`).join("")}</ul>
     <div class="adm-row"><div><label>Best sellers shown</label>${countSel("fc", s.featuredCount)}</div><div><label>"Just added" shown</label>${countSel("rc", s.recentCount || 3)}</div><div><label>"Most popular" shown</label>${countSel("pc", s.popularCount || 3)}</div><div><label>"New" badge stays for</label><select data-act="nd">${[[0, "Off"], [7, "1 week"], [14, "2 weeks"], [28, "4 weeks"]].map(([n, l]) => `<option value="${n}" ${n === (s.newDays == null ? 14 : s.newDays) ? "selected" : ""}>${l}</option>`).join("")}</select></div>
     <div><label>Card style</label><select data-act="fs"><option value="glass" ${s.featuredStyle !== "plain" ? "selected" : ""}>Glass (frosted)</option><option value="plain" ${s.featuredStyle === "plain" ? "selected" : ""}>Plain</option></select></div></div>
     <p class="muted">Best sellers are items ticked "Show on home page"; Most popular are items ticked "Show in Most popular".</p>
@@ -409,6 +412,18 @@
     if (a === "ostatus") { sb.from("orders").update({ status: t.value }).eq("id", t.dataset.id).then(async r => { await loadAdminData(); go("orders", r.error ? "Could not update: " + r.error.message : ""); }); }
   });
 
+  // v10.17.4: hold the grip and drag a Home section up or down (pointer events, so it works with a mouse, a finger or a pen).
+  app.addEventListener("pointerdown", e => {
+    const h = e.target.closest(".hgrip"); if (!h || !state.draft || e.button > 0) return;
+    const li = h.closest("li"), ul = li.parentNode; e.preventDefault(); li.classList.add("hdrag");
+    const move = ev => { const y = ev.clientY; let before = null; for (const x of ul.children) { if (x === li) continue; const r = x.getBoundingClientRect(); if (y < r.top + r.height / 2) { before = x; break; } } if (before !== li.nextSibling) ul.insertBefore(li, before); };
+    const end = () => {
+      document.removeEventListener("pointermove", move); document.removeEventListener("pointerup", end); document.removeEventListener("pointercancel", end); li.classList.remove("hdrag");
+      const now = [...ul.children].map(x => x.dataset.k); if (now.join() === SB.homeOrder(state.draft.homeOrder).join()) return;
+      state.draft.homeOrder = now; state.page = "index.html"; draftKey(); go("look");
+    };
+    document.addEventListener("pointermove", move); document.addEventListener("pointerup", end); document.addEventListener("pointercancel", end);
+  });
   app.addEventListener("click", async e => {
     const b = e.target.closest("button[data-act]"); if (!b) return; const a = b.dataset.act, v = b.dataset.v, id = b.dataset.id, u = b.dataset.u;
     if (a === "auth") { state.authTab = v; state.note = ""; return render(); }
@@ -424,6 +439,7 @@
     if (a === "pedit") { state.edit = id; return go("menu"); }
     if (a === "pcancel") { state.edit = null; return go("menu"); }
     if (a === "pdel") { if (confirm("Delete this item?")) { state.data.products = state.data.products.filter(p => p.id !== id); await saveProducts(); } return go("menu"); }
+    if (a === "hmove") { const o = SB.homeOrder(state.draft.homeOrder), k = b.dataset.k, i = o.indexOf(k), j = i + +b.dataset.d; if (j < 0 || j >= o.length) return; o.splice(j, 0, o.splice(i, 1)[0]); state.draft.homeOrder = o; state.page = "index.html"; draftKey(); go("look"); const nb = document.querySelector(`[data-act="hmove"][data-k="${k}"][data-d="${b.dataset.d}"]`) || document.querySelector(`[data-act="hmove"][data-k="${k}"]`); if (nb) nb.focus(); return; }   // v10.17.4
     if (a === "theme") { state.draft.theme = v; state.peek = null; draftKey(); return go("look"); }
     if (a === "speek") { state.peek = v; draftKey(); return go("look"); }   // look at a season's theme without changing the saved one
     if (a === "ppage") { state.page = v; return go("look"); }
