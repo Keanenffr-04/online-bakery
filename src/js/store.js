@@ -8,7 +8,7 @@
   //   easter      { before, after }                                  days around Easter Sunday (worked out each year)
   //   nthweekday  { month, n, weekday(0=Sun), before, after }        e.g. 2nd Sunday of May = Mother's Day (South Africa)
   // The first matching rule wins. Uses the visitor's own calendar date.
-  const SEASON_RULES = [{"theme": "valentines", "type": "range", "from": "02-01", "to": "02-14", "on": true}, {"theme": "easter", "type": "easter", "before": 9, "after": 1, "on": true}, {"theme": "mothers", "type": "nthweekday", "month": 5, "n": 2, "weekday": 0, "before": 7, "after": 0, "on": true}, {"theme": "fathers", "type": "nthweekday", "month": 6, "n": 3, "weekday": 0, "before": 7, "after": 0, "on": true}, {"theme": "braai", "type": "range", "from": "09-17", "to": "09-24", "on": true}, {"theme": "halloween", "type": "range", "from": "10-24", "to": "10-31", "on": true}, {"theme": "christmas", "type": "range", "from": "12-01", "to": "12-26", "on": true}];
+  const SEASON_RULES = [{"theme": "valentines", "type": "range", "from": "02-01", "to": "02-14", "on": true}, {"theme": "easter", "type": "easter", "before": 9, "after": 1, "on": true}, {"theme": "mothers", "type": "nthweekday", "month": 5, "n": 2, "weekday": 0, "before": 7, "after": 0, "on": true}, {"theme": "fathers", "type": "nthweekday", "month": 6, "n": 3, "weekday": 0, "before": 7, "after": 0, "on": true}, {"theme": "braai", "type": "range", "from": "09-17", "to": "09-24", "on": true}, {"theme": "halloween", "type": "range", "from": "10-24", "to": "10-31", "on": true}, {"theme": "christmas", "type": "range", "from": "12-01", "to": "12-26", "on": true}, {"theme": "newyear", "type": "range", "from": "12-27", "to": "01-03", "on": true}, {"theme": "womens", "type": "range", "from": "08-02", "to": "08-09", "on": true}, {"theme": "blackfriday", "type": "nthweekday", "month": 11, "n": 4, "weekday": 4, "before": 1, "after": 4, "on": true}, {"theme": "diwali", "type": "range", "from": "11-03", "to": "11-09", "on": false, "moving": true}, {"theme": "eid", "type": "range", "from": "03-06", "to": "03-10", "on": false, "moving": true}];
   const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const dOf = (y, m, d) => new Date(y, m - 1, d);                        // local midnight (JS rolls over days past month end)
   const shiftDay = (dt, n) => dOf(dt.getFullYear(), dt.getMonth() + 1, dt.getDate() + n);
@@ -31,7 +31,12 @@
     fathers: { greeting: "Happy Father's Day, bake dad's day sweeter.", special: "Father's Day cakes and treats: order early" },
     braai: { greeting: "Happy Braai Day, celebrate Heritage Day with something sweet.", special: "Heritage Day (Braai Day) treats: order early" },
     halloween: { greeting: "Happy Halloween, spooky and sweet treats are baking.", special: "Halloween treats and custom cakes: order early" },
-    christmas: { greeting: "Merry Christmas from our kitchen to yours.", special: "Christmas cakes and treats: order early, spaces fill up fast" }
+    christmas: { greeting: "Merry Christmas from our kitchen to yours.", special: "Christmas cakes and treats: order early, spaces fill up fast" },
+    newyear: { greeting: "Happy New Year, here is to a sweet start.", special: "New Year treats and celebration cakes: order early" },
+    womens: { greeting: "Happy Women's Day, treat a woman who deserves it.", special: "Women's Day cakes and treat boxes: order early" },
+    blackfriday: { greeting: "Black Friday weekend, treat yourself to something sweet.", special: "Black Friday weekend: ask us on WhatsApp what is baking" },
+    diwali: { greeting: "Happy Diwali, a festival of light and sweet things.", special: "Diwali treats and gift boxes: order early" },
+    eid: { greeting: "Eid Mubarak, sweet wishes from our kitchen.", special: "Eid treats and gift boxes: order early" }
   };
   // Placeholder for the "Meet Becca" section until Becca writes her own (shows a small "Draft text" tag; the tag goes when she edits it in admin).
   const MEET_TEXT = "Hi, I'm Becca, the baker behind The Sweetest Bakery. Everything here is handmade and baked fresh to order, so nothing sits on a shelf waiting for you.\n\nTell me what you're celebrating and I'll bake something sweet for it.";
@@ -41,7 +46,7 @@
     esc, TAGS: [["vegan", "Vegan"], ["gluten-free", "Gluten-free"], ["nut-free", "Nut-free"], ["dairy-free", "Dairy-free"]],
     THEMES: [["classic", "Classic Black & White"], ["cocoa", "Cocoa & Cream"], ["pastel", "Soft Pastel"]],
     // Special-occasion themes (v10.6): tokens live in themes/theme-seasonal.css. The admin shows them as a second group.
-    OCCASION_THEMES: [["christmas", "Christmas"], ["valentines", "Valentine's Day"], ["easter", "Easter"], ["halloween", "Halloween"], ["braai", "Braai Day (Heritage Day)"], ["mothers", "Mother's Day"], ["fathers", "Father's Day"]],
+    OCCASION_THEMES: [["christmas", "Christmas"], ["valentines", "Valentine's Day"], ["easter", "Easter"], ["halloween", "Halloween"], ["braai", "Braai Day (Heritage Day)"], ["mothers", "Mother's Day"], ["fathers", "Father's Day"], ["newyear", "New Year"], ["womens", "Women's Day"], ["blackfriday", "Black Friday"], ["diwali", "Diwali"], ["eid", "Eid"]],
     // v10.6: phone numbers. A country-code dropdown (South Africa +27 first and the default) next to the number box.
     // SB.phoneField() draws it, SB.phoneRead() turns what was typed into one clean number (digits only, e.g. 27833413166).
     COUNTRIES: [["27", "South Africa"], ["264", "Namibia"], ["267", "Botswana"], ["263", "Zimbabwe"], ["258", "Mozambique"], ["266", "Lesotho"], ["268", "Eswatini"], ["260", "Zambia"], ["265", "Malawi"], ["244", "Angola"], ["254", "Kenya"], ["234", "Nigeria"], ["233", "Ghana"], ["44", "United Kingdom"], ["353", "Ireland"], ["1", "USA / Canada"], ["61", "Australia"], ["64", "New Zealand"], ["49", "Germany"], ["31", "Netherlands"], ["33", "France"], ["34", "Spain"], ["351", "Portugal"], ["39", "Italy"], ["971", "United Arab Emirates"], ["91", "India"], ["86", "China"]],
@@ -165,6 +170,8 @@
         const pv = window.top !== window ? J(sessionStorage, "sb_preview") : null;
         const base = { ...D, ...(pubSet || {}) }, own = (pv && pv.settings) || (SB.dbOK ? null : J(localStorage, "sb_settings")) || {};
         const settings = { ...base, ...own, home: { ...D.home, ...(base.home || {}), ...(own.home || {}) }, meet: { ...D.meet, ...(base.meet || {}), ...(own.meet || {}) }, specials: { ...D.specials, ...(base.specials || {}), ...(own.specials || {}) }, orders: { ...D.orders, ...(base.orders || {}), ...(own.orders || {}) }, autoTheme: { ...D.autoTheme, ...(base.autoTheme || {}), ...(own.autoTheme || {}) } };
+        // v10.20: seasons added in later versions reach already-saved settings too (added at the end, nothing Becca chose is changed).
+        { const au = settings.autoTheme, have = new Set((au.rules || []).map(r => r.theme)); au.rules = [...(au.rules || []), ...SEASON_RULES.filter(r => !have.has(r.theme)).map(r => ({ ...r }))]; }
         const data = (SB.dbOK ? null : J(localStorage, "sb_products")) || pubProd || { categories: [], products: [] };
         // v10.9: themeNow = the theme showing right now (a season's theme when one is on, else the owner's everyday theme).
         // settings.theme is NEVER changed by the seasons, so the admin and Publish always keep the owner's own choice.

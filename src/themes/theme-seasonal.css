@@ -84,3 +84,65 @@
   --shadow:0 6px 18px rgba(27,58,95,.14);
   --space-3:1.25rem; --space-5:4rem;
 }
+
+/* v10.20: more occasion themes (New Year, Women's Day, Black Friday, Diwali, Eid). Dates for Diwali and Eid move every year, so their automatic seasons start switched off. */
+/* New Year: midnight navy and champagne gold */
+[data-theme="newyear"]{
+  --bg:#F8F6F0; --surface:#FFFFFF; --surface-alt:#EDE8D8; --border:#DDD3B5;
+  --text:#1F2437; --heading:#151B3A; --accent:#B8892B;
+  --btn-bg:#151B3A; --btn-text:#FFFFFF; --whatsapp:#1FA855;
+  --link:#8A6416; --btn-invert-text:#151B3A;
+  --font-heading:"Bodoni Moda","Playfair Display",Georgia,serif; --font-body:"Inter",system-ui,sans-serif;
+  --heading-weight:600;
+  --radius-card:12px; --radius-pill:999px; --radius-arch:999px;
+  --shadow:0 8px 22px rgba(21,27,58,.14);
+  --space-3:1.25rem; --space-5:4rem;
+}
+/* Women's Day: plum and orchid */
+[data-theme="womens"]{
+  --bg:#FBF6FA; --surface:#FFFFFF; --surface-alt:#F1E1EE; --border:#E3C6DD;
+  --text:#3A2338; --heading:#5A1F57; --accent:#9B3A8F;
+  --btn-bg:#6B2368; --btn-text:#FFFFFF; --whatsapp:#1FA855;
+  --link:#6B2368; --btn-invert-text:#6B2368;
+  --font-heading:"Playfair Display",Georgia,serif; --font-body:"Montserrat",system-ui,sans-serif;
+  --heading-weight:600;
+  --radius-card:20px; --radius-pill:999px; --radius-arch:999px;
+  --shadow:0 8px 22px rgba(107,35,104,.14);
+  --space-3:1.25rem; --space-5:4rem;
+}
+/* Black Friday: black, hot pink and yellow */
+[data-theme="blackfriday"]{
+  --bg:#F6F6F4; --surface:#FFFFFF; --surface-alt:#E9E9E6; --border:#CFCFCA;
+  --text:#1A1A1A; --heading:#000000; --accent:#C4006B;
+  --btn-bg:#111111; --btn-text:#FFD400; --whatsapp:#1FA855;
+  --link:#B0005F; --btn-invert-text:#111111;
+  --font-heading:"Montserrat",system-ui,sans-serif; --font-body:"Inter",system-ui,sans-serif;
+  --heading-weight:700;
+  --radius-card:8px; --radius-pill:6px; --radius-arch:999px;
+  --shadow:0 6px 16px rgba(0,0,0,.18);
+  --space-3:1.25rem; --space-5:4rem;
+}
+/* Diwali: marigold, saffron and maroon */
+[data-theme="diwali"]{
+  --bg:#FFF8EC; --surface:#FFFFFF; --surface-alt:#FDE7C2; --border:#F2D19A;
+  --text:#4A2A12; --heading:#7A1F12; --accent:#D9730D;
+  --btn-bg:#8E2A12; --btn-text:#FFFFFF; --whatsapp:#1FA855;
+  --link:#8E2A12; --btn-invert-text:#8E2A12;
+  --font-heading:"Playfair Display",Georgia,serif; --font-body:"Montserrat",system-ui,sans-serif;
+  --heading-weight:700;
+  --radius-card:18px; --radius-pill:999px; --radius-arch:999px;
+  --shadow:0 8px 22px rgba(142,42,18,.15);
+  --space-3:1.25rem; --space-5:4rem;
+}
+/* Eid: teal, emerald and gold */
+[data-theme="eid"]{
+  --bg:#F5FAF8; --surface:#FFFFFF; --surface-alt:#DDEFEA; --border:#B7DAD1;
+  --text:#1F3A37; --heading:#0C4A4A; --accent:#B8892B;
+  --btn-bg:#0E6B64; --btn-text:#FFFFFF; --whatsapp:#1FA855;
+  --link:#0B5A54; --btn-invert-text:#0E6B64;
+  --font-heading:"Playfair Display",Georgia,serif; --font-body:"Inter",system-ui,sans-serif;
+  --heading-weight:600;
+  --radius-card:16px; --radius-pill:999px; --radius-arch:999px;
+  --shadow:0 8px 22px rgba(14,107,100,.14);
+  --space-3:1.25rem; --space-5:4rem;
+}

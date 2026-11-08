@@ -1,6 +1,6 @@
 # Roadmap: what is done, what is next, what is waiting
 
-**Current version:** v10.19.1 &nbsp;|&nbsp; **Next up:** v10.20 (more occasion themes + WhatsApp order-status buttons; run `supabase/setup.sql` again first, section 8, if you have not yet) &nbsp;|&nbsp; Rule: **max 2 to 3 things per version.**
+**Current version:** v10.20 &nbsp;|&nbsp; **Next up:** v10.21 (order calendar with lead times and a daily limit + delivery or collection with fees by area; needs your real lead times, areas and prices) &nbsp;|&nbsp; Rule: **max 2 to 3 things per version.**
 
 Finished work lives in [`BACKLOG.md`](BACKLOG.md). The old, long roadmap notes are kept untouched in [`ROADMAP_ARCHIVE.md`](ROADMAP_ARCHIVE.md).
 
@@ -34,8 +34,8 @@ Owner's list always comes first; older scheduled items slide back. Photos and la
 | v10.18 | DONE | **"My account" page** (sign in, profile, saved details, past orders, order again, change password, delete my account) + **Privacy (POPIA) and Terms pages** (drafts) + **email-sender walkthrough** (section 1i; the sender itself is set up by the owner in Brevo / Resend + Supabase, no code) | Owner list 10 item 2. Privacy page shipped with accounts |
 | v10.19 | DONE | **Order tools, part 1**: colour-coded statuses with a one-tap next step (Confirm, Mark ready, Mark done) + a **printable order slip** + **"Numbers"** (this week / this month / last month / all time, with a CSV) + **"Most popular" ranked automatically from real orders** (SQL section 7) | Needs v10.17 (done). The thank-you page and the change log did not fit the 3-things rule and moved to v10.19.1 |
 | v10.19.1 | DONE | **Patch: order thank-you page** (shows what was just sent, honest "not confirmed yet", Open WhatsApp, Empty my cart) + **change log** (who changed what on orders, SQL section 8) | Pushed from v10.19 |
-| **v10.20** | **NEXT** | **More occasion themes** (New Year, Women's Day, Black Friday, Diwali, Eid ...). **Visitors never switch themes** (owner list 13 item 1): only Becca and the automatic seasons decide + **Top 10 #4: WhatsApp order-status buttons** ("ready for collection") | Needs v10.19 for the buttons |
-| v10.21 | PLANNED | **Top 10 #1: order calendar** (lead times, daily limit, blocked dates) + **#2: delivery or collection with fees by area** | Needs your real lead times, areas and prices |
+| v10.20 | DONE | **More occasion themes** (New Year, Women's Day, Black Friday, Diwali, Eid; Visitors still never switch themes) + **WhatsApp order-status buttons** (confirmed / ready / thank you / cancelled messages filled in for Becca to send) | Top 10 #4. Diwali and Eid dates move each year, so their automatic seasons start switched off |
+| **v10.21** | **NEXT** | **Top 10 #1: order calendar** (lead times, daily limit, blocked dates) + **#2: delivery or collection with fees by area** | Needs your real lead times, areas and prices |
 | v10.22 | PLANNED | **Top 10 #6: cake price guide / quote helper** + **"Order again" button** | Needs real prices; order again needs v10.18 |
 | v10.23 | PLANNED | **Top 10 #7: gift vouchers** + **#8: loyalty reward / referral** | Needs accounts (v10.17) and your rules |
 | v10.24 | PLANNED | **Top 10 #3: deposits / online payment** (Yoco / PayFast / Ozow) on its own, because it handles real money | Needs a payment account opened by the owner |
@@ -150,6 +150,7 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 
 | List | # | Request (short) | Status | Where |
 |---|---|---|---|---|
+| - | - | (No change list came with "start next v/patch", so the version marked NEXT was built: five more occasion themes + WhatsApp order-status buttons) | DONE | v10.20 |
 | - | - | (No change list came with "start next v/patch", so the version marked NEXT was built: thank-you page + change log) | DONE | v10.19.1 |
 | - | - | (No change list came with "start the next v/patch", so the version marked NEXT was built: statuses + printable slip, Numbers, automatic "Most popular"; thank-you page + change log pushed to v10.19.1 to keep to 3 things) | DONE | v10.19 |
 | - | - | (No change list came with "start next v/patch", so the version marked NEXT was built: My account + Privacy and Terms + email-sender walkthrough) | DONE | v10.18 |
@@ -189,7 +190,7 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 | 9 | 1 | Father's Day + moving decorations on occasion themes only | DONE | v10.7 (made to always move in v10.8) |
 | 8 | 1 | Forgot password with a code | DONE (admin accounts) | v10.6; real email / SMS in v10.17 |
 | 8 | 2 | Phone country-code dropdown, default +27 | DONE | v10.6 |
-| 8 | 3 | Themes for Christmas, Valentine's, Braai Day, every occasion | DONE | v10.6 (+ Father's Day v10.7); more in v10.20 |
+| 8 | 3 | Themes for Christmas, Valentine's, Braai Day, every occasion | DONE | v10.6 (+ Father's Day v10.7); more in v10.20 (DONE) |
 | 7 | 1 | Rewrite or confirm the 6 FAQ answers | WAITING | owner sends the info (section 3) |
 | 7 | 2 | Add real reviews | WAITING | owner sends the info (section 3) |
 | 6 | 1 | Get it online | PLANNED | LAST (v11) |

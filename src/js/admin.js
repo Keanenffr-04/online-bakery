@@ -192,6 +192,19 @@
   const lastChange = id => { const l = (state.log || []).find(x => x.order_id === id); return l ? `<br><span class="muted">Last change: ${esc(l.action)} by ${esc(l.by_name || "?")}, ${esc(when(l.at))}</span>` : ""; };
   const logBox = () => `<details class="adm-sec" data-sec="olog" ${state.open.olog ? "open" : ""}><summary><span class="adm-sec__t">Change log</span><span class="adm-sec__h">${state.logErr ? "needs setup" : (state.log || []).length + " recent"}</span></summary><div class="adm-sec__b">${state.logErr ? `<p class="muted">Run the newest <code>supabase/setup.sql</code> once (section 8) to start the log.</p>` : `<ul class="adm-list">${(state.log || []).slice(0, 50).map(l => `<li><div><strong>${esc(l.order_name || "Order")}</strong>: ${esc(l.action)}<br><span class="muted">${esc(l.by_name || "?")} &middot; ${esc(when(l.at))}</span></div></li>`).join("") || "<li>Nothing yet. Changes are written here from now on.</li>"}</ul>`}</div></details>`;
 
+  // v10.20: WhatsApp message for the order's status (opens WhatsApp with the words filled in; Becca can change them before sending).
+  const waText = o => {
+    const biz = SB._biz || {}, first = String(o.name || "").trim().split(/\s+/)[0] || "there", what = String(o.items || "").slice(0, 300), method = (o.details && o.details.method) || "";
+    const dateTxt = o.date ? " for " + o.date : "", tot = +o.total ? " The total is " + money(+o.total) + "." : "", sig = " " + (biz.name || "The Sweetest Bakery");
+    if (o.status === "confirmed") return `Hi ${first}, your order is confirmed: ${what}${dateTxt}.${tot} Thank you!${sig}`;
+    if (o.status === "ready") return `Hi ${first}, your order is ready${/deliver/i.test(method) ? " and will be delivered as arranged" : " for collection"}: ${what}. Thank you!${sig}`;
+    if (o.status === "completed") return `Hi ${first}, thank you for your order! We hope you enjoy it. If you loved it, we would love to bake for you again.${sig}`;
+    if (o.status === "cancelled") return `Hi ${first}, your order (${what}) has been cancelled. Message us any time if you would like to order again.${sig}`;
+    return `Hi ${first}, this is ${sig.trim()} about your order: ${what}.`;
+  };
+  const waLabel = { confirmed: "Send: confirmed", ready: "Send: ready", completed: "Send: thank you", cancelled: "Send: cancelled" };
+  const waLink = o => "https://wa.me/" + String(o.phone).replace(/\D/g, "") + "?text=" + encodeURIComponent(waText(o));
+
   function orders() {
     const o = state.orders || [], f = state.filter || "pending", list = o.filter(x => f === "all" || x.status === f), nper = state.nper || "week";
     const cnt = s => s === "all" ? o.length : o.filter(x => x.status === s).length;
@@ -204,7 +217,7 @@
     <ul class="adm-list">${list.map(x => `<li><div><strong>${esc(x.name)}</strong> <span class="tag tag--${x.status}">${x.status}</span><br><span class="muted">${esc(x.items)}${x.date ? " &middot; for " + esc(x.date) : ""}${x.source && x.source !== "admin" ? " &middot; from the website (" + (x.source === "cart" ? "cart" : "custom order") + ")" : ""}${x.total ? " &middot; R " + esc(x.total) : ""}<br>Placed ${esc(placed(x))}</span>${lastChange(x.id)}</div>
     <div class="adm-actions">${NEXT[x.status] ? `<button class="btn btn--sm" data-act="onext" data-id="${x.id}" data-v="${NEXT[x.status][0]}">${NEXT[x.status][1]}</button>` : ""}<select data-act="ostatus" data-id="${x.id}" style="width:auto" aria-label="Change status">${ST.map(s => `<option ${s === x.status ? "selected" : ""}>${s}</option>`).join("")}</select>
     <button class="btn btn--sm btn--ghost" data-act="oslip" data-id="${x.id}">Print slip</button>
-    ${x.phone ? `<a class="btn btn--sm btn--whatsapp" target="_blank" rel="noopener" href="https://wa.me/${esc(x.phone.replace(/\D/g, ""))}">WhatsApp</a>` : ""}
+    ${x.phone ? `<a class="btn btn--sm btn--whatsapp" target="_blank" rel="noopener" title="Opens WhatsApp with the message filled in. You can change it before sending." href="${esc(waLink(x))}">${waLabel[x.status] || "WhatsApp"}</a>` : ""}
     <button class="btn btn--sm btn--ghost" data-act="odel" data-id="${x.id}">Delete</button></div></li>`).join("") || "<li>No orders here.</li>"}</ul></div></div>
     <p class="muted">Orders sent from the Cart or the Custom Order form are saved here automatically (the WhatsApp message still goes to you too). You can also add one by hand. They are stored online, so you see the same list on every device.</p>${logBox()}`;
   }
@@ -317,9 +330,10 @@
     const r = s.autoTheme.rules[state.seasonSel || 0], yr = new Date().getFullYear(), i = state.seasonSel || 0, nm = esc(themeName(r.theme));
     box.innerHTML = `<label class="chk"><input type="checkbox" data-act="son" data-i="${i}" ${r.on !== false ? "checked" : ""}>Use the ${nm} season</label>
     <p class="muted" id="season-dates">${esc(SB.seasonText(r, yr))} this year</p>
+    ${r.moving ? `<p class="notice"><strong>These dates move every year.</strong> Check them against the calendar, then tick the box above to switch this season on.</p>` : ""}
     <div class="season-edit">${r.type === "range"
       ? `<label>From <input data-act="sfrom" data-i="${i}" value="${ddmm(r.from)}" size="5" maxlength="5" inputmode="numeric" aria-label="${nm} starts (day/month)"></label> <label>to <input data-act="sto" data-i="${i}" value="${ddmm(r.to)}" size="5" maxlength="5" inputmode="numeric" aria-label="${nm} ends (day/month)"></label>`
-      : `<span class="muted">${r.type === "easter" ? `${r.before == null ? 9 : r.before} days before Easter Sunday to ${r.after == null ? 1 : r.after} day after (worked out each year, nothing to edit)` : `The week up to the ${["first", "second", "third", "fourth"][r.n - 1] || r.n + "th"} Sunday of ${MONTHS[r.month]} (worked out each year, nothing to edit)`}</span>`}
+      : `<span class="muted">${r.type === "easter" ? `${r.before == null ? 9 : r.before} days before Easter Sunday to ${r.after == null ? 1 : r.after} day after (worked out each year, nothing to edit)` : (r.weekday || 0) === 0 ? `The week up to the ${["first", "second", "third", "fourth"][r.n - 1] || r.n + "th"} Sunday of ${MONTHS[r.month]} (worked out each year, nothing to edit)` : `${r.before == null ? 7 : r.before} day(s) before to ${r.after || 0} days after the ${["first", "second", "third", "fourth"][r.n - 1] || r.n + "th"} ${["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][r.weekday]} of ${MONTHS[r.month]} (worked out each year, nothing to edit)`}</span>`}
       <button type="button" class="btn btn--sm btn--ghost" data-act="speek" data-v="${esc(r.theme)}">Preview ${nm}</button></div>
     <label>Home greeting during ${nm} <span class="muted">(blank = the suggested one below)</span><input data-act="sgr" data-i="${i}" maxlength="80" value="${esc(r.greeting || "")}" placeholder="${esc(SB.seasonWords({}, r.theme).greeting)}"></label>
     <label>Top strip message during ${nm} <span class="muted">(shown first; blank = suggested)</span><input data-act="ssp" data-i="${i}" maxlength="100" value="${esc(r.special || "")}" placeholder="${esc(SB.seasonWords({}, r.theme).special)}"></label>

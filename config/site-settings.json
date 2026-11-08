@@ -80,6 +80,46 @@
         "from": "12-01",
         "to": "12-26",
         "on": true
+      },
+      {
+        "theme": "newyear",
+        "type": "range",
+        "from": "12-27",
+        "to": "01-03",
+        "on": true
+      },
+      {
+        "theme": "womens",
+        "type": "range",
+        "from": "08-02",
+        "to": "08-09",
+        "on": true
+      },
+      {
+        "theme": "blackfriday",
+        "type": "nthweekday",
+        "month": 11,
+        "n": 4,
+        "weekday": 4,
+        "before": 1,
+        "after": 4,
+        "on": true
+      },
+      {
+        "theme": "diwali",
+        "type": "range",
+        "from": "11-03",
+        "to": "11-09",
+        "on": false,
+        "moving": true
+      },
+      {
+        "theme": "eid",
+        "type": "range",
+        "from": "03-06",
+        "to": "03-10",
+        "on": false,
+        "moving": true
       }
     ]
   },

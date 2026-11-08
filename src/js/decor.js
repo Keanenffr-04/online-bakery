@@ -15,7 +15,12 @@
     halloween:  [["\uD83C\uDF83", "wander", 3], ["\uD83E\uDD87", "wander", 5], ["\uD83D\uDC7B", "wander", 3], ["\uD83C\uDF6C", "fall", 3]],
     braai:      [["\uD83D\uDD25", "rise", 4], ["\u2728", "rise", 6], ["\uD83E\uDD69", "wander", 2], ["\uD83C\uDF3D", "wander", 2], ["\uD83C\uDF56", "wander", 1]],
     mothers:    [["\uD83C\uDF38", "fall", 8], ["\uD83D\uDC90", "wander", 2], ["\uD83E\uDD8B", "wander", 2], ["\uD83D\uDC9C", "rise", 3]],
-    fathers:    [["\uD83D\uDC54", "wander", 3], ["\uD83C\uDFC6", "wander", 2], ["\uD83D\uDD27", "wander", 2], ["\u26BD", "wander", 2], ["\uD83C\uDFA3", "wander", 2], ["\u2B50", "rise", 3]]
+    fathers:    [["\uD83D\uDC54", "wander", 3], ["\uD83C\uDFC6", "wander", 2], ["\uD83D\uDD27", "wander", 2], ["\u26BD", "wander", 2], ["\uD83C\uDFA3", "wander", 2], ["\u2B50", "rise", 3]],
+    newyear:    [["\uD83C\uDF89", "wander", 3], ["\uD83E\uDD42", "wander", 2], ["\u2728", "rise", 6], ["\uD83C\uDF86", "wander", 2], ["\u2B50", "fall", 4]],
+    womens:     [["\uD83C\uDF37", "fall", 6], ["\uD83D\uDC9C", "rise", 4], ["\u2728", "rise", 4], ["\uD83E\uDD8B", "wander", 3]],
+    blackfriday:[["\uD83D\uDECD\uFE0F", "wander", 3], ["\uD83C\uDFF7\uFE0F", "wander", 3], ["\uD83D\uDDA4", "rise", 4], ["\uD83C\uDF81", "wander", 2], ["\u2B50", "fall", 3]],
+    diwali:     [["\uD83E\uDE94", "wander", 4], ["\u2728", "rise", 7], ["\uD83C\uDF86", "wander", 2], ["\uD83C\uDF3C", "fall", 4]],
+    eid:        [["\uD83C\uDF19", "wander", 3], ["\u2B50", "rise", 5], ["\u2728", "rise", 5], ["\uD83C\uDFEE", "wander", 2]]
   };
   const r = (a, b) => a + Math.random() * (b - a), p = n => Math.round(n * 10) / 10;
 
