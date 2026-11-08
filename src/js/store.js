@@ -35,7 +35,7 @@
   };
   // Placeholder for the "Meet Becca" section until Becca writes her own (shows a small "Draft text" tag; the tag goes when she edits it in admin).
   const MEET_TEXT = "Hi, I'm Becca, the baker behind The Sweetest Bakery. Everything here is handmade and baked fresh to order, so nothing sits on a shelf waiting for you.\n\nTell me what you're celebrating and I'll bake something sweet for it.";
-  const D = { theme: "classic", tagline: "", heroStyle: "logo", greeting: "Welcome in, something sweet is baking.", home: { hero: true, shop: true, featured: true, fresh: true, meet: true, steps: true, cta: true }, meet: { heading: "Meet Becca", text: MEET_TEXT, draft: true }, featuredCount: 3, featuredStyle: "glass", recentCount: 3, popularCount: 3, decorations: true, autoTheme: { enabled: true, rules: SEASON_RULES }, menuLayout: "grid", faq: [], reviews: [], specials: { enabled: true, items: ["Today's specials: ask Becca on WhatsApp", "Custom cakes for every occasion, order online"] }, orders: { enabled: true, items: ["How to order: message Becca on WhatsApp", "Tell us what you'd like, the date you need it and any notes"] } };
+  const D = { theme: "classic", tagline: "", heroStyle: "logo", greeting: "Welcome in, something sweet is baking.", home: { hero: true, shop: true, featured: true, fresh: true, meet: true, steps: true, cta: true }, meet: { heading: "Meet Becca", text: MEET_TEXT, draft: true }, featuredCount: 3, featuredStyle: "glass", recentCount: 3, popularCount: 3, newDays: 14, decorations: true, autoTheme: { enabled: true, rules: SEASON_RULES }, menuLayout: "grid", faq: [], reviews: [], specials: { enabled: true, items: ["Today's specials: ask Becca on WhatsApp", "Custom cakes for every occasion, order online"] }, orders: { enabled: true, items: ["How to order: message Becca on WhatsApp", "Tell us what you'd like, the date you need it and any notes"] } };
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const SB = window.SB = {
     esc, TAGS: [["vegan", "Vegan"], ["gluten-free", "Gluten-free"], ["nut-free", "Nut-free"], ["dairy-free", "Dairy-free"]],
@@ -71,6 +71,8 @@
     // "Sold out today": the item carries the DATE it was marked (p.soldOut = "2026-11-08"). It only counts on that day, so it switches itself
     // off at midnight, even on a published site nobody touches.
     isSoldOut(p) { return !!p && p.soldOut === SB.today(); },
+    // v10.15: "New" badge for items added in the last SB.newDays days (setting newDays, default 14, 0 = off). p.added is a YYYY-MM-DD date set when the item is created.
+    isNew(p) { const n = SB.newDays == null ? 14 : SB.newDays; if (!p || !p.added || !n) return false; const d = Math.round((new Date(SB.today() + "T00:00") - new Date(p.added + "T00:00")) / 864e5); return d >= 0 && d < n; },
     SEASON_RULES, SEASON_WORDS,
     // v10.13: wording for a season theme id: the rule's own greeting / special if Becca wrote one, else the built-in text.
     seasonWords(settings, id) {
@@ -121,14 +123,18 @@
         // Inside the admin preview (pv) we show exactly the chosen theme, so the owner can look at any theme any time of year.
         const season = pv ? (pv.peek || null) : SB.seasonTheme(settings.autoTheme), themeNow = season || settings.theme;
         document.documentElement.dataset.theme = themeNow;
-        return { biz: biz || {}, settings, themeNow, season, categories: data.categories || [], products: data.products || [], published: { settings: base, products: pubProd } };
+        // v10.15: sections can be hidden (c.hidden). Customers only ever get shownCategories / shownProducts (an item inside a hidden section is hidden too);
+        // the admin keeps using categories / products (everything).
+        const cats = data.categories || [], prods = data.products || [], hid = new Set(cats.filter(c => c.hidden).map(c => c.id));
+        SB.newDays = settings.newDays == null ? 14 : +settings.newDays;
+        return { biz: biz || {}, settings, themeNow, season, categories: cats, products: prods, shownCategories: cats.filter(c => !c.hidden), shownProducts: prods.filter(p => p.visible !== false && !hid.has(p.category)), published: { settings: base, products: pubProd } };
       })());
     },
     // v10.2: the card button adds to the cart (SBCart, js/cart.js). One WhatsApp message is sent from the Cart page.
     card(p, biz) {
       const tg = (p.tags || []).map(id => (SB.TAGS.find(t => t[0] === id) || [])[1]).filter(Boolean);
-      const so = SB.isSoldOut(p);
-      return `<article class="card pcard${so ? " pcard--sold" : ""}"><div class="card__media" aria-hidden="true">${esc(p.emoji || "🍰")}</div><div class="card__body"><h3>${esc(p.name)}${so ? ' <span class="badge badge--sold">Sold out today</span>' : ""}</h3><p class="pcard__desc">${esc(p.description)}</p>${tg.length ? `<p class="pcard__tags" aria-label="Dietary tags">${tg.map(t => `<span class="badge">${esc(t)}</span>`).join("")}</p>` : ""}<div class="pcard__foot"><span class="card__price">R ${esc(p.price)}</span>${so ? `<button type="button" class="btn btn--sm" disabled aria-label="${esc(p.name)} is sold out today">Sold out</button>` : `<button type="button" class="btn btn--sm" data-add="${esc(p.id)}" data-name="${esc(p.name)}" aria-label="Add ${esc(p.name)} to cart">Add</button>`}</div></div></article>`;
+      const so = SB.isSoldOut(p), nw = !so && SB.isNew(p);
+      return `<article class="card pcard${so ? " pcard--sold" : ""}"><div class="card__media" aria-hidden="true">${esc(p.emoji || "🍰")}</div><div class="card__body"><h3>${esc(p.name)}${so ? ' <span class="badge badge--sold">Sold out today</span>' : ""}${nw ? ' <span class="badge badge--new">New</span>' : ""}</h3><p class="pcard__desc">${esc(p.description)}</p>${tg.length ? `<p class="pcard__tags" aria-label="Dietary tags">${tg.map(t => `<span class="badge">${esc(t)}</span>`).join("")}</p>` : ""}<div class="pcard__foot"><span class="card__price">R ${esc(p.price)}</span>${so ? `<button type="button" class="btn btn--sm" disabled aria-label="${esc(p.name)} is sold out today">Sold out</button>` : `<button type="button" class="btn btn--sm" data-add="${esc(p.id)}" data-name="${esc(p.name)}" aria-label="Add ${esc(p.name)} to cart">Add</button>`}</div></div></article>`;
     }
   };
 })();

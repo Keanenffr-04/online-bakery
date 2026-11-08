@@ -111,7 +111,7 @@
     matchMedia("(max-width:859px)").addEventListener("change", () => { setMenu(false); setOpen(false); });
 
     // Sections in the dropdown come from the product data (same list as the filter buttons on the Menu page).
-    window.SB && SB.load().then(({ categories }) => {
+    window.SB && SB.load().then(({ shownCategories: categories }) => {
       const cur = page === "menu.html" ? (new URLSearchParams(location.search).get("c") || "") : null;
       const rows = [["", "Full menu"], ...categories.map(c => [c.id, (c.icon ? c.icon + " " : "") + c.name])];
       panel.innerHTML = rows.map(([id, label]) =>

@@ -1,6 +1,6 @@
 # Roadmap: what is done, what is next, what is waiting
 
-**Current version:** v10.14 &nbsp;|&nbsp; **Next up:** v10.15 (Manage menu sections + a "New" badge on recently added items) &nbsp;|&nbsp; Rule: **max 2 to 3 things per version.**
+**Current version:** v10.15 &nbsp;|&nbsp; **Next up:** v10.16 (Supabase foundation: real sign-in, server-locked admin, orders saved online; needs your free Supabase account first) &nbsp;|&nbsp; Rule: **max 2 to 3 things per version.**
 
 Finished work lives in [`BACKLOG.md`](BACKLOG.md). The old, long roadmap notes are kept untouched in [`ROADMAP_ARCHIVE.md`](ROADMAP_ARCHIVE.md).
 
@@ -28,8 +28,8 @@ Owner's list always comes first; older scheduled items slide back. Photos and la
 | v10.12 | DONE | **Home page, first round**: "Shop by treat" tiles + "How ordering works" steps (each can be switched off in admin) + **admin hidden from customers** (no public link, no public sign-up) | Owner list 13 items 3 (first part) and 5 |
 | v10.13 | DONE | **Home page, round 2**: a short "Meet Becca" section + greeting and specials text that follow the season; **remember my details on this device** (name, phone, notes pre-filled on Cart and Custom Order) | Owner list 13 item 5 (customer side first); the device-only part of list 10 item 1 |
 | v10.14 | DONE | **Admin "Remember me"** (tick box under Log in: stay signed in on this device for 30 days, username remembered) + the **"how many versions are left?" answer** (section 1g) | Owner list 14 items 1 and 2 |
-| **v10.15** | **NEXT** | **Manage menu sections** (add / rename / reorder / hide; the Shop-by-treat tiles follow) + a "New" badge on recently added items | Older plan |
-| v10.16 | BACKEND | **Supabase foundation (decided, list 13 item 2)**: real sign-in with Google / email (Apple only if paid for), **admin panel locked on the server so only admins can enter (list 13 item 3)**, admin works across devices (no manual Publish), forgot-password by real email, orders saved online, backup | Owner list 13 items 2 and 3, list 10 item 1, list 6 item 7. One big item |
+| v10.15 | DONE | **Manage menu sections** (add / rename / reorder / hide / delete; the Shop-by-treat tiles and header menu follow) + a **"New" badge** on recently added items (length set in admin) | Older plan; owner list 15 was empty |
+| **v10.16** | **NEXT** | **Supabase foundation (decided, list 13 item 2)**: real sign-in with Google / email (Apple only if paid for), **admin panel locked on the server so only admins can enter (list 13 item 3)**, admin works across devices (no manual Publish), forgot-password by real email, orders saved online, backup | Owner list 13 items 2 and 3, list 10 item 1, list 6 item 7. One big item |
 | v10.17 | BACKEND | **"My account" page** (profile, saved details, past orders, order again, edit and delete my account) + **Privacy (POPIA) and Terms pages** | Owner list 10 item 2. Privacy page MUST ship with accounts |
 | v10.18 | BACKEND | **Order tools**: statuses, thank-you page, printable slip, weekly / monthly numbers + CSV, change log; **"Most popular" ranked automatically from real orders** | Needs v10.16 |
 | v10.19 | PLANNED | **More occasion themes** (New Year, Women's Day, Black Friday, Diwali, Eid ...). **Visitors never switch themes** (owner list 13 item 1): only Becca and the automatic seasons decide + **Top 10 #4: WhatsApp order-status buttons** ("ready for collection") | Needs v10.18 for the buttons |
@@ -54,7 +54,7 @@ Why not the backend right now: every admin change still needs a manual Publish u
 |---|---|
 | v10.13 (done) | More home page: a short "Meet Becca" story section, and the greeting and specials text change with the season. Repeat customers do not retype their name and phone (kept on their own device). |
 | v10.14 (done) | Admin "Remember me" tick box under the Log in button, and the count of versions left (section 1g). |
-| v10.15 | Becca can add, rename, reorder and hide menu sections herself (the home tiles follow), plus a "New" badge on recent items. |
+| v10.15 (done) | Becca can add, rename, reorder, hide and delete menu sections herself (the home tiles and header menu follow), plus a "New" badge on recent items. |
 | v10.16 | The online "back room" (Supabase, free plan): real sign-in, the admin panel locked so **only admins can get in**, the admin works on every device with no manual Publish, orders saved online. Needs you to create the free account (section 3). |
 | v10.17 | "My account" page (details, past orders, order again, delete my account) plus the Privacy (POPIA) and Terms pages. |
 | v10.18 | Order tools: statuses, thank-you page, printable slip, weekly / monthly numbers, and "Most popular" worked out from real orders. |
@@ -96,10 +96,10 @@ Each new home section can be switched on or off in Admin > Theme & layout > Home
 
 ### 1g. How many versions are left? (answer to owner list 14 item 1)
 Counted from the plan table above, after v10.14:
-- **10 numbered versions** still planned: v10.15 (menu sections), v10.16 (Supabase backend), v10.17 (My account + Privacy and Terms), v10.18 (order tools), v10.19 (more occasion themes + WhatsApp status buttons), v10.20 (order calendar + delivery), v10.21 (price guide + Order again), v10.22 (vouchers + loyalty), v10.23 (deposits / online payment), v10.24 (broadcast list + home page round 3).
+- **10 numbered versions** were still planned after v10.14 (v10.15 is now done, so 9 remain): v10.15 (menu sections, DONE), v10.16 (Supabase backend), v10.17 (My account + Privacy and Terms), v10.18 (order tools), v10.19 (more occasion themes + WhatsApp status buttons), v10.20 (order calendar + delivery), v10.21 (price guide + Order again), v10.22 (vouchers + loyalty), v10.23 (deposits / online payment), v10.24 (broadcast list + home page round 3).
 - **2 more steps that wait for you rather than for us:** real product photos (when you have them) and the launch version, v11 (hosting, search tidy-up, domain).
 - **So 12 steps in total, 10 of them numbered.** The backend (v10.16) is the biggest; the rest are small to medium.
-- Done so far: v1 to v10.14 (see `BACKLOG.md`; it lists only finished work, so nothing in it is still to do).
+- Done so far: v1 to v10.15 (see `BACKLOG.md`; it lists only finished work, so nothing in it is still to do).
 - The number grows by about one for every new list you send, because your list always goes first and the older items slide back. Anything you add that is not in the plan sits in the ideas parking lot (section 5) until it is given a version.
 
 ## 2. Every request from the owner, and where it stands
@@ -107,6 +107,7 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 
 | List | # | Request (short) | Status | Where |
 |---|---|---|---|---|
+| 15 | 1 | (Change-list file was empty.) "Start the next version" + "tell me what you will do in the next 5 versions" | DONE (v10.15 built; next 5 listed in section 1c: v10.16 to v10.20) | v10.15 |
 | 14 | 1 | How many versions are left in the roadmap / backlog? | DONE (answered in section 1g) | v10.14 |
 | 14 | 2 | "Remember me" on the admin sign-in (tick box below the sign-in) | DONE | v10.14 |
 | 13 | 1 | No visitor theme switching (only Becca and the seasons choose); keep adding more themes | DONE (plan changed) | v10.12 rule; more themes v10.19 |
@@ -182,7 +183,7 @@ Not scheduled. Tell us which to pull into a version. The ranked **top 10** is in
 - Privacy-friendly analytics
 - Specials with start and end dates; clickable specials; seasonal specials banner per occasion
 - Owner-chosen decoration emoji per theme in admin
-- A "New" badge on items added in the last 2 weeks
+- A "New" badge on items added in the last 2 weeks (DONE v10.15)
 - "Sold out" for a chosen date range or "until further notice" (today it is one day at a time, switching itself off at midnight)
 - Seasonal greeting / specials text that changes with the season theme (DONE v10.13)
 - Let the owner edit the Easter / Mother's Day / Father's Day windows (today only the fixed-date seasons have editable dates; those three are worked out from the calendar)

@@ -25,7 +25,7 @@
     meta(patch) { const c = read(); if (patch) { c.meta = { ...c.meta, ...patch }; write(c); } return c.meta || {}; },
     // Cart rows joined with the live product data. Items whose product was removed or hidden are dropped from the view.
     async lines() {
-      const { products } = await SB.load(), vis = products.filter(p => p.visible !== false);
+      const { shownProducts: vis } = await SB.load();   // v10.15: items in a hidden section are not orderable either
       const lines = [], gone = [];
       read().items.forEach(i => { const p = vis.find(x => x.id === i.id); if (p) lines.push({ p, q: i.q, sub: price(p) * i.q, soldOut: SB.isSoldOut(p) }); else gone.push(i.id); });
       return { lines, gone, total: lines.reduce((s, l) => s + l.sub, 0) };

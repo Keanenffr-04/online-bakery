@@ -1,6 +1,6 @@
 /* pages.js: fills the Home "featured" row and the Menu page (category filter) from the data. */
-SB.load().then(({ biz, settings: s, categories: cs, products, season }) => {
-  const vis = products.filter(p => p.visible !== false), $ = q => document.querySelector(q);
+SB.load().then(({ biz, settings: s, shownCategories: cs, shownProducts: vis, season }) => {
+  const $ = q => document.querySelector(q);
   if ($("[data-home]")) {
     // Two hero styles live in index.html; keep the chosen one (or neither if the Hero box is switched off).
     const dropHero = s.home.hero === false ? ["hero", "hero-bakes"] : [s.heroStyle === "bakes" ? "hero" : "hero-bakes"];

@@ -14,7 +14,7 @@
   const mk = async (u, p, extra) => { const salt = uid() + uid(); return { u, salt, h: await hash(p, salt), status: "active", ...extra }; };
   const admins = () => J("sb_admins", []), saveA = a => S("sb_admins", a);
   const find = (a, u) => a.find(x => x.u.toLowerCase() === u.toLowerCase());
-  let state = { open: { theme: true }, tab: "orders", note: "", authTab: "login", edit: null, page: "index.html", draft: null, data: null };
+  let state = { open: { theme: true, msec: true }, tab: "orders", note: "", authTab: "login", edit: null, page: "index.html", draft: null, data: null };
   // v10.14: "Remember me". The sign-in normally lasts until the tab closes (sessionStorage). With the tick box it is also kept on this
   // device for 30 days (localStorage "sb_keep" = {u, exp}); me() brings it back. Logging out removes both. Like the whole login, this is a
   // convenience lock on this browser, not server security (that comes with Supabase).
@@ -112,7 +112,7 @@
     const d = state.data, e = d.products.find(p => p.id === state.edit) || { visible: true, category: d.categories[0]?.id, emoji: "🍰" }, cat = id => (d.categories.find(c => c.id === id) || {}).name || "";
     return `<div class="adm-split"><div class="adm-card adm-form"><h2>${state.edit ? "Edit item" : "Add item"}</h2>
     <form data-form="product"><label>Name</label><input name="name" value="${esc(e.name)}" required>
-    <div class="adm-row"><div><label>Section</label><select name="category">${d.categories.map(c => `<option value="${c.id}" ${c.id === e.category ? "selected" : ""}>${esc(c.name)}</option>`).join("")}</select></div>
+    <div class="adm-row"><div><label>Section</label><select name="category">${d.categories.map(c => `<option value="${c.id}" ${c.id === e.category ? "selected" : ""}>${esc(c.name)}${c.hidden ? " (hidden)" : ""}</option>`).join("")}</select></div>
     <div><label>Price (R)</label><input name="price" type="number" min="0" value="${esc(e.price)}" required></div></div>
     <div class="adm-row"><div><label>Emoji</label><input name="emoji" value="${esc(e.emoji)}"></div><div></div></div>
     <label>Description</label><textarea name="description">${esc(e.description)}</textarea>
@@ -122,10 +122,15 @@
     <label class="chk"><input type="checkbox" name="featured" ${e.featured ? "checked" : ""}>Home page: Our best sellers</label>
     <label class="chk"><input type="checkbox" name="popular" ${e.popular ? "checked" : ""}>Home page: Most popular</label></fieldset>
     <p><button class="btn btn--sm" type="submit">Save</button> ${state.edit ? '<button class="btn btn--sm btn--ghost" type="button" data-act="pcancel">Cancel</button>' : ""}</p></form></div>
+    <div>${sec("msec", "Menu sections", d.categories.length + (d.categories.length === 1 ? " section" : " sections"), `<p class="muted">The groups on your Menu page. The order here is the order customers see (Menu page buttons, the menu in the header and the Home "Shop by treat" tiles). Hiding a section hides its items too. Changes reach customers after you Publish.</p>
+    <ul class="adm-list">${d.categories.map((c, i) => { const n = d.products.filter(p => p.category === c.id).length; return `<li class="item sec-row"><form class="csec" data-form="csec" data-id="${esc(c.id)}"><input name="icon" value="${esc(c.icon || "")}" maxlength="4" aria-label="Emoji for ${esc(c.name)}"><input name="name" value="${esc(c.name)}" required maxlength="40" aria-label="Section name"><button class="btn btn--sm btn--ghost" type="submit">Save</button></form>
+    <div class="item__tags"><span class="tag">${n} ${n === 1 ? "item" : "items"}</span>${c.hidden ? '<span class="tag">hidden</span>' : ""}</div>
+    <div class="adm-actions"><button class="btn btn--sm btn--ghost" data-act="cup" data-id="${esc(c.id)}" aria-label="Move ${esc(c.name)} up" ${i === 0 ? "disabled" : ""}>&uarr;</button><button class="btn btn--sm btn--ghost" data-act="cdown" data-id="${esc(c.id)}" aria-label="Move ${esc(c.name)} down" ${i === d.categories.length - 1 ? "disabled" : ""}>&darr;</button><button class="btn btn--sm btn--ghost" data-act="chide" data-id="${esc(c.id)}" aria-pressed="${!!c.hidden}">${c.hidden ? "Show" : "Hide"}</button><button class="btn btn--sm btn--ghost" data-act="cdel" data-id="${esc(c.id)}" ${n ? 'disabled title="Move or delete its items first"' : ""}>Delete</button></div></li>`; }).join("") || "<li>No sections yet. Add one below, then you can add items.</li>"}</ul>
+    <form class="sec-add" data-form="csecnew"><label for="csec-new-name">Add a section</label><div class="csec"><input name="icon" placeholder="🍪" maxlength="4" aria-label="Emoji for the new section"><input id="csec-new-name" name="name" placeholder="e.g. Cookies" required maxlength="40"><button class="btn btn--sm" type="submit">Add</button></div></form>`)}
     <div class="adm-card"><h2>${d.products.length} items</h2><p class="muted">"Sold out today" greys an item out for customers and switches itself off at midnight. Like every change here it reaches customers after you Publish.</p>
     <ul class="adm-list">${d.products.map(p => { const so = SB.isSoldOut(p); return `<li class="item"><div class="item__main"><span class="item__e" aria-hidden="true">${esc(p.emoji)}</span><div><strong>${esc(p.name)}</strong> <span class="muted">R ${esc(p.price)} &middot; ${esc(cat(p.category))}</span>
-    <div class="item__tags">${p.featured ? '<span class="tag">home</span>' : ""}${p.popular ? '<span class="tag">popular</span>' : ""}${so ? '<span class="tag tag--sold">sold out today</span>' : ""}${p.visible === false ? '<span class="tag">hidden</span>' : ""}${(p.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div></div></div>
-    <div class="adm-actions"><button class="btn btn--sm ${so ? "" : "btn--ghost"}" data-act="psold" data-id="${p.id}" aria-pressed="${so}">${so ? "Back in stock" : "Sold out today"}</button><button class="btn btn--sm btn--ghost" data-act="pedit" data-id="${p.id}">Edit</button><button class="btn btn--sm btn--ghost" data-act="pdel" data-id="${p.id}">Delete</button></div></li>`; }).join("")}</ul></div></div>`;
+    <div class="item__tags">${SB.isNew(p) ? '<span class="tag">new</span>' : ""}${p.featured ? '<span class="tag">home</span>' : ""}${p.popular ? '<span class="tag">popular</span>' : ""}${so ? '<span class="tag tag--sold">sold out today</span>' : ""}${p.visible === false ? '<span class="tag">hidden</span>' : ""}${(p.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div></div></div>
+    <div class="adm-actions"><button class="btn btn--sm ${so ? "" : "btn--ghost"}" data-act="psold" data-id="${p.id}" aria-pressed="${so}">${so ? "Back in stock" : "Sold out today"}</button><button class="btn btn--sm btn--ghost" data-act="pedit" data-id="${p.id}">Edit</button><button class="btn btn--sm btn--ghost" data-act="pdel" data-id="${p.id}">Delete</button></div></li>`; }).join("")}</ul></div></div></div>`;
   }
 
   const OFFLINE_HEAD = "/* offline-data.js: a COPY of config/business.json, config/site-settings.json and src/data/products.json.\n   Only used when the site is opened straight from disk (file://, e.g. preview.html), because browsers block\n   fetch() of local files. The live/hosted site ignores this file and reads the real JSON files.\n   KEEP IN SYNC: whenever one of those three files changes, regenerate this file (see docs/AI_HANDOFF.md). */\n";
@@ -146,7 +151,7 @@
   function look() {
     const s = state.draft, pg = (v, n) => `<button class="btn btn--sm ${state.page === v ? "" : "btn--ghost"}" data-act="ppage" data-v="${v}">${n}</button>`;
     const homeBox = `${[["hero", "Hero"], ["shop", "Shop by treat (section tiles)"], ["featured", "Featured items"], ["fresh", "New and popular"], ["meet", "Meet Becca"], ["steps", "How ordering works"], ["cta", "Order banner"]].map(([k, n]) => `<label class="chk"><input type="checkbox" data-act="home" data-k="${k}" ${s.home[k] !== false ? "checked" : ""}>${n}</label>`).join("")}
-    <div class="adm-row"><div><label>Best sellers shown</label>${countSel("fc", s.featuredCount)}</div><div><label>"Just added" shown</label>${countSel("rc", s.recentCount || 3)}</div><div><label>"Most popular" shown</label>${countSel("pc", s.popularCount || 3)}</div>
+    <div class="adm-row"><div><label>Best sellers shown</label>${countSel("fc", s.featuredCount)}</div><div><label>"Just added" shown</label>${countSel("rc", s.recentCount || 3)}</div><div><label>"Most popular" shown</label>${countSel("pc", s.popularCount || 3)}</div><div><label>"New" badge stays for</label><select data-act="nd">${[[0, "Off"], [7, "1 week"], [14, "2 weeks"], [28, "4 weeks"]].map(([n, l]) => `<option value="${n}" ${n === (s.newDays == null ? 14 : s.newDays) ? "selected" : ""}>${l}</option>`).join("")}</select></div>
     <div><label>Card style</label><select data-act="fs"><option value="glass" ${s.featuredStyle !== "plain" ? "selected" : ""}>Glass (frosted)</option><option value="plain" ${s.featuredStyle === "plain" ? "selected" : ""}>Plain</option></select></div></div>
     <p class="muted">Best sellers are items ticked "Show on home page"; Most popular are items ticked "Show in Most popular".</p>
     <div class="adm-row"><div><label>Hero style</label><select data-act="hs"><option value="logo" ${s.heroStyle !== "bakes" ? "selected" : ""}>Logo (rabbit)</option><option value="bakes" ${s.heroStyle === "bakes" ? "selected" : ""}>Baked goods + greeting</option></select></div>
@@ -285,7 +290,18 @@
       const ph = SB.phoneRead("o-phone"); if (ph.error) return go("orders", ph.error);
       delete v["o-phone-cc"]; delete v["o-phone"];
       const o = J("sb_orders", []); o.unshift({ id: uid(), status: "pending", ...v, phone: ph.digits || "" }); S("sb_orders", o); return go("orders", "Order saved."); }
+    if (k === "csec") {   // v10.15: rename / change emoji (the id never changes, so links and items keep working)
+      const c = state.data.categories.find(x => x.id === f.dataset.id), nm = (v.name || "").trim(); if (!c || !nm) return go("menu", "A section needs a name.");
+      c.name = nm; c.icon = (v.icon || "").trim(); saveProducts(); return go("menu", "Section saved.");
+    }
+    if (k === "csecnew") {
+      const nm = (v.name || "").trim(); if (!nm) return go("menu", "Give the new section a name.");
+      const L = state.data.categories; if (L.some(c => c.name.toLowerCase() === nm.toLowerCase())) return go("menu", "You already have a section called " + nm + ".");
+      const base = nm.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "section"; let id = base, n = 2; while (L.some(c => c.id === id)) id = base + "-" + n++;
+      L.push({ id, name: nm, icon: (v.icon || "").trim() || "🍰" }); saveProducts(); return go("menu", nm + " added. It shows on the Menu once it has an item.");
+    }
     if (k === "product") {
+      if (!v.category) return go("menu", "Add a menu section first, then you can add items.");
       const p = { ...v, price: Number(v.price), featured: !!v.featured, popular: !!v.popular, visible: !!v.visible, tags: SB.TAGS.map(t => t[0]).filter(id => v["tag_" + id]) }, L = state.data.products;
       SB.TAGS.forEach(t => delete p["tag_" + t[0]]);
       if (state.edit) Object.assign(L.find(x => x.id === state.edit), p); else L.push({ id: "p" + uid(), ...p, added: SB.today() });   // v10.9: the date decides "Just added"
@@ -322,7 +338,7 @@
       draftKey(); refreshSeasonLabels(); return drawSeasonStatus();
     }
     if (a === "mh") (s.meet = s.meet || {}).heading = t.value; else if (a === "mt") { s.meet = s.meet || {}; s.meet.text = t.value; s.meet.draft = false; }   // v10.13: editing the story removes the placeholder "Draft text" tag
-    else if (a === "tag") s.tagline = t.value; else if (a === "gr") s.greeting = t.value; else if (a === "hs") s.heroStyle = t.value; else if (a === "fc") s.featuredCount = +t.value; else if (a === "fs") s.featuredStyle = t.value; else if (a === "rc") s.recentCount = +t.value; else if (a === "pc") s.popularCount = +t.value; else if (a === "deco") s.decorations = t.checked; else if (a === "ml") s.menuLayout = t.value; else if (a === "home") s.home[t.dataset.k] = t.checked; else if (a === "spon") (s.specials = s.specials || {}).enabled = t.checked; else if (a === "oron") (s.orders = s.orders || {}).enabled = t.checked; else if (a === "ortxt") (s.orders = s.orders || {}).items = t.value.split("\n").map(x => x.trim()).filter(Boolean).slice(0, 6); else if (a === "sptxt") (s.specials = s.specials || {}).items = t.value.split("\n").map(x => x.trim()).filter(Boolean).slice(0, 6); else return;
+    else if (a === "tag") s.tagline = t.value; else if (a === "gr") s.greeting = t.value; else if (a === "hs") s.heroStyle = t.value; else if (a === "fc") s.featuredCount = +t.value; else if (a === "fs") s.featuredStyle = t.value; else if (a === "rc") s.recentCount = +t.value; else if (a === "pc") s.popularCount = +t.value; else if (a === "nd") s.newDays = +t.value; else if (a === "deco") s.decorations = t.checked; else if (a === "ml") s.menuLayout = t.value; else if (a === "home") s.home[t.dataset.k] = t.checked; else if (a === "spon") (s.specials = s.specials || {}).enabled = t.checked; else if (a === "oron") (s.orders = s.orders || {}).enabled = t.checked; else if (a === "ortxt") (s.orders = s.orders || {}).items = t.value.split("\n").map(x => x.trim()).filter(Boolean).slice(0, 6); else if (a === "sptxt") (s.specials = s.specials || {}).items = t.value.split("\n").map(x => x.trim()).filter(Boolean).slice(0, 6); else return;
     draftKey();
     if (a === "deco") drawDemo();   // tick box: redraw the little preview at once
     // Show the change where it can be seen: layout -> Menu preview, everything else here -> Home preview.
@@ -350,6 +366,9 @@
     if (a === "psold") { const p = state.data.products.find(x => x.id === id); if (SB.isSoldOut(p)) delete p.soldOut; else p.soldOut = SB.today(); saveProducts(); return go("menu", p.name + (p.soldOut ? " is marked sold out for today." : " is back in stock.")); }
     if (a === "tab") { state.tab = v; if (v === "look") await prepLook(); if (v === "menu") state.edit = null; if (v !== "look") sessionStorage.removeItem("sb_preview"); return go(v); }
     if (a === "odel") { S("sb_orders", J("sb_orders", []).filter(x => x.id !== id)); return go("orders"); }
+    if (a === "cup" || a === "cdown") { const L = state.data.categories, i = L.findIndex(c => c.id === id), j = a === "cup" ? i - 1 : i + 1; if (i < 0 || j < 0 || j >= L.length) return go("menu"); [L[i], L[j]] = [L[j], L[i]]; saveProducts(); return go("menu", L[j].name + " moved " + (a === "cup" ? "up." : "down.")); }
+    if (a === "chide") { const c = state.data.categories.find(x => x.id === id); if (c.hidden) delete c.hidden; else c.hidden = true; saveProducts(); return go("menu", c.name + (c.hidden ? " is hidden from customers." : " is showing again.")); }
+    if (a === "cdel") { const c = state.data.categories.find(x => x.id === id); if (state.data.products.some(p => p.category === id)) return go("menu", "Move or delete the items in " + c.name + " first."); if (confirm("Delete the section " + c.name + "?")) { state.data.categories = state.data.categories.filter(x => x.id !== id); saveProducts(); } return go("menu"); }
     if (a === "pedit") { state.edit = id; return go("menu"); }
     if (a === "pcancel") { state.edit = null; return go("menu"); }
     if (a === "pdel") { if (confirm("Delete this item?")) { state.data.products = state.data.products.filter(p => p.id !== id); saveProducts(); } return go("menu"); }
