@@ -36,6 +36,7 @@ SB.load().then(({ biz }) => {
     SB.me.commit("co-remember", { name: v("name"), phone: document.getElementById("co-phone").value.trim(), method: v("method"), diet: v("diet") });
     const fg = f.querySelector("[data-forget]"); if (fg) fg.hidden = !SB.me.has();
     if (!biz.whatsappLink) { location.href = "contact.html"; return; }
+    SB.saveOrder({ source: "custom", name: v("name").slice(0, 120), phone: ph.digits || "", items: ("Custom order: " + v("what") + " (" + v("occasion") + ", " + s + " servings)").slice(0, 3000), date: v("date"), details: { method: v("method"), flavours: v("flavours"), diet: v("diet"), notes: v("notes") } });   // v10.17
     window.open(biz.whatsappLink + "?text=" + encodeURIComponent(L.join("\n")), "_blank", "noopener");
   });
 });

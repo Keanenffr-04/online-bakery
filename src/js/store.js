@@ -104,6 +104,22 @@
     },
     // "1 Feb to 14 Feb" for the admin table (the dates a rule covers in the given year).
     seasonText(r, year) { try { const [a, b] = seasonWindow(r, year || new Date().getFullYear()); return dayText(a) + " to " + dayText(b); } catch (e) { return ""; } },
+    // v10.17: read the public rows (menu + settings) with a plain request, no library needed. null = database not reachable / not set up.
+    async dbRead(cfg) {
+      if (!cfg || !cfg.url || !cfg.key) return null;
+      try {
+        const c = new AbortController(), tm = setTimeout(() => c.abort(), 4000);
+        const r = await fetch(cfg.url + "/rest/v1/site_data?select=key,value", { headers: { apikey: cfg.key }, signal: c.signal }); clearTimeout(tm);
+        if (!r.ok) return null; const o = {}; (await r.json()).forEach(x => { o[x.key] = x.value; }); return o;
+      } catch (e) { return null; }
+    },
+    // v10.17: save an order online (anyone may add one, only admins can read them). Never blocks or breaks the WhatsApp message.
+    saveOrder(o) {
+      try {
+        const c = (SB._biz || {}).supabase; if (!c || !c.url || !c.key || window.top !== window) return;
+        fetch(c.url + "/rest/v1/orders", { method: "POST", keepalive: true, headers: { apikey: c.key, "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify(o) }).catch(() => { /* offline: the WhatsApp message still goes */ });
+      } catch (e) { /* ignore */ }
+    },
     load() {
       return SB._p || (SB._p = (async () => {
         // Opened from disk (file://)? Browsers block fetch() there, so read the copy in js/offline-data.js instead.
@@ -113,11 +129,15 @@
           el.onload = el.onerror = () => res(window.SB_OFFLINE || {}); document.head.appendChild(el);
         });
         const get = (u, key) => FILE ? mirror().then(m => m[key] || null) : fetch(u).then(r => r.json()).catch(() => null);
-        const [biz, pubSet, pubProd] = await Promise.all([get("../config/business.json", "business"), get("../config/site-settings.json", "settings"), get("data/products.json", "products")]);
+        const biz = await get("../config/business.json", "business"); SB._biz = biz || {};
+        // v10.17: the menu and settings live in the online database (Supabase) when it answers; the files are the fallback.
+        const [fSet, fProd, db] = await Promise.all([get("../config/site-settings.json", "settings"), get("data/products.json", "products"), SB.dbRead(SB._biz.supabase)]);
+        SB.dbOK = db !== null; SB.dbRows = db || {};
+        const pubSet = (db && db.settings) || fSet, pubProd = (db && db.products) || fProd;
         const pv = window.top !== window ? J(sessionStorage, "sb_preview") : null;
-        const base = { ...D, ...(pubSet || {}) }, own = (pv && pv.settings) || J(localStorage, "sb_settings") || {};
+        const base = { ...D, ...(pubSet || {}) }, own = (pv && pv.settings) || (SB.dbOK ? null : J(localStorage, "sb_settings")) || {};
         const settings = { ...base, ...own, home: { ...D.home, ...(base.home || {}), ...(own.home || {}) }, meet: { ...D.meet, ...(base.meet || {}), ...(own.meet || {}) }, specials: { ...D.specials, ...(base.specials || {}), ...(own.specials || {}) }, orders: { ...D.orders, ...(base.orders || {}), ...(own.orders || {}) }, autoTheme: { ...D.autoTheme, ...(base.autoTheme || {}), ...(own.autoTheme || {}) } };
-        const data = J(localStorage, "sb_products") || pubProd || { categories: [], products: [] };
+        const data = (SB.dbOK ? null : J(localStorage, "sb_products")) || pubProd || { categories: [], products: [] };
         // v10.9: themeNow = the theme showing right now (a season's theme when one is on, else the owner's everyday theme).
         // settings.theme is NEVER changed by the seasons, so the admin and Publish always keep the owner's own choice.
         // Inside the admin preview (pv) we show exactly the chosen theme, so the owner can look at any theme any time of year.

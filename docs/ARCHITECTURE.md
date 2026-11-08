@@ -58,3 +58,8 @@ Payments, user accounts, delivery tracking, real database.
 ## v10.4 update: tags, filters, search
 - Tag list is code, not data: `SB.TAGS` in `store.js` (id, label). Products carry `tags: [ids]`. The Menu page (`pages.js`) filters by section, tags (AND) and search words, all client-side; tag buttons only show for tags in use. Admin product form writes `tags` from `tag_<id>` checkboxes.
 
+## v10.17 update: Supabase backend
+- **Still a static site**; Supabase is only the "back room". Public pages use plain `fetch` to `<url>/rest/v1/...` with the publishable key (no library). Only `admin.html` loads `@supabase/supabase-js@2.45.4` (jsDelivr, pinned) for sign-in.
+- **Tables** (`supabase/setup.sql`): `admins(email)`, `site_data(key in settings|products, value jsonb)`, `orders(...)`. Row level security: site_data is world-readable, orders are insert-only for the public, everything else needs `is_admin()` (signed-in + confirmed email on `admins`).
+- **Load order** in `SB.load()`: files (`business.json`, JSON copies) then the database rows win when the database answers (`SB.dbOK`); local `sb_settings` / `sb_products` overrides are ignored when the database is OK (they only apply offline). The admin preview iframe still uses the unsaved draft in `sessionStorage` `sb_preview`.
+- **Admin session**: Supabase session stored via a custom storage (localStorage when "Remember me", else sessionStorage; flag `sb_keep`).

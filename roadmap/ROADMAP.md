@@ -1,6 +1,6 @@
 # Roadmap: what is done, what is next, what is waiting
 
-**Current version:** v10.16 &nbsp;|&nbsp; **Next up:** v10.17 (Supabase foundation: real sign-in, server-locked admin, orders saved online; needs your free Supabase account first) &nbsp;|&nbsp; Rule: **max 2 to 3 things per version.**
+**Current version:** v10.17 &nbsp;|&nbsp; **Next up:** v10.18 (My account page + Privacy and Terms pages; run `supabase/setup.sql` first if you have not) &nbsp;|&nbsp; Rule: **max 2 to 3 things per version.**
 
 Finished work lives in [`BACKLOG.md`](BACKLOG.md). The old, long roadmap notes are kept untouched in [`ROADMAP_ARCHIVE.md`](ROADMAP_ARCHIVE.md).
 
@@ -30,8 +30,8 @@ Owner's list always comes first; older scheduled items slide back. Photos and la
 | v10.14 | DONE | **Admin "Remember me"** (tick box under Log in: stay signed in on this device for 30 days, username remembered) + the **"how many versions are left?" answer** (section 1g) | Owner list 14 items 1 and 2 |
 | v10.15 | DONE | **Manage menu sections** (add / rename / reorder / hide / delete; the Shop-by-treat tiles and header menu follow) + a **"New" badge** on recently added items (length set in admin) | Older plan; owner list 15 was empty |
 | v10.16 | DONE | **Menu items list is now a dropdown** under Menu sections (Admin > Menu) + **Supabase walkthrough** (plain-English explanation, section 1h) | Owner list 16 items 1 and 2; took the v10.16 slot, so every later version slid back by one |
-| **v10.17** | **NEXT** | **Supabase foundation (decided, list 13 item 2)**: real sign-in with Google / email (Apple only if paid for), **admin panel locked on the server so only admins can enter (list 13 item 3)**, admin works across devices (no manual Publish), forgot-password by real email, orders saved online, backup | Owner list 13 items 2 and 3, list 10 item 1, list 6 item 7. One big item |
-| v10.18 | BACKEND | **"My account" page** (profile, saved details, past orders, order again, edit and delete my account) + **Privacy (POPIA) and Terms pages** | Owner list 10 item 2. Privacy page MUST ship with accounts |
+| v10.17 | DONE | **Supabase foundation**: real sign-in (email + Google, real reset emails), **admin locked on the server** (admins by email: Becca + Keanen), **menu and settings live online (no Publish)**, **orders saved online** + backup download | Owner list 17; list 13 items 2 and 3, list 10 item 1, list 6 item 7 |
+| **v10.18** | **NEXT** | **"My account" page** (profile, saved details, past orders, order again, edit and delete my account) + **Privacy (POPIA) and Terms pages** | Owner list 10 item 2. Privacy page MUST ship with accounts |
 | v10.19 | BACKEND | **Order tools**: statuses, thank-you page, printable slip, weekly / monthly numbers + CSV, change log; **"Most popular" ranked automatically from real orders** | Needs v10.17 |
 | v10.20 | PLANNED | **More occasion themes** (New Year, Women's Day, Black Friday, Diwali, Eid ...). **Visitors never switch themes** (owner list 13 item 1): only Becca and the automatic seasons decide + **Top 10 #4: WhatsApp order-status buttons** ("ready for collection") | Needs v10.19 for the buttons |
 | v10.21 | PLANNED | **Top 10 #1: order calendar** (lead times, daily limit, blocked dates) + **#2: delivery or collection with fees by area** | Needs your real lead times, areas and prices |
@@ -139,6 +139,8 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 
 | List | # | Request (short) | Status | Where |
 |---|---|---|---|---|
+| 17 | 1 | Use the Supabase project + publishable key; add Becca and Keanen as admins in this patch | DONE (emails in `supabase/setup.sql`; keys in `config/business.json`) | v10.17 |
+| 17 | 2 | Only 3 changes per version, everything else to the backlog | DONE (rule kept; leftovers listed in the v10.17 backlog entry) | v10.17 |
 | 16 | 1 | Make the items list in Admin > Menu a dropdown too, under Menu sections | DONE | v10.16 |
 | 16 | 2 | "Go through the explanation of the Supabase thing" | DONE (plain-English walkthrough, section 1h) | v10.16 |
 | 15 | 1 | (Change-list file was empty.) "Start the next version" + "tell me what you will do in the next 5 versions" | DONE (v10.15 built; next 5 listed in section 1c: v10.16 to v10.20) | v10.15 |
@@ -146,7 +148,7 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 | 14 | 2 | "Remember me" on the admin sign-in (tick box below the sign-in) | DONE | v10.14 |
 | 13 | 1 | No visitor theme switching (only Becca and the seasons choose); keep adding more themes | DONE (plan changed) | v10.12 rule; more themes v10.20 |
 | 13 | 2 | Use Supabase | DONE (decision recorded; owner creates the free account) | v10.17 |
-| 13 | 3 | Only admins can see the admin panel, not customers | PARTLY DONE: no public link, no public sign-up (v10.12); real server-side lock comes with sign-in | v10.17 |
+| 13 | 3 | Only admins can see the admin panel, not customers | DONE (v10.12 no public link; v10.17 real server-side lock) | v10.17 |
 | 13 | 4 | Add all 10 suggested things to the roadmap | DONE | v10.20 to v10.25, photos, launch |
 | 13 | 5 | Start customising the home page, away from admin things | DONE (round 1 v10.12; round 2 v10.13: Meet Becca, season-aware greeting and strip) | v10.12, v10.13 |
 | 12 | 1 | Supabase or Firebase? (free for now, pay later) | DONE (answered in section 1d: Supabase) | v10.11 |
@@ -156,7 +158,7 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 | 12 | 5 | "Tell me what you will do in the next 5 versions" | DONE (section 1c) | v10.11 |
 | 11 | 1 | "What would you do next?" | DONE (answered in section 1b; first pick built) | v10.10 |
 | 11 | 2 | Automatic seasons: all dates in one section with a dropdown to pick the season to change | DONE | v10.10 |
-| 10 | 1 | Sign in so it remembers people (admins and customers); Google, Apple, etc. | PARTLY DONE: device-only "remember my details" (v10.13); real sign-in is BACKEND | v10.13, v10.17 |
+| 10 | 1 | Sign in so it remembers people (admins and customers); Google, Apple, etc. | PARTLY DONE: admins sign in for real (v10.17); customer accounts come with "My account" | v10.17, v10.18 |
 | 10 | 2 | Full account page: whole account, past orders, customise, all info | BACKEND | v10.18 |
 | 10 | 3 | Preview of the moving effects when changing theme or ticking the box | DONE | v10.8 |
 | 10 | 4 | Theme changes automatically for every season | DONE | v10.9 |
@@ -174,7 +176,7 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 | 6 | 4 | Custom Order form | DONE | v10.2 |
 | 6 | 5 | FAQ and reviews | DONE (needs owner's answers) | v10.3 |
 | 6 | 6 | Allergen / dietary tags with filters | DONE (owner must tag products) | v10.4 |
-| 6 | 7 | Admin that works across devices | BACKEND | v10.17 |
+| 6 | 7 | Admin that works across devices | DONE | v10.17 |
 | 5 | 1 | Instagram + Facebook in the footer | DONE (needs real handles) | v10.5 |
 | 5 | 2 | Glass-style best-seller cards + choose how many | DONE | v10.5 |
 | 5 | 3 | Most recent + most popular section | DONE (popular = owner ticks it for now; automatic ranking in v10.19) | v10.9 |
@@ -197,10 +199,11 @@ Nothing below can be built or guessed by us. Send it whenever you have it.
 | Real prices and product list (today they are SAMPLE prices) | Menu, cart totals | Admin > Menu items |
 | Product photos | Replace emoji | when ready (see plan, "When photos exist") |
 | Decision on "Sign in with Apple" | It needs an Apple Developer account (paid, about US$99 per year). Google sign-in and email sign-in are free. If you skip Apple, we ship Google + email first | before v10.17 |
-| Create a free Supabase account (decision made: Supabase, list 13). Step-by-step in section 1h | v10.17 | before v10.17 |
+| **v10.17 first run (about 10 minutes, in the Supabase dashboard):** (1) SQL Editor > New query > paste `supabase/setup.sql` > Run. (2) Authentication > URL configuration: set Site URL to the site address once it is hosted (add `http://localhost:8000` too if testing locally). (3) Optional, for Google sign-in: Authentication > Sign In / Providers > Google, switch on and paste a Google Cloud OAuth client id + secret. (4) Open `admin.html`, choose **First time here?**, use your admin email + a password, confirm the email, then log in. Email + password works without step 3. | v10.17 working live | now |
 | For the top-10 items: real lead times and daily limit, delivery areas and fees, which payment provider (Yoco / PayFast / Ozow), voucher and loyalty rules | v10.21 to v10.24 | when we reach each one |
 
 ## 4. Needs the backend
+(v10.17 added the backend: sign-in, database, locks. What is left below is built on top of it.)
 A static website (what we have now) cannot keep an account for someone on all their devices, send real emails or SMS, or let you sign in with Google or Apple. Everything below waits for v10.17, which adds a hosted backend (login, database, email). Until then: carts, details and admin changes live on one device only.
 - Sign in with Google / Apple / email, and being remembered on every device (v10.17)
 - Customer and admin "My account" page with past orders (v10.18)

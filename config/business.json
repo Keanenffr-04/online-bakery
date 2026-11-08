@@ -7,7 +7,11 @@
   "country": "ZA",
   "currency": "ZAR",
   "mode": "online-only",
-  "_note": "Single source of truth for business details. Never hardcode these elsewhere. instagram / facebook are PLACEHOLDER handles (v10.5) until the owner gives the real ones; leave one empty to hide that link.",
+  "_note": "Single source of truth for business details. Never hardcode these elsewhere. instagram / facebook are PLACEHOLDER handles (v10.5) until the owner gives the real ones; leave one empty to hide that link. supabase.url / supabase.key (v10.17) are PUBLIC by design (the publishable key); the data is protected by the locks in supabase/setup.sql. Never put a secret / service_role key here.",
   "instagram": "sweetest.bakery",
-  "facebook": "sweetest.bakery"
+  "facebook": "sweetest.bakery",
+  "supabase": {
+    "url": "https://tiynbahroiicptjaqqiy.supabase.co",
+    "key": "sb_publishable_cyQfXKNbssrzbbgCintzSQ_V-7TU40m"
+  }
 }

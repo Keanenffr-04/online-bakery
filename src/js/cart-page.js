@@ -63,6 +63,10 @@ SB.load().then(async ({ biz }) => {
   const refresh = async () => { state = await C.lines(); draw(); };
   // v10.13: pressing send saves the details on this device (if ticked); "Forget my details" clears them and the boxes.
   root.addEventListener("click", e => {
+    if (e.target.closest("#cart-send")) {   // v10.17: also save the order online (the WhatsApp message still opens as before)
+      const g = id => (document.getElementById(id) || {}).value || "", ph0 = SB.phoneRead("c-phone");
+      if (state.lines.length) SB.saveOrder({ source: "cart", name: g("c-name").trim().slice(0, 120), phone: ph0.digits || "", items: state.lines.map(l => l.q + " x " + l.p.name).join(", ").slice(0, 3000), date: g("c-date"), total: state.total, details: { method: g("c-method"), notes: g("c-notes").trim().slice(0, 500) } });
+    }
     if (e.target.closest("#cart-send")) { const v = id => (document.getElementById(id) || {}).value || ""; SB.me.commit("c-remember", { name: v("c-name").trim(), phone: v("c-phone").trim(), method: v("c-method") }); const f = root.querySelector("[data-forget]"); if (f) f.hidden = !SB.me.has(); }
     if (e.target.closest("[data-forget]")) { SB.me.forget(); C.meta({ name: "", phoneRaw: "", method: "" }); draw(); }
   });

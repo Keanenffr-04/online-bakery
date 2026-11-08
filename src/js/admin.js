@@ -1,99 +1,111 @@
-/* admin.js: client-side admin (login, sign-up, orders, menu, look & layout, admins, export).
-   NOTE: this is a static site, so everything is saved in THIS browser (localStorage). It is a convenience
-   lock, not real security. Use "Publish" to export files that make changes live for everyone. */
+/* admin.js: admin panel (v10.17: real sign-in with Supabase; orders, menu and settings are saved in the online database).
+   Only a confirmed email on the admins list can get in, and the database itself refuses everyone else (supabase/setup.sql). */
 (function () {
   const $ = q => document.querySelector(q), app = $("#app"), esc = SB.esc;
   const J = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } };
   const S = (k, v) => localStorage.setItem(k, JSON.stringify(v));
   const uid = () => Math.random().toString(36).slice(2, 9);
-  const ok = s => /^[A-Za-z0-9_.-]{3,20}$/.test(s);
-  async function hash(pw, salt) {
-    if (window.crypto && crypto.subtle) { const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(salt + pw)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join(""); }
-    let h = 5381; for (const c of salt + pw) h = ((h * 33) ^ c.charCodeAt(0)) >>> 0; return "f" + h;
-  }
-  const mk = async (u, p, extra) => { const salt = uid() + uid(); return { u, salt, h: await hash(p, salt), status: "active", ...extra }; };
-  const admins = () => J("sb_admins", []), saveA = a => S("sb_admins", a);
-  const find = (a, u) => a.find(x => x.u.toLowerCase() === u.toLowerCase());
-  let state = { open: { theme: true, msec: true }, tab: "orders", note: "", authTab: "login", edit: null, page: "index.html", draft: null, data: null };
-  // v10.14: "Remember me". The sign-in normally lasts until the tab closes (sessionStorage). With the tick box it is also kept on this
-  // device for 30 days (localStorage "sb_keep" = {u, exp}); me() brings it back. Logging out removes both. Like the whole login, this is a
-  // convenience lock on this browser, not server security (that comes with Supabase).
-  const KEEP_DAYS = 30;
-  const keep = () => { const k = J("sb_keep", null); return k && k.u && k.exp > Date.now() ? k : null; };
-  const me = () => { let u = sessionStorage.getItem("sb_session"); if (!u) { const k = keep(); if (k) { u = k.u; sessionStorage.setItem("sb_session", u); } else if (J("sb_keep", null)) localStorage.removeItem("sb_keep"); } return u; };
-  const keepFor = u => S("sb_keep", { u, exp: Date.now() + KEEP_DAYS * 864e5 });
+  const ok = s => /^\S+@\S+\.\S+$/.test(s);
+  let state = { open: { theme: true, msec: true }, tab: "orders", note: "", authTab: "login", edit: null, page: "index.html", draft: null, data: null, user: null, isAdmin: false, orders: [], admins: [] };
   const flash = t => { state.note = t; render(); };
+  const HERE = () => location.origin + location.pathname, WEB = () => /^https?:$/.test(location.protocol);
 
-  async function seed() { if (!admins().length) saveA([await mk("admin", "admin1", { root: true, mustChange: true })]); }
-
-  async function login(u, p, remember) {
-    const a = find(admins(), u);
-    if (!a || a.h !== await hash(p, a.salt)) return flash("Wrong username or password.");
-    if (a.status !== "active") return flash("This account is waiting for approval by an admin.");
-    sessionStorage.setItem("sb_session", a.u); state.note = "";
-    if (remember) { keepFor(a.u); localStorage.setItem("sb_admin_u", a.u); } else { localStorage.removeItem("sb_keep"); localStorage.removeItem("sb_admin_u"); }
+  // ---- Supabase client (library loaded from a CDN, pinned version) ----
+  // "Remember me" decides where the sign-in is kept: ticked = this device (localStorage), unticked = until the tab closes (sessionStorage).
+  const LIB = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
+  const loadLib = () => window.supabase ? Promise.resolve() : new Promise((res, rej) => { const s = document.createElement("script"); s.src = LIB; s.onload = res; s.onerror = () => rej(new Error("lib")); document.head.appendChild(s); });
+  const store = { getItem: k => { const a = sessionStorage.getItem(k); return a != null ? a : localStorage.getItem(k); }, setItem: (k, v) => (localStorage.getItem("sb_keep") === "1" ? localStorage : sessionStorage).setItem(k, v), removeItem: k => { sessionStorage.removeItem(k); localStorage.removeItem(k); } };
+  let sb = null;
+  async function boot() {
+    const c = (state.data.biz || {}).supabase;
+    if (!c || !c.url || !c.key) { state.noDb = "The online database is not set up in config/business.json."; return; }
+    try { await loadLib(); } catch (e) { state.noDb = "Could not load the sign-in library. Check your internet connection and reload."; return; }
+    sb = window.supabase.createClient(c.url, c.key, { auth: { storage: store, persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+    sb.auth.onAuthStateChange((ev, s) => { if (ev === "PASSWORD_RECOVERY") { state.authTab = "newpw"; state.recovering = true; render(); } });   // came from the reset-password email
+    await refreshUser();
+  }
+  async function refreshUser() {
+    const { data } = await sb.auth.getSession(); state.user = (data.session && data.session.user) || null; state.isAdmin = false; state.setupErr = false;
+    if (state.user) { const r = await sb.rpc("is_admin"); if (r.error) state.setupErr = true; state.isAdmin = r.data === true; }
+  }
+  async function loadAdminData() {
+    if (!state.isAdmin) return;
+    const [o, a] = await Promise.all([sb.from("orders").select("*").order("created_at", { ascending: false }).limit(1000), sb.from("admins").select("*").order("added_at")]);
+    state.orders = o.data || []; state.admins = a.data || []; if (o.error || a.error) state.note = "Could not load from the online database: " + ((o.error || a.error).message || "unknown error");
+  }
+  // First time ever: copy the menu and settings from the project files into the database so nothing is lost.
+  async function seedDb() {
+    if (!SB.dbOK) return; const rows = [];
+    if (!SB.dbRows.products) rows.push({ key: "products", value: { categories: state.data.categories, products: state.data.products } });
+    if (!SB.dbRows.settings) rows.push({ key: "settings", value: state.data.published.settings });
+    if (!rows.length) return; const r = await sb.from("site_data").upsert(rows); if (!r.error) { SB._p = null; SB.dbRows = {}; state.data = await SB.load(); }
+  }
+  const dbSave = async (key, value) => { const r = await sb.from("site_data").upsert({ key, value, updated_at: new Date().toISOString() }); if (r.error) { alert("Could not save online: " + r.error.message); return false; } return true; };
+  async function enter() {
+    await refreshUser();
+    if (state.user && !state.isAdmin) { const who = state.user.email; await sb.auth.signOut(); state.user = null; return flash(state.setupErr ? "The online database is not set up yet (run supabase/setup.sql, see the roadmap)." : who + " is not on the admin list. Ask an existing admin to add that email.") }
+    if (state.isAdmin) { await seedDb(); await loadAdminData(); }
     render();
   }
-  async function signup(u, p) {
-    const all = admins();
-    if (!ok(u)) return flash("Username: 3-20 letters, numbers, . _ -");
-    if (p.length < 6) return flash("Password must be at least 6 characters.");
-    if (find(all, u)) return flash("That username is taken.");
-    all.push(await mk(u, p, { status: "pending" })); saveA(all);
-    state.authTab = "login"; flash("Sign-up sent. An existing admin must approve it before you can log in.");
-  }
 
-  // v10.6: forgot password. There is no email/SMS on a static site, so the proof of identity is a one-time 6-digit code that
-  // a logged-in admin sees under Admins > "Password reset requests" and passes on to the person (WhatsApp, a call, in person).
-  // Codes last 15 minutes and are blocked after 5 wrong tries. Real email/SMS links come with the backend (v10.7).
-  const RK = "sb_resets", RMIN = 15;
-  const resets = () => J(RK, []).filter(r => r.exp > Date.now()), saveR = r => S(RK, r);
-  const newCode = () => String(crypto.getRandomValues(new Uint32Array(1))[0] % 1000000).padStart(6, "0");
-  function requestReset(u) {
-    const a = find(admins(), u); state.resetUser = u;
-    if (a && a.status === "active") { const all = resets().filter(r => r.u !== a.u); all.push({ u: a.u, code: newCode(), exp: Date.now() + RMIN * 60000, tries: 0 }); saveR(all); }
-    state.authTab = "reset";   // same answer whether or not the account exists, so nobody can use this to find usernames
-    flash(`If that account exists, a reset code was created. Ask an admin for it (it shows on their Admins tab). It works for ${RMIN} minutes.`);
+  async function login(email, p, remember) {
+    localStorage.setItem("sb_keep", remember ? "1" : "0"); if (remember) localStorage.setItem("sb_admin_u", email); else localStorage.removeItem("sb_admin_u");
+    const { error } = await sb.auth.signInWithPassword({ email, password: p });
+    if (error) return flash(/confirm/i.test(error.message) ? "Please confirm your email first (check your inbox, then log in)." : "Wrong email or password.");
+    state.note = ""; await enter();
   }
-  async function useReset(u, code, p) {
-    const all = resets(), r = all.find(x => x.u.toLowerCase() === u.toLowerCase());
+  async function signup(email, p) {
+    if (!ok(email)) return flash("Type a valid email address."); if (p.length < 6) return flash("Password must be at least 6 characters.");
+    localStorage.setItem("sb_keep", "0");
+    const { error } = await sb.auth.signUp({ email, password: p, options: { emailRedirectTo: HERE() } });
+    state.authTab = "login"; flash(error ? "Could not create the login: " + error.message : "Check your email and click the confirm link, then log in here. (Only emails on the admin list can enter.)");
+  }
+  async function google(remember) {
+    localStorage.setItem("sb_keep", remember ? "1" : "0");
+    const { error } = await sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: HERE() } }); if (error) flash("Google sign-in is not switched on yet: " + error.message);
+  }
+  async function requestReset(email) {
+    if (ok(email)) await sb.auth.resetPasswordForEmail(email, { redirectTo: HERE() });
+    state.authTab = "login"; flash("If that email has a login, a reset link is on its way. Open it on this device.");   // same answer either way
+  }
+  async function newPassword(p) {
     if (p.length < 6) return flash("New password must be at least 6 characters.");
-    if (!r) return flash("That code is wrong or has expired. Request a new one.");
-    if (r.tries >= 5) { saveR(all.filter(x => x !== r)); return flash("Too many wrong tries. Request a new code."); }
-    if (String(code).trim() !== r.code) { r.tries++; saveR(all); return flash(`That code is wrong. ${5 - r.tries} ${5 - r.tries === 1 ? "try" : "tries"} left.`); }
-    const rest = admins(), a = find(rest, r.u); a.salt = uid() + uid(); a.h = await hash(p, a.salt); delete a.mustChange; saveA(rest);
-    saveR(all.filter(x => x !== r)); state.authTab = "login"; flash("Password changed. You can log in now.");
+    const { error } = await sb.auth.updateUser({ password: p }); if (error) return flash("Could not change it: " + error.message);
+    state.authTab = "login"; state.recovering = false; history.replaceState(null, "", location.pathname); await enter();
   }
   function recoverView() {
     const f = state.authTab === "forgot";
-    return `<div class="adm-card adm-login"><h1>${f ? "Forgot password" : "Enter your reset code"}</h1>
-    <p class="muted">${f ? "Enter your username. A one-time code is created, and an admin gives it to you, so we know it is really you." : "Type the 6-digit code an admin gave you, then choose a new password."}</p>
+    return `<div class="adm-card adm-login"><h1>${f ? "Forgot password" : "Choose a new password"}</h1>
+    <p class="muted">${f ? "Type your email. We send you a link to choose a new password." : "Type the new password you want to use."}</p>
     ${state.note ? `<div class="msg">${esc(state.note)}</div>` : ""}
-    <form data-form="${f ? "forgot" : "reset"}"><label>Username</label><input name="u" autocomplete="username" value="${esc(state.resetUser || "")}" required>
-    ${f ? "" : `<label>Reset code</label><input name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required><label>New password</label><input name="p" type="password" autocomplete="new-password" minlength="6" required>`}
-    <p style="margin-top:1rem"><button class="btn" type="submit">${f ? "Get a reset code" : "Change password"}</button></p></form>
-    <p class="muted">${f ? '<button type="button" class="linkbtn" data-act="auth" data-v="reset">I already have a code</button> &middot; ' : '<button type="button" class="linkbtn" data-act="auth" data-v="forgot">Get a new code</button> &middot; '}<button type="button" class="linkbtn" data-act="auth" data-v="login">Back to log in</button></p></div>`;
+    <form data-form="${f ? "forgot" : "newpw"}">${f ? `<label>Email</label><input name="u" type="email" autocomplete="email" value="${esc(localStorage.getItem("sb_admin_u") || "")}" required>` : `<label>New password</label><input name="p" type="password" autocomplete="new-password" minlength="6" required>`}
+    <p style="margin-top:1rem"><button class="btn" type="submit">${f ? "Send me the link" : "Save new password"}</button></p></form>
+    ${f ? `<p class="muted"><button type="button" class="linkbtn" data-act="auth" data-v="login">Back to log in</button></p>` : ""}</div>`;
   }
 
-  // v10.12: only admins use this page. There is no public link to it (the footer "Staff login" link was removed) and no public sign-up:
-  // new admins are added by an existing admin under Admins > Add an admin. (A real server-side lock arrives with the Supabase version.)
+  // Only admins use this page. There is no public link to it and no public sign-up: a person can only get in if their confirmed
+  // email is on the admins list in the database (the database itself enforces this, not just this page).
   function authView() {
-    if (state.authTab === "forgot" || state.authTab === "reset") return recoverView();
-    return `<div class="adm-card adm-login"><h1>Admin login</h1><p class="muted">For the bakery team only.</p>
+    if (state.noDb) return `<div class="adm-card adm-login"><h1>Admin login</h1><div class="msg msg--warn">${esc(state.noDb)}</div><p class="muted"><a href="index.html">Back to the website</a></p></div>`;
+    if (!sb) return `<div class="adm-card adm-login"><h1>Admin login</h1><p class="muted">Loading...</p></div>`;
+    if (state.authTab === "forgot" || state.authTab === "newpw") return recoverView();
+    const first = state.authTab === "first", em = esc(localStorage.getItem("sb_admin_u") || "");
+    return `<div class="adm-card adm-login"><h1>${first ? "Create my login" : "Admin login"}</h1><p class="muted">${first ? "First time? Use the email that is on the admin list, choose a password, then confirm the email we send you." : "For the bakery team only."}</p>
     ${state.note ? `<div class="msg">${esc(state.note)}</div>` : ""}
-    <form data-form="login"><label>Username</label><input name="u" autocomplete="username" value="${esc(localStorage.getItem("sb_admin_u") || "")}" required>
-    <label>Password</label><input name="p" type="password" autocomplete="current-password" required>
-    <label class="chk"><input type="checkbox" name="remember" ${localStorage.getItem("sb_admin_u") ? "checked" : ""}><span>Remember me on this device <span class="muted">(stay signed in for ${KEEP_DAYS} days)</span></span></label>
-    <p style="margin-top:1rem"><button class="btn" type="submit">Log in</button></p></form>
-    <p class="muted"><button type="button" class="linkbtn" data-act="auth" data-v="forgot">Forgot your password?</button></p>
+    <form data-form="${first ? "signup" : "login"}"><label>Email</label><input name="u" type="email" autocomplete="email" value="${em}" required>
+    <label>Password</label><input name="p" type="password" autocomplete="${first ? "new-password" : "current-password"}" ${first ? 'minlength="6"' : ""} required>
+    ${first ? "" : `<label class="chk"><input type="checkbox" name="remember" ${em ? "checked" : ""}><span>Remember me on this device <span class="muted">(stay signed in)</span></span></label>`}
+    <p style="margin-top:1rem"><button class="btn" type="submit">${first ? "Create my login" : "Log in"}</button></p></form>
+    ${first ? "" : (WEB() ? `<p><button type="button" class="btn btn--ghost btn--block" data-act="google">Sign in with Google</button></p>` : `<p class="muted">Sign in with Google works once the site is online (https).</p>`)}
+    <p class="muted">${first ? '<button type="button" class="linkbtn" data-act="auth" data-v="login">I already have a login</button>' : '<button type="button" class="linkbtn" data-act="auth" data-v="forgot">Forgot your password?</button> &middot; <button type="button" class="linkbtn" data-act="auth" data-v="first">First time here?</button>'}</p>
     <p class="muted"><a href="index.html">Back to the website</a></p></div>`;
   }
 
   /* ---------- tabs ---------- */
-  const TABS = [["orders", "Orders"], ["menu", "Menu items"], ["look", "Theme & layout"], ["admins", "Admins"], ["account", "My account"], ["publish", "Publish"]];
+  const TABS = [["orders", "Orders"], ["menu", "Menu items"], ["look", "Theme & layout"], ["admins", "Admins"], ["account", "My account"], ["publish", "Backup & files"]];
 
   function orders() {
-    const o = J("sb_orders", []), f = state.filter || "pending", list = o.filter(x => f === "all" || x.status === f);
+    const o = state.orders || [], f = state.filter || "pending", list = o.filter(x => f === "all" || x.status === f);
     const st = ["pending", "confirmed", "ready", "completed", "cancelled"];
     return `<div class="adm-split"><div class="adm-card"><h2>Add an order</h2>
     <form data-form="order"><label>Customer</label><input name="name" required>${SB.phoneField("o-phone", { label: "Phone" })}
@@ -101,11 +113,11 @@
     <p><button class="btn btn--sm" type="submit">Save order</button></p></form></div>
     <div class="adm-card"><div class="adm-top"><h2>${list.length} ${f === "all" ? "" : f} order${list.length === 1 ? "" : "s"}</h2>
     <select data-act="filter" style="width:auto">${["all", ...st].map(s => `<option ${s === f ? "selected" : ""}>${s}</option>`).join("")}</select></div>
-    <ul class="adm-list">${list.map(x => `<li><div><strong>${esc(x.name)}</strong> <span class="tag">${x.status}</span><br><span class="muted">${esc(x.items)}${x.date ? " &middot; for " + esc(x.date) : ""}${x.total ? " &middot; R " + esc(x.total) : ""}</span></div>
+    <ul class="adm-list">${list.map(x => `<li><div><strong>${esc(x.name)}</strong> <span class="tag">${x.status}</span><br><span class="muted">${esc(x.items)}${x.date ? " &middot; for " + esc(x.date) : ""}${x.source && x.source !== "admin" ? " &middot; from the website (" + (x.source === "cart" ? "cart" : "custom order") + ")" : ""}${x.total ? " &middot; R " + esc(x.total) : ""}</span></div>
     <div class="adm-actions"><select data-act="ostatus" data-id="${x.id}" style="width:auto">${st.map(s => `<option ${s === x.status ? "selected" : ""}>${s}</option>`).join("")}</select>
     ${x.phone ? `<a class="btn btn--sm btn--whatsapp" target="_blank" rel="noopener" href="https://wa.me/${esc(x.phone.replace(/\D/g, ""))}">WhatsApp</a>` : ""}
     <button class="btn btn--sm btn--ghost" data-act="odel" data-id="${x.id}">Delete</button></div></li>`).join("") || "<li>No orders here.</li>"}</ul></div></div>
-    <p class="muted">Orders arrive on WhatsApp, so add them here to keep track. They are stored in this browser only.</p>`;
+    <p class="muted">Orders sent from the Cart or the Custom Order form are saved here automatically (the WhatsApp message still goes to you too). You can also add one by hand. They are stored online, so you see the same list on every device.</p>`;
   }
 
   function menu() {
@@ -236,48 +248,39 @@
   }
 
   function adminsView() {
-    const a = admins(), rq = resets();
-    const reqs = rq.length ? `<div class="adm-card"><h2>Password reset requests</h2><p class="muted">Someone asked to reset their password. Only give them the code if you are sure it is really them (call or WhatsApp them). It cannot be used after it expires.</p>
-    <ul class="adm-list">${rq.map(r => `<li><div><strong>${esc(r.u)}</strong> &middot; code <strong class="adm-code">${esc(r.code)}</strong><br><span class="muted">expires in ${Math.max(1, Math.ceil((r.exp - Date.now()) / 60000))} min</span></div>
-    <div class="adm-actions"><button class="btn btn--sm btn--ghost" data-act="rcancel" data-u="${esc(r.u)}">Cancel</button></div></li>`).join("")}</ul></div>` : "";
-    return `${reqs}<div class="adm-split"><div class="adm-card"><h2>Add an admin</h2><form data-form="addadmin"><label>Username</label><input name="u" required><label>Password</label><input name="p" type="password" required>
-    <p><button class="btn btn--sm" type="submit">Add admin</button></p></form><p class="muted">The root admin is always "admin" (password can change, account can't be removed). If an admin forgets their password they can use "Forgot your password?" on the login page; the code shows here.</p></div>
-    <div class="adm-card"><h2>Admins</h2><ul class="adm-list">${a.map(x => `<li><div><strong>${esc(x.u)}</strong> ${x.root ? '<span class="tag">root</span>' : ""} ${x.status === "pending" ? '<span class="tag">waiting</span>' : ""}</div>
-    <div class="adm-actions">${x.status === "pending" ? `<button class="btn btn--sm" data-act="aok" data-u="${esc(x.u)}">Approve</button>` : ""}
-    ${x.root ? "" : `<button class="btn btn--sm btn--ghost" data-act="areset" data-u="${esc(x.u)}">New password</button>`}${x.root ? "" : `<button class="btn btn--sm btn--ghost" data-act="adel" data-u="${esc(x.u)}">${x.status === "pending" ? "Decline" : "Remove"}</button>`}</div></li>`).join("")}</ul></div></div>`;
+    const a = state.admins, me = (state.user.email || "").toLowerCase();
+    return `<div class="adm-split"><div class="adm-card"><h2>Add an admin</h2><form data-form="addadmin"><label>Email</label><input name="u" type="email" required>
+    <p><button class="btn btn--sm" type="submit">Add admin</button></p></form><p class="muted">Use the email the person will sign in with (their Google address if they use Google). They then choose <strong>First time here?</strong> on the login page, or use Sign in with Google. Anyone not on this list is refused by the database itself.</p></div>
+    <div class="adm-card"><h2>Admins</h2><ul class="adm-list">${a.map(x => `<li><div><strong>${esc(x.email)}</strong> ${x.email.toLowerCase() === me ? '<span class="tag">you</span>' : ""}</div>
+    <div class="adm-actions">${x.email.toLowerCase() === me ? "" : `<button class="btn btn--sm btn--ghost" data-act="adel" data-u="${esc(x.email)}">Remove</button>`}</div></li>`).join("") || "<li>No admins found.</li>"}</ul></div></div>`;
   }
 
   function account() {
-    const a = find(admins(), me());
-    return `<div class="adm-card" style="max-width:460px"><h2>My account</h2><form data-form="account">
-    <label>Username</label><input name="u" value="${esc(a.u)}" ${a.root ? "readonly" : ""}>
-    <label>Current password</label><input name="cur" type="password" required><label>New password (leave empty to keep)</label><input name="p" type="password">
-    <p><button class="btn btn--sm" type="submit">Save</button></p></form></div>`;
+    return `<div class="adm-card" style="max-width:460px"><h2>My account</h2><p>Signed in as <strong>${esc(state.user.email)}</strong></p><form data-form="account">
+    <label>New password</label><input name="p" type="password" autocomplete="new-password" minlength="6" required>
+    <p><button class="btn btn--sm" type="submit">Change password</button></p></form><p class="muted">Signed in with Google? Then there is no password to change here.</p></div>`;
   }
 
   function publish() {
-    return `<div class="adm-card"><h2>Make changes live for everyone</h2>
-    <p>Saved changes only show in this browser. To publish them, download these three files and replace the originals in the project, then re-upload the site:</p>
-    <p><button class="btn btn--sm" data-act="dl-set">Download site-settings.json</button> <span class="muted">replaces <code>config/site-settings.json</code></span></p>
-    <p><button class="btn btn--sm" data-act="dl-prod">Download products.json</button> <span class="muted">replaces <code>src/data/products.json</code></span></p>
-    <p><button class="btn btn--sm" data-act="dl-off">Download offline-data.js</button> <span class="muted">replaces <code>src/js/offline-data.js</code> (keeps <code>preview.html</code> showing the same thing)</span></p>
-    <p><button class="btn btn--sm btn--ghost" data-act="dl-ord">Download orders (CSV)</button></p>
-    <p><button class="btn btn--sm btn--ghost" data-act="discard">Discard my saved changes on this device</button></p></div>`;
+    return `<div class="adm-card"><h2>Backup</h2>
+    <p>Menu and settings are saved online as soon as you press Save, so there is nothing to publish any more. The free Supabase plan has no automatic backups, so download one now and then (it holds the menu, settings, orders and admin list).</p>
+    <p><button class="btn btn--sm" data-act="dl-backup">Download a backup (JSON)</button> <button class="btn btn--sm btn--ghost" data-act="dl-ord">Download orders (CSV)</button></p></div>
+    <div class="adm-card"><h2>Project files (advanced)</h2><p class="muted">Only needed to keep the project folder and the double-click <code>preview.html</code> in step with the online copy.</p>
+    <p><button class="btn btn--sm btn--ghost" data-act="dl-set">Download site-settings.json</button> <button class="btn btn--sm btn--ghost" data-act="dl-prod">Download products.json</button> <button class="btn btn--sm btn--ghost" data-act="dl-off">Download offline-data.js</button></p></div>`;
   }
 
   function dash() {
-    const a = find(admins(), me());
-    const warn = a.root && a.mustChange ? `<div class="msg msg--warn">You are still using the default password. Please change it under <strong>My account</strong>.</div>` : "";
     const body = { orders, menu, look, admins: adminsView, account, publish }[state.tab]();
-    return `<div class="adm-top"><h1>Admin</h1><div class="adm-actions"><span class="muted">Hi, ${esc(a.u)}</span><a class="btn btn--sm btn--ghost" href="index.html">View site</a><button class="btn btn--sm" data-act="logout">Log out</button></div></div>
+    const dbw = SB.dbOK ? "" : `<div class="msg msg--warn">The online database is not answering (has <code>supabase/setup.sql</code> been run?). Changes cannot be saved until it is.</div>`;
+    return `<div class="adm-top"><h1>Admin</h1><div class="adm-actions"><span class="muted">Hi, ${esc(state.user.email)}</span><a class="btn btn--sm btn--ghost" href="index.html">View site</a><button class="btn btn--sm" data-act="logout">Log out</button></div></div>
     <nav class="adm-nav" aria-label="Admin sections">${TABS.map(([k, n]) => `<button class="${state.tab === k ? "is-on" : ""}" ${state.tab === k ? 'aria-current="page"' : ""} data-act="tab" data-v="${k}">${n}</button>`).join("")}</nav>
-    ${warn}${state.note ? `<div class="msg">${esc(state.note)}</div>` : ""}${body}`;
+    ${dbw}${state.note ? `<div class="msg">${esc(state.note)}</div>` : ""}${body}`;
   }
 
-  function render() { app.innerHTML = me() && find(admins(), me()) ? dash() : authView(); state.note = ""; }
-  const go = (t, note) => { state.tab = t; state.note = note || ""; app.innerHTML = dash(); state.note = ""; if (t === "look") { drawDemo(); drawSeasonEditor(); drawSeasonStatus(); } };
+  function render() { app.innerHTML = state.isAdmin && !state.recovering ? dash() : authView(); state.note = ""; }
+    const go = (t, note) => { state.tab = t; state.note = note || ""; app.innerHTML = dash(); state.note = ""; if (t === "look") { drawDemo(); drawSeasonEditor(); drawSeasonStatus(); } };
   const dl = (name, text, type) => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type: type || "application/json" })); a.download = name; a.click(); };
-  const saveProducts = () => S("sb_products", { categories: state.data.categories, products: state.data.products });
+  const saveProducts = () => dbSave("products", { categories: state.data.categories, products: state.data.products });   // v10.17: saved online, live for everyone at once
 
   /* ---------- events ---------- */
   app.addEventListener("submit", async e => {
@@ -285,39 +288,36 @@
     if (k === "login") return login(v.u.trim(), v.p, !!v.remember);
     if (k === "signup") return signup(v.u.trim(), v.p);
     if (k === "forgot") return requestReset(v.u.trim());
-    if (k === "reset") { state.resetUser = v.u.trim(); return useReset(v.u.trim(), v.code, v.p); }
+    if (k === "newpw") return newPassword(v.p);
     if (k === "order") {
       const ph = SB.phoneRead("o-phone"); if (ph.error) return go("orders", ph.error);
-      delete v["o-phone-cc"]; delete v["o-phone"];
-      const o = J("sb_orders", []); o.unshift({ id: uid(), status: "pending", ...v, phone: ph.digits || "" }); S("sb_orders", o); return go("orders", "Order saved."); }
+      const r = await sb.from("orders").insert({ source: "admin", status: "pending", name: v.name, items: v.items, date: v.date || null, total: v.total === "" ? null : Number(v.total), phone: ph.digits || "" });
+      if (r.error) return go("orders", "Could not save: " + r.error.message); await loadAdminData(); return go("orders", "Order saved."); }
     if (k === "csec") {   // v10.15: rename / change emoji (the id never changes, so links and items keep working)
       const c = state.data.categories.find(x => x.id === f.dataset.id), nm = (v.name || "").trim(); if (!c || !nm) return go("menu", "A section needs a name.");
-      c.name = nm; c.icon = (v.icon || "").trim(); saveProducts(); return go("menu", "Section saved.");
+      c.name = nm; c.icon = (v.icon || "").trim(); await saveProducts(); return go("menu", "Section saved.");
     }
     if (k === "csecnew") {
       const nm = (v.name || "").trim(); if (!nm) return go("menu", "Give the new section a name.");
       const L = state.data.categories; if (L.some(c => c.name.toLowerCase() === nm.toLowerCase())) return go("menu", "You already have a section called " + nm + ".");
       const base = nm.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "section"; let id = base, n = 2; while (L.some(c => c.id === id)) id = base + "-" + n++;
-      L.push({ id, name: nm, icon: (v.icon || "").trim() || "🍰" }); saveProducts(); return go("menu", nm + " added. It shows on the Menu once it has an item.");
+      L.push({ id, name: nm, icon: (v.icon || "").trim() || "🍰" }); await saveProducts(); return go("menu", nm + " added. It shows on the Menu once it has an item.");
     }
     if (k === "product") {
       if (!v.category) return go("menu", "Add a menu section first, then you can add items.");
       const p = { ...v, price: Number(v.price), featured: !!v.featured, popular: !!v.popular, visible: !!v.visible, tags: SB.TAGS.map(t => t[0]).filter(id => v["tag_" + id]) }, L = state.data.products;
       SB.TAGS.forEach(t => delete p["tag_" + t[0]]);
       if (state.edit) Object.assign(L.find(x => x.id === state.edit), p); else L.push({ id: "p" + uid(), ...p, added: SB.today() });   // v10.9: the date decides "Just added"
-      state.edit = null; saveProducts(); return go("menu", "Menu saved.");
+      state.edit = null; await saveProducts(); return go("menu", "Menu saved.");
     }
     if (k === "addadmin") {
-      const a = admins(); if (!ok(v.u.trim()) || v.p.length < 6) return go("admins", "Username 3-20 characters, password 6+.");
-      if (find(a, v.u.trim())) return go("admins", "That username is taken.");
-      a.push(await mk(v.u.trim(), v.p)); saveA(a); return go("admins", "Admin added.");
+      const em = v.u.trim().toLowerCase(); if (!ok(em)) return go("admins", "Type a valid email address.");
+      const r = await sb.from("admins").insert({ email: em }); if (r.error) return go("admins", r.error.code === "23505" ? "That email is already an admin." : "Could not add: " + r.error.message);
+      await loadAdminData(); return go("admins", em + " added. They can now create their login or use Google.");
     }
     if (k === "account") {
-      const all = admins(), a = find(all, me());
-      if (a.h !== await hash(v.cur, a.salt)) return go("account", "Current password is wrong.");
-      if (!a.root && v.u.trim() !== a.u) { if (!ok(v.u.trim()) || find(all, v.u.trim())) return go("account", "That username is not available."); a.u = v.u.trim(); sessionStorage.setItem("sb_session", a.u); if (keep()) keepFor(a.u); if (localStorage.getItem("sb_admin_u")) localStorage.setItem("sb_admin_u", a.u); }
-      if (v.p) { if (v.p.length < 6) return go("account", "New password must be 6+ characters."); a.salt = uid() + uid(); a.h = await hash(v.p, a.salt); delete a.mustChange; }
-      saveA(all); return go("account", "Account updated.");
+      if (v.p.length < 6) return go("account", "New password must be 6+ characters.");
+      const r = await sb.auth.updateUser({ password: v.p }); return go("account", r.error ? "Could not change it: " + r.error.message : "Password changed.");
     }
   });
 
@@ -356,36 +356,34 @@
   app.addEventListener("change", e => {
     const t = e.target, a = t.dataset.act;
     if (a === "filter") { state.filter = t.value; go("orders"); }
-    if (a === "ostatus") { const o = J("sb_orders", []); o.find(x => x.id === t.dataset.id).status = t.value; S("sb_orders", o); go("orders"); }
+    if (a === "ostatus") { sb.from("orders").update({ status: t.value }).eq("id", t.dataset.id).then(async r => { await loadAdminData(); go("orders", r.error ? "Could not update: " + r.error.message : ""); }); }
   });
 
   app.addEventListener("click", async e => {
     const b = e.target.closest("button[data-act]"); if (!b) return; const a = b.dataset.act, v = b.dataset.v, id = b.dataset.id, u = b.dataset.u;
     if (a === "auth") { state.authTab = v; state.note = ""; return render(); }
-    if (a === "logout") { sessionStorage.removeItem("sb_session"); localStorage.removeItem("sb_keep");   /* the username stays filled in (sb_admin_u) until a login without the tick */ sessionStorage.removeItem("sb_preview"); return render(); }
-    if (a === "psold") { const p = state.data.products.find(x => x.id === id); if (SB.isSoldOut(p)) delete p.soldOut; else p.soldOut = SB.today(); saveProducts(); return go("menu", p.name + (p.soldOut ? " is marked sold out for today." : " is back in stock.")); }
-    if (a === "tab") { state.tab = v; if (v === "look") await prepLook(); if (v === "menu") state.edit = null; if (v !== "look") sessionStorage.removeItem("sb_preview"); return go(v); }
-    if (a === "odel") { S("sb_orders", J("sb_orders", []).filter(x => x.id !== id)); return go("orders"); }
-    if (a === "cup" || a === "cdown") { const L = state.data.categories, i = L.findIndex(c => c.id === id), j = a === "cup" ? i - 1 : i + 1; if (i < 0 || j < 0 || j >= L.length) return go("menu"); [L[i], L[j]] = [L[j], L[i]]; saveProducts(); return go("menu", L[j].name + " moved " + (a === "cup" ? "up." : "down.")); }
-    if (a === "chide") { const c = state.data.categories.find(x => x.id === id); if (c.hidden) delete c.hidden; else c.hidden = true; saveProducts(); return go("menu", c.name + (c.hidden ? " is hidden from customers." : " is showing again.")); }
-    if (a === "cdel") { const c = state.data.categories.find(x => x.id === id); if (state.data.products.some(p => p.category === id)) return go("menu", "Move or delete the items in " + c.name + " first."); if (confirm("Delete the section " + c.name + "?")) { state.data.categories = state.data.categories.filter(x => x.id !== id); saveProducts(); } return go("menu"); }
+    if (a === "logout") { await sb.auth.signOut(); state.user = null; state.isAdmin = false; localStorage.removeItem("sb_keep"); sessionStorage.removeItem("sb_preview"); state.authTab = "login"; return render(); }
+    if (a === "google") { const f = app.querySelector("input[name=remember]"); return google(!!(f && f.checked)); }
+    if (a === "psold") { const p = state.data.products.find(x => x.id === id); if (SB.isSoldOut(p)) delete p.soldOut; else p.soldOut = SB.today(); await saveProducts(); return go("menu", p.name + (p.soldOut ? " is marked sold out for today." : " is back in stock.")); }
+    if (a === "tab") { state.tab = v; if (v === "look") await prepLook(); if (v === "menu") state.edit = null; if (v === "orders" || v === "admins") await loadAdminData(); if (v !== "look") sessionStorage.removeItem("sb_preview"); return go(v); }
+    if (a === "odel") { if (!confirm("Delete this order?")) return; const r = await sb.from("orders").delete().eq("id", id); await loadAdminData(); return go("orders", r.error ? "Could not delete: " + r.error.message : ""); }
+    if (a === "cup" || a === "cdown") { const L = state.data.categories, i = L.findIndex(c => c.id === id), j = a === "cup" ? i - 1 : i + 1; if (i < 0 || j < 0 || j >= L.length) return go("menu"); [L[i], L[j]] = [L[j], L[i]]; await saveProducts(); return go("menu", L[j].name + " moved " + (a === "cup" ? "up." : "down.")); }
+    if (a === "chide") { const c = state.data.categories.find(x => x.id === id); if (c.hidden) delete c.hidden; else c.hidden = true; await saveProducts(); return go("menu", c.name + (c.hidden ? " is hidden from customers." : " is showing again.")); }
+    if (a === "cdel") { const c = state.data.categories.find(x => x.id === id); if (state.data.products.some(p => p.category === id)) return go("menu", "Move or delete the items in " + c.name + " first."); if (confirm("Delete the section " + c.name + "?")) { state.data.categories = state.data.categories.filter(x => x.id !== id); await saveProducts(); } return go("menu"); }
     if (a === "pedit") { state.edit = id; return go("menu"); }
     if (a === "pcancel") { state.edit = null; return go("menu"); }
-    if (a === "pdel") { if (confirm("Delete this item?")) { state.data.products = state.data.products.filter(p => p.id !== id); saveProducts(); } return go("menu"); }
+    if (a === "pdel") { if (confirm("Delete this item?")) { state.data.products = state.data.products.filter(p => p.id !== id); await saveProducts(); } return go("menu"); }
     if (a === "theme") { state.draft.theme = v; state.peek = null; draftKey(); return go("look"); }
     if (a === "speek") { state.peek = v; draftKey(); return go("look"); }   // look at a season's theme without changing the saved one
     if (a === "ppage") { state.page = v; return go("look"); }
-    if (a === "lsave") { S("sb_settings", state.draft); return go("look", "Saved on this device. Use the Publish tab to make it live for everyone."); }
-    if (a === "lreset") { localStorage.removeItem("sb_settings"); await prepLook(true); return go("look", "Reset to the published settings."); }
-    if (a === "rcancel") { saveR(resets().filter(r => r.u !== u)); return go("admins", "Reset request cancelled."); }
-    if (a === "aok") { const all = admins(); find(all, u).status = "active"; saveA(all); return go("admins", u + " approved."); }
-    if (a === "adel") { if (confirm("Remove " + u + "?")) saveA(admins().filter(x => x.u !== u || x.root)); return go("admins"); }
-    if (a === "areset") { const p = prompt("New password for " + u + " (6+ characters):"); if (p && p.length >= 6) { const all = admins(), x = find(all, u); x.salt = uid() + uid(); x.h = await hash(p, x.salt); saveA(all); return go("admins", "Password changed."); } return; }
+    if (a === "lsave") { if (!await dbSave("settings", state.draft)) return; await prepLook(true); return go("look", "Saved. It is live for everyone now."); }
+    if (a === "lreset") { await prepLook(true); return go("look", "Reset to the saved settings."); }
+    if (a === "adel") { if (confirm("Remove " + u + " from the admins?")) { const r = await sb.from("admins").delete().eq("email", u); await loadAdminData(); return go("admins", r.error ? "Could not remove: " + r.error.message : u + " removed."); } return; }
     if (a === "dl-set") return dl("site-settings.json", JSON.stringify(state.draft || state.data.settings, null, 2));
     if (a === "dl-off") return dl("offline-data.js", OFFLINE_HEAD + "window.SB_OFFLINE = " + JSON.stringify({ business: state.data.biz, settings: state.draft || state.data.settings, products: { categories: state.data.categories, products: state.data.products } }, null, 2) + ";\n", "text/javascript");
     if (a === "dl-prod") return dl("products.json", JSON.stringify({ categories: state.data.categories, products: state.data.products }, null, 2));
-    if (a === "dl-ord") { const rows = [["name", "phone", "items", "date", "total", "status"], ...J("sb_orders", []).map(o => [o.name, o.phone, o.items, o.date, o.total, o.status])]; return dl("orders.csv", rows.map(r => r.map(c => '"' + String(c || "").replace(/"/g, '""') + '"').join(",")).join("\n"), "text/csv"); }
-    if (a === "discard") { if (confirm("Remove all changes saved on this device (settings and menu)? Orders are kept.")) { ["sb_settings", "sb_products"].forEach(k => localStorage.removeItem(k)); sessionStorage.removeItem("sb_preview"); await init(); return go("publish", "Back to the published version."); } }
+    if (a === "dl-ord") { const rows = [["created", "source", "name", "phone", "items", "date", "total", "status"], ...state.orders.map(o => [o.created_at, o.source, o.name, o.phone, o.items, o.date, o.total, o.status])]; return dl("orders.csv", rows.map(r => r.map(c => '"' + String(c == null ? "" : c).replace(/"/g, '""') + '"').join(",")).join("\n"), "text/csv"); }
+    if (a === "dl-backup") { await loadAdminData(); const sd = await sb.from("site_data").select("*"); return dl("sweetest-bakery-backup-" + SB.today() + ".json", JSON.stringify({ exported: new Date().toISOString(), site_data: sd.data || [], orders: state.orders, admins: state.admins }, null, 2)); }
   });
 
   async function prepLook(fresh) {
@@ -395,5 +393,5 @@
   }
   async function init() { SB._p = null; sessionStorage.removeItem("sb_preview"); state.data = await SB.load(); state.draft = null; }
 
-  seed().then(init).then(render);
+  init().then(boot).then(() => state.user ? enter() : render());
 })();
