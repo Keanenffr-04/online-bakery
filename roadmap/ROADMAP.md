@@ -1,6 +1,6 @@
 # Roadmap: what is done, what is next, what is waiting
 
-**Current version:** v10.17.4 &nbsp;|&nbsp; **Next up:** v10.18 (My account page + Privacy and Terms pages; run `supabase/setup.sql` first if you have not) &nbsp;|&nbsp; Rule: **max 2 to 3 things per version.**
+**Current version:** v10.18 &nbsp;|&nbsp; **Next up:** v10.19 (order tools: statuses, thank-you page, printable slip, weekly / monthly numbers, change log, "Most popular" ranked from real orders; run `supabase/setup.sql` again first, section 6) &nbsp;|&nbsp; Rule: **max 2 to 3 things per version.**
 
 Finished work lives in [`BACKLOG.md`](BACKLOG.md). The old, long roadmap notes are kept untouched in [`ROADMAP_ARCHIVE.md`](ROADMAP_ARCHIVE.md).
 
@@ -31,8 +31,8 @@ Owner's list always comes first; older scheduled items slide back. Photos and la
 | v10.15 | DONE | **Manage menu sections** (add / rename / reorder / hide / delete; the Shop-by-treat tiles and header menu follow) + a **"New" badge** on recently added items (length set in admin) | Older plan; owner list 15 was empty |
 | v10.16 | DONE | **Menu items list is now a dropdown** under Menu sections (Admin > Menu) + **Supabase walkthrough** (plain-English explanation, section 1h) | Owner list 16 items 1 and 2; took the v10.16 slot, so every later version slid back by one |
 | v10.17 | DONE | **Supabase foundation**: real sign-in (email + Google, real reset emails), **admin locked on the server** (admins by email: Becca + Keanen), **menu and settings live online (no Publish)**, **orders saved online** + backup download | Owner list 17; list 13 items 2 and 3, list 10 item 1, list 6 item 7 |
-| **v10.18** | **NEXT** | **"My account" page** (profile, saved details, past orders, order again, edit and delete my account) + **Privacy (POPIA) and Terms pages** + **a custom email sender (SMTP) so customers can receive confirm / reset emails** (needs a free Brevo or Resend account) | Owner list 10 item 2. Privacy page MUST ship with accounts |
-| v10.19 | BACKEND | **Order tools**: statuses, thank-you page, printable slip, weekly / monthly numbers + CSV, change log; **"Most popular" ranked automatically from real orders** | Needs v10.17 |
+| v10.18 | DONE | **"My account" page** (sign in, profile, saved details, past orders, order again, change password, delete my account) + **Privacy (POPIA) and Terms pages** (drafts) + **email-sender walkthrough** (section 1i; the sender itself is set up by the owner in Brevo / Resend + Supabase, no code) | Owner list 10 item 2. Privacy page shipped with accounts |
+| **v10.19** | **NEXT** | **Order tools**: statuses, thank-you page, printable slip, weekly / monthly numbers + CSV, change log; **"Most popular" ranked automatically from real orders** | Needs v10.17 (done) |
 | v10.20 | PLANNED | **More occasion themes** (New Year, Women's Day, Black Friday, Diwali, Eid ...). **Visitors never switch themes** (owner list 13 item 1): only Becca and the automatic seasons decide + **Top 10 #4: WhatsApp order-status buttons** ("ready for collection") | Needs v10.19 for the buttons |
 | v10.21 | PLANNED | **Top 10 #1: order calendar** (lead times, daily limit, blocked dates) + **#2: delivery or collection with fees by area** | Needs your real lead times, areas and prices |
 | v10.22 | PLANNED | **Top 10 #6: cake price guide / quote helper** + **"Order again" button** | Needs real prices; order again needs v10.18 |
@@ -134,11 +134,22 @@ Counted from the plan table above, after v10.14:
 
 **What could go wrong, and the answer.** Project paused: click restore (or upgrade). Free limits reached: upgrade to Pro. Supabase changes its plans: the data can be exported at any time, so you are never locked in. You lose the admin email: we add a second admin first.
 
+### 1i. Email sender for customers (the third part of v10.18; no code, you set it up)
+**Why.** Supabase's free built-in email sender only delivers to the project team's own addresses (about 2 an hour). Customers who create an account need a confirm email, and "forgot password" needs a reset email, so both fail for them until the project has its **own email sender (SMTP)**. Until then the My account page says so honestly, and **Continue with Google** (once switched on) and the WhatsApp route still work.
+**What you do (about 20 minutes, then tell us how it went).**
+1. Open a free account with an email service. **Brevo** or **Resend** are the usual free choices for a small shop (a few hundred emails a day is plenty). Check their current free limits when you sign up.
+2. Verify a **sender**. For emails that reliably reach inboxes (not spam) services want you to verify a **domain** you own (for example `thesweetestbakery.co.za`), which is normally bought with the launch (v11). A free Gmail address is often rejected or lands in spam, so email for customers will likely only work well **after the domain exists**. If you want it sooner, buying the domain first is the answer.
+3. Create the SMTP login in the service (host, port, username, password / API key). **Never send us the password**; you paste it straight into Supabase.
+4. In Supabase: **Authentication > Emails > SMTP Settings**: switch on custom SMTP and paste the details, set the sender name to "The Sweetest Bakery". Then **Authentication > URL configuration**: set the Site URL to the live address (add `http://localhost:8000` too if testing locally) so the confirm and reset links come back to the site.
+5. Test: create a customer account with a normal email address and see the confirm email arrive.
+**Meanwhile:** the sign-up and reset messages on the My account page tell the customer plainly if no email arrives, and Google sign-in is the no-email way in (switch it on in Supabase > Authentication > Sign In / Providers > Google, see section 3).
+
 ## 2. Every request from the owner, and where it stands
 Newest list first. (Version numbers of the BACKEND items have moved later several times because owner lists are done first; v10.14 was taken by owner list 14, so every later number slid by one. Older notes in `BACKLOG.md` that mention v10.11 to v10.15 for backend work use older numbers; the plan table above is always the truth.) "List" is the order the owner's change lists arrived in.
 
 | List | # | Request (short) | Status | Where |
 |---|---|---|---|---|
+| - | - | (No change list came with "start next v/patch", so the version marked NEXT was built: My account + Privacy and Terms + email-sender walkthrough) | DONE | v10.18 |
 | 21 | 1 | In Admin > Theme & layout, hold and drag to put the Home page sections where I want them | DONE (grip handle + up / down arrows; Home follows the order) | v10.17.4 |
 | 21 | 2 | Only 2 changes per patch, the rest to the backlog | DONE (only 1 request came; ideas listed in the v10.17.4 backlog entry) | v10.17.4 |
 | 20 | 1 | The "New and popular" section on Home is cluttered: make the layout better | DONE (two slim columns, compact rows, one "See the full menu" link) | v10.17.3 |
@@ -166,8 +177,8 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 | 12 | 5 | "Tell me what you will do in the next 5 versions" | DONE (section 1c) | v10.11 |
 | 11 | 1 | "What would you do next?" | DONE (answered in section 1b; first pick built) | v10.10 |
 | 11 | 2 | Automatic seasons: all dates in one section with a dropdown to pick the season to change | DONE | v10.10 |
-| 10 | 1 | Sign in so it remembers people (admins and customers); Google, Apple, etc. | PARTLY DONE: admins sign in for real (v10.17); customer accounts come with "My account" | v10.17, v10.18 |
-| 10 | 2 | Full account page: whole account, past orders, customise, all info | BACKEND | v10.18 |
+| 10 | 1 | Sign in so it remembers people (admins and customers); Google, Apple, etc. | DONE for admins (v10.17) and customers (v10.18, email + Google; Apple skipped, it costs about US$99 a year; confirm / reset emails reach customers only after the email sender is set up, section 1i) | v10.17, v10.18 |
+| 10 | 2 | Full account page: whole account, past orders, customise, all info | DONE (My account page; no list sent for this version, so the NEXT item was built) | v10.18 |
 | 10 | 3 | Preview of the moving effects when changing theme or ticking the box | DONE | v10.8 |
 | 10 | 4 | Theme changes automatically for every season | DONE | v10.9 |
 | 10 | 5 | Neat roadmap + backlog with a table of contents | DONE | v10.8 (this file) |
@@ -208,6 +219,7 @@ Nothing below can be built or guessed by us. Send it whenever you have it.
 | Product photos | Replace emoji | when ready (see plan, "When photos exist") |
 | Decision on "Sign in with Apple" | It needs an Apple Developer account (paid, about US$99 per year). Google sign-in and email sign-in are free. If you skip Apple, we ship Google + email first | before v10.17 |
 | **v10.17 first run (about 10 minutes, in the Supabase dashboard):** (1) SQL Editor > New query > paste `supabase/setup.sql` > Run. (2) Authentication > URL configuration: set Site URL to the site address once it is hosted (add `http://localhost:8000` too if testing locally). (3) Optional, for Google sign-in: Authentication > Sign In / Providers > Google, switch on and paste a Google Cloud OAuth client id + secret. (4) **Create your admin login without email:** Authentication > Users > Add user > Create new user, type your admin email + a password, tick **Auto Confirm User**; then log in on `admin.html` with them (Supabase's free email sender only emails your own team and about 2 an hour, so confirm / reset emails often never arrive). Email + password works without step 3. | v10.17 working live | now |
+| **v10.18 first run:** (1) Supabase > SQL Editor > run `supabase/setup.sql` again (new section 6: customer accounts, your past orders, delete my account). (2) Read the Privacy and Terms pages and fix anything that is not true for the bakery (they are marked Draft): the **region** your Supabase data sits in (Project Settings > General), whether Becca is the information officer, notice and cancellation wording. (3) Email sender for customers: section 1i. | Customer accounts working for real | now |
 | For the top-10 items: real lead times and daily limit, delivery areas and fees, which payment provider (Yoco / PayFast / Ozow), voucher and loyalty rules | v10.21 to v10.24 | when we reach each one |
 
 ## 4. Needs the backend

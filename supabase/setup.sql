@@ -80,3 +80,37 @@ drop policy if exists "own profile insert"    on public.profiles;
 create policy "own profile insert"    on public.profiles for insert with check (public.is_admin() and user_id = auth.uid());
 drop policy if exists "own profile update"    on public.profiles;
 create policy "own profile update"    on public.profiles for update using (public.is_admin() and user_id = auth.uid()) with check (public.is_admin() and user_id = auth.uid());
+
+-- 6. (v10.18) Customer accounts: own profile, own orders, delete my account. Re-runnable; nothing is deleted by running it.
+alter table public.orders add column if not exists user_id uuid references auth.users(id) on delete set null;
+create index if not exists orders_user_id_idx on public.orders (user_id);
+
+-- A customer may add an order (signed in or not). If signed in it can be linked to them, never to someone else.
+drop policy if exists "customers add orders" on public.orders;
+create policy "customers add orders" on public.orders for insert to anon, authenticated
+  with check (source in ('cart', 'custom') and status = 'pending' and (user_id is null or user_id = auth.uid()));
+-- A signed-in customer can read (only) their own orders.
+drop policy if exists "customers read own orders" on public.orders;
+create policy "customers read own orders" on public.orders for select to authenticated using (user_id = auth.uid());
+
+-- Profiles: anyone signed in can have one for themselves; admins can still read all of them.
+drop policy if exists "own profile read"   on public.profiles;
+create policy "own profile read"   on public.profiles for select to authenticated using (user_id = auth.uid());
+drop policy if exists "own profile insert" on public.profiles;
+create policy "own profile insert" on public.profiles for insert to authenticated with check (user_id = auth.uid());
+drop policy if exists "own profile update" on public.profiles;
+create policy "own profile update" on public.profiles for update to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
+
+-- "Delete my account" (POPIA): removes the login and the profile, and strips the name and phone from the person's past orders
+-- (the bakery keeps the order itself for its books). Admins cannot use it, so nobody can lock themselves out by accident.
+create or replace function public.delete_my_account() returns void
+language plpgsql security definer set search_path = public, auth as $$
+begin
+  if auth.uid() is null then raise exception 'Not signed in'; end if;
+  if public.is_admin() then raise exception 'Admin logins cannot be deleted here. Ask another admin.'; end if;
+  update public.orders set name = null, phone = null, details = null, user_id = null where user_id = auth.uid();
+  delete from public.profiles where user_id = auth.uid();
+  delete from auth.users where id = auth.uid();
+end $$;
+revoke all on function public.delete_my_account() from public, anon;
+grant execute on function public.delete_my_account() to authenticated;

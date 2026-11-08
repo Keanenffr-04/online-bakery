@@ -28,12 +28,14 @@
         <span data-biz="name">The Sweetest Bakery</span>
       </a>
       <button class="nav__burger" type="button" aria-expanded="false" aria-controls="nav" aria-label="Open menu"><span></span><span></span><span></span></button>
-      <nav class="nav" id="nav" aria-label="Main">${NAV.map(item).join("")}</nav>
+      <nav class="nav" id="nav" aria-label="Main">${NAV.map(item).join("")}<a class="nav__acct" href="account.html"${page === "account.html" ? ' aria-current="page"' : ""}>My account</a></nav>
+      <a class="cart-link acct-link" href="account.html"${page === "account.html" ? ' aria-current="page"' : ""} aria-label="My account"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4.5 20.5c.6-3.6 3.7-5.5 7.5-5.5s6.9 1.9 7.5 5.5"/></svg></a>
       <a class="cart-link" href="cart.html"${page === "cart.html" ? ' aria-current="page"' : ""} aria-label="Cart, empty"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M5 8h14l-1.2 11.2a1.5 1.5 0 0 1-1.5 1.3H7.7a1.5 1.5 0 0 1-1.5-1.3L5 8Zm4 0V6.5a3 3 0 0 1 6 0V8"/></svg><span class="cart-badge" hidden>0</span></a>
     </div>
   </div>
 </header>`;
 
+  window.SB && SB.load().then(() => SB.customerWarm());   // v10.18: keep a signed-in customer's token fresh so orders link to their account
   window.SBCart && SBCart.sync(); // header exists now: show the current cart count
 
   // Scrolling ticker strips: "specials" at the very top of every page (v9) and "orders" at the very bottom (v10).
@@ -77,6 +79,7 @@
       <div><h3 data-biz="name">The Sweetest Bakery</h3><p>Handmade cakes, cupcakes, cookies and bread by <span data-biz="owner">Becca</span>.</p></div>
       <div><h3>Explore</h3><ul>${NAV.slice(1).map(([l, h]) => `<li><a href="${h}">${l.replace("&", "&amp;")}</a></li>`).join("")}</ul></div>
       <div><h3>Order</h3><p>Online orders only.<br>WhatsApp: <span data-biz="phoneDisplay"></span></p></div>
+      <div><h3>Account</h3><ul><li><a href="account.html">My account</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="terms.html">Terms</a></li></ul></div>
       <div class="social" data-social hidden><h3>Follow us</h3><ul class="social__list"></ul></div>
     </div>
     <small>&copy; <span id="year"></span> <span data-biz="name">The Sweetest Bakery</span></small>

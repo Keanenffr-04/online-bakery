@@ -92,7 +92,7 @@
       forget() { try { localStorage.removeItem("sb_me"); localStorage.removeItem("sb_cc"); } catch (e) { /* ignore */ } },
       has() { const m = SB.me.get(); return m.remember !== false && !!(m.name || m.phone); },
       // The tick box + "Forget" link drawn under a form. Wire it with SB.me.wire().
-      box(id) { const m = SB.me.get(); return `<div class="remember"><label class="chk"><input type="checkbox" id="${id}" ${m.remember === false ? "" : "checked"}> Remember my details on this device</label><span class="muted small">Kept only on this phone or computer, never on our server. <button type="button" class="linkbtn" data-forget${SB.me.has() ? "" : " hidden"}>Forget my details</button></span></div>`; },
+      box(id) { const m = SB.me.get(); return `<div class="remember"><label class="chk"><input type="checkbox" id="${id}" ${m.remember === false ? "" : "checked"}> Remember my details on this device</label><span class="muted small">Kept only on this phone or computer, never on our server. <button type="button" class="linkbtn" data-forget${SB.me.has() ? "" : " hidden"}>Forget my details</button></span></div><p class="muted small remember__priv">When you send, we also keep a copy of your order (name, phone, items) so Becca can find it. <a href="privacy.html">Privacy</a></p>`; },
       // After a send: save (ticked) or clear (unticked). Only call when the customer actually sends.
       commit(id, d) { const c = document.getElementById(id); if (c && !c.checked) SB.me.optOut(); else SB.me.save(d); },
     },
@@ -117,11 +117,23 @@
         if (!r.ok) return null; const o = {}; (await r.json()).forEach(x => { o[x.key] = x.value; }); return o;
       } catch (e) { return null; }
     },
+    // v10.18: the customer's sign-in (kept by account.html under localStorage "sb-customer", separate from the admin's). saveOrder links an order to a signed-in
+    // customer; customerWarm() quietly renews an old token on every page so that works days later. Both use plain requests (no library).
+    customer() { try { const t = JSON.parse(localStorage.getItem("sb-customer") || "null"); return t && t.access_token && t.user ? t : null; } catch (e) { return null; } },
+    customerWarm() {
+      try {
+        const c = (SB._biz || {}).supabase, t = SB.customer(); if (!c || !t || !t.refresh_token || t.expires_at * 1000 - Date.now() > 120000 || SB._warm) return; SB._warm = 1;
+        fetch(c.url + "/auth/v1/token?grant_type=refresh_token", { method: "POST", headers: { apikey: c.key, "Content-Type": "application/json" }, body: JSON.stringify({ refresh_token: t.refresh_token }) })
+          .then(r => r.ok ? r.json() : null).then(n => { if (n && n.access_token) localStorage.setItem("sb-customer", JSON.stringify({ ...t, ...n })); }).catch(() => { /* offline */ });
+      } catch (e) { /* ignore */ }
+    },
     // v10.17: save an order online (anyone may add one, only admins can read them). Never blocks or breaks the WhatsApp message.
     saveOrder(o) {
       try {
         const c = (SB._biz || {}).supabase; if (!c || !c.url || !c.key || window.top !== window) return;
-        fetch(c.url + "/rest/v1/orders", { method: "POST", keepalive: true, headers: { apikey: c.key, "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify(o) }).catch(() => { /* offline: the WhatsApp message still goes */ });
+        const t = SB.customer(), live = t && t.expires_at * 1000 > Date.now() + 30000, h = { apikey: c.key, "Content-Type": "application/json", Prefer: "return=minimal" };
+        if (live) { h.Authorization = "Bearer " + t.access_token; o = { ...o, user_id: t.user.id }; }   // v10.18: signed in = shows under My account
+        fetch(c.url + "/rest/v1/orders", { method: "POST", keepalive: true, headers: h, body: JSON.stringify(o) }).catch(() => { /* offline: the WhatsApp message still goes */ });
       } catch (e) { /* ignore */ }
     },
     load() {
