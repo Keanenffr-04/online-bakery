@@ -1,10 +1,10 @@
 # online-bakery 🐇🍰
 Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
 
-**Current version:** v10.23. The latest three versions:
+**Current version:** v10.24. The latest three versions:
+- **v10.24:** a **bake sheet** in the admin (what to make for a day, added up from every order, printable) and a **new-order alert** (a chime and a pop-up while the admin is open). Run the newest `setup.sql` once (optional, makes the alert instant).
 - **v10.23:** a **Live check** button in the admin that tests the real online database, **spam protection** on orders and sign-up, and a **keep-alive** so the free database never pauses. Run the newest `setup.sql` once.
 - **v10.22:** a **cake price guide** on the Custom Orders page and **Order the same again** on the thank-you page. The sizes and prices are samples until you set yours.
-- **v10.21.2** (patch): a list of 60 ideas to make the website better than the others (roadmap section 4c). Nothing on the website itself changed.
 
 Every version, in plain English, is in [`roadmap/BACKLOG.md`](roadmap/BACKLOG.md).
 
@@ -39,6 +39,8 @@ When you press **Save**, the change is live for everyone straight away. *(Some w
 | Say an order is ready or finished | Press **Mark ready**, later **Mark done** (each has its own WhatsApp message) |
 | Print a slip for the bench or the box | Orders > **Print slip** |
 | See how busy the next two weeks are | Orders > **Upcoming dates** |
+| See what to bake for a day, and print it | Orders > **Bake sheet** > pick the day > **Print bake sheet** (allergies show in red) |
+| Hear about new orders | Keep the admin open. A chime and a pop-up arrive with each website order. Switch it on or off in Orders > **New-order alert** (per device) |
 | See how many orders this week or month | The **Numbers** box at the top of Orders (it can download a spreadsheet) |
 | Mark something as sold out for today | Admin > **Menu items** > **Sold out today** (it switches itself back on at midnight) |
 | Add a cake, change a price or hide an item | Admin > **Menu items** (use **Menu sections** to add or reorder the groups) |
@@ -76,6 +78,7 @@ The full checklist is in [`roadmap/ROADMAP.md`, section 2](roadmap/ROADMAP.md#ne
 | An item I marked "Sold out today" is back | That is on purpose: it switches itself off at midnight. |
 | The moving decorations are too much | Admin > Theme & layout > Theme: untick **Moving decorations**. Customers can also press the Pause button. |
 | The live check shows a yellow or red line | The line says what to do. Most often it is "run the newest `setup.sql`" (roadmap section 2c). Red means stop and send us a screenshot. |
+| I did not hear the new-order chime | Browsers only allow sound after you have touched the page once, so tap anywhere after reloading. Then press Orders > New-order alert > **Test the chime** and check the volume. The pop-up always shows. The alert cannot reach a closed phone yet (that comes with the install-as-an-app step). |
 | Orders from one customer or phone are not saved online | The spam guard allows 6 an hour per phone number. The WhatsApp message always works, so the order still reaches you. |
 | Anything else | Tell us in your next change list, with the page name and what you expected. |
 
@@ -98,6 +101,8 @@ The full checklist is in [`roadmap/ROADMAP.md`, section 2](roadmap/ROADMAP.md#ne
 | **Spam guard** | Quiet rules that stop robots flooding the order form. Real customers never notice them. |
 | **Keep-alive** | A tiny scheduled job that touches the free database every few days so it never pauses. |
 | **Price guide** | The box on the Custom Orders page where a customer picks a cake size and flavour and sees a rough price. The prices are yours to set in the admin. |
+| **Bake sheet** | A list in Orders of what to make for a day, added up from all the orders still to bake. It can be printed. |
+| **New-order alert** | A chime and a pop-up in the admin when a website order arrives. It works while the admin page is open. |
 | **Order calendar** | The rules about which dates customers may choose: notice days, days off, blocked dates and a daily limit. |
 | **Email sender (SMTP)** | A service that sends the confirm and reset emails to customers. We set it up with your own web address. |
 | **POPIA** | South Africa's law about protecting people's personal information. The Privacy page follows it. |

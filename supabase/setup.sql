@@ -206,8 +206,21 @@ revoke all on function public.orders_guard() from public, anon, authenticated;
 drop trigger if exists orders_guard_trg on public.orders;
 create trigger orders_guard_trg before insert on public.orders for each row execute function public.orders_guard();
 
+-- 11. (v10.24) New-order alert: let the admin page hear about new orders the moment they arrive. Re-runnable; nothing is deleted.
+-- This only switches on "realtime" for the orders table. Customers still cannot read anyone's orders: realtime follows the same locks
+-- as everything else, so only admins (and a customer for their own orders) receive anything. Without this the alert still works,
+-- it just notices within 30 seconds instead of at once.
+do $$
+begin
+  if not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'orders') then
+    alter publication supabase_realtime add table public.orders;
+  end if;
+exception when others then
+  raise notice 'Realtime could not be switched on here (%). The 30-second check still works.', sqlerrm;
+end $$;
+
 -- The admin's "Live check" asks this to see whether the database has the newest setup.sql.
 create or replace function public.setup_version() returns text
-language sql immutable as $$ select '10.23'::text $$;
+language sql immutable as $$ select '10.24'::text $$;
 revoke all on function public.setup_version() from public;
 grant execute on function public.setup_version() to anon, authenticated;

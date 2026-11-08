@@ -1,13 +1,14 @@
 # 🗺️ Roadmap: what's next and what we need from you
 
-**Where we are:** v10.23 &nbsp;|&nbsp; **Next up:** v10.24 (bake sheet + new-order alert) &nbsp;|&nbsp; **Rule:** 2 things per version.
+**Where we are:** v10.24 &nbsp;|&nbsp; **Next up:** v10.25 (review link + inspiration photo upload) &nbsp;|&nbsp; **Rule:** 2 things per version.
 
 *This page is written for Becca. No website or coding knowledge needed. Words you might not know are explained in the "Words explained" list in the [README](../README.md). Finished work is in [`BACKLOG.md`](BACKLOG.md).*
 
 ## In one minute
 - ✅ **The shop works.** Menu, cart, custom orders, WhatsApp, customer accounts, the admin, themes, order calendar and delivery fees are all built.
 - ✅ **New in v10.23:** a **Live check** button in the admin that tests the real online database for you (it even sends and removes a test order), **spam protection** on orders and sign-up that real customers never notice, and a **keep-alive** so the free database never pauses. You need to run the newest `setup.sql` once (section 2c).
-- ⏭️ **Next:** v10.24, a bake sheet ("what to make for Saturday") and a new-order alert. The build order for all 60 ideas is in section 1.
+- ✅ **New in v10.24:** a **bake sheet** in Orders ("what to make for Saturday", added up across every order, allergies in red, printable) and a **new-order alert** (a chime and a pop-up while the admin is open). Updating the database (section 2c) is optional here: it only makes the alert instant instead of within 30 seconds.
+- ⏭️ **Next:** v10.25, a review link and customers attaching an inspiration photo to a custom order. The build order for all 60 ideas is in section 1.
 - ⏳ **Waiting on you:** real prices, FAQ answers, reviews, your story, Instagram / Facebook names and photos. The full checklist is in section 2.
 - 🚀 **Last step:** putting the website online, only when you say "I'm happy with everything".
 
@@ -25,12 +26,11 @@
 
 <a id="plan"></a>
 ## 1. What is still to build (the plan)
-Your change lists always go **first**, so the versions below may slide back by one when you send a list. **The order below is the one you agreed in v10.22:** safe and real first (v10.23), then things that save you time, then trust, then money, then launch. Done: **v10.22** (price guide + Order again) and **v10.23** (Live check + spam protection + keep-alive). Photos and going online are deliberately **last**. Everything already built is listed in [`BACKLOG.md`](BACKLOG.md) (start with "What the website can do today").
+Your change lists always go **first**, so the versions below may slide back by one when you send a list. **The order below is the one you agreed in v10.22:** safe and real first (v10.23), then things that save you time, then trust, then money, then launch. Done: **v10.22** (price guide + Order again), **v10.23** (Live check + spam protection + keep-alive) and **v10.24** (bake sheet + new-order alert). Photos and going online are deliberately **last**. Everything already built is listed in [`BACKLOG.md`](BACKLOG.md) (start with "What the website can do today").
 
 | Version | Status | What you will get | What we need from you |
 |---|---|---|---|
-| **v10.24** | ⏭️ Next | **Bake sheet + new-order alert** (36 and 35): "what to make for Saturday" totalled across all orders and printable, and a sound or phone notice when an order arrives. | Nothing new |
-| v10.25 | 📅 Planned | **Review link + inspiration photo upload** (1 and 13): a link to a short review form you approve, and customers can attach a photo to a custom order. | Nothing new |
+| **v10.25** | ⏭️ Next | **Review link + inspiration photo upload** (1 and 13): a link to a short review form you approve, and customers can attach a photo to a custom order. | Nothing new |
 | v10.26 | 📅 Planned | **EFT / SnapScan / Capitec Pay details with "upload proof of payment"** + **install on the home screen like an app** (27 and 47). | Your payment details (account or QR) |
 | v10.27 | 📅 Planned | **Shop status banner** ("on holiday until 3 Jan", pauses orders) + the **old "Publish" wording fixed** in the admin (4 and 45). | Nothing new |
 | v10.28 | 📅 Planned | **Gift vouchers** (you give a code, the customer types it in the cart, it comes off the total) + a **loyalty reward** (for example every 10th order a free cupcake box). | Your voucher and loyalty rules |
@@ -47,7 +47,7 @@ Your change lists always go **first**, so the versions below may slide back by o
 Nothing here can be built or guessed by us. Send things whenever you have them (in your next change list is fine).
 
 ### 2a. Your to-do list
-- [ ] **Update the online database** with the newest `supabase/setup.sql` (steps in 2c). Latest change: **v10.23** (it adds the spam guard; until you run it, spam protection is only half on).
+- [ ] **Update the online database** with the newest `supabase/setup.sql` (steps in 2c). Latest change: **v10.24** (it makes the new-order alert instant; the alert still works without it). If you have not run it since v10.22, run it now too: **v10.23** added the spam guard, which is only half on until you do.
 - [ ] **Replace the placeholder numbers** in Admin > Theme & layout > **Order calendar & delivery**: days of notice, orders per day, days off, delivery areas and fees. Today they are samples.
 - [ ] **Real prices and product list.** Today the menu prices are samples (Admin > Menu items).
 - [ ] **Real cake sizes, servings, flavours and prices** for the price guide (Admin > Theme & layout > **Cake price guide**). Until you change them customers see a "Sample prices" tag.
@@ -74,7 +74,7 @@ Nothing here can be built or guessed by us. Send things whenever you have them (
 | Real cake sizes, servings, flavours and extra costs | Cake price guide on Custom Orders | Admin > Theme & layout > Cake price guide |
 | Real notice days, daily limit, delivery areas and fees | Order calendar and delivery | Admin > Theme & layout > Order calendar & delivery |
 | Product photos | Replace the emoji | When you are ready |
-| Voucher and loyalty rules, payment provider | v10.23 and v10.24 | When we reach those versions |
+| Voucher and loyalty rules, payment provider | v10.28 and v10.29 | When we reach those versions |
 | *Decided:* Sign in with Apple is **skipped for now** (it costs about US$99 a year). Google and email sign-in are free and built. | | |
 
 ### 2c. Update the online database (do this when a version says so)
@@ -101,6 +101,7 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 
 | List | # | Request (short) | Status | Where |
 |---|---|---|---|---|
+| - | - | (Owner said "start next v/patch" with no change list, so the version marked NEXT was built: the bake sheet (idea 36) and the new-order alert (idea 35)) | DONE | v10.24 |
 | - | - | (Owner said "start next v/patch" with no change list, so the version marked NEXT was built: a Live check for the real database (idea 46), spam protection and a keep-alive (idea 48). The hand-test with Becca is guide 5e) | DONE | v10.23 |
 | - | - | (Owner said "lets do it your way, start next v/patch": the first version of the agreed order was built, the cake price guide + "Order the same again" on the thank-you page. The new build order for all 60 ideas is in the plan, section 1) | DONE | v10.22 |
 | - | - | (Change list: give me a list of everything we should still add to make the website better than the others, and I will say what I like. Only 2 changes per patch, the rest to the backlog. The list is in section 4c; nothing was built) | DONE | v10.21.2 |
@@ -245,6 +246,13 @@ Every version leaves a few "good idea, but not now" notes. They used to be sprea
 - Keep a history of Live check results, and run it by itself once a week (v10.23)
 - A Live check step that tests customer sign-up and delete-my-account with a throw-away address (v10.23)
 
+**Bake sheet and new-order alert (v10.24)**
+- Real push notifications that reach a closed phone (needs the installed app from v10.26 plus a push service) (v10.24)
+- A different chime for custom orders; quiet hours for the chime (v10.24)
+- Send the bake sheet by WhatsApp or email; a "tomorrow's bake sheet" that appears by itself (v10.24)
+- Split the bake sheet into collection and delivery runs; choose which statuses count (v10.24)
+- A shopping list worked out from the bake sheet (idea 37, needs your recipes) (v10.24)
+
 **Helping Becca (new in v10.21.1)**
 - A one-page printable cheat sheet for the day-to-day admin jobs
 - Screenshots in the README next to each admin job
@@ -296,8 +304,8 @@ You asked for everything we think the website could still add. Nothing here is b
 34. **Editable WhatsApp wording for each order status.** *S*
 
 **E. Save Becca time (admin)**
-35. ⭐ **New-order alert:** a sound or phone notification when an order arrives, so the admin does not have to stay open. Works best together with 47. *M*
-36. ⭐ **Bake sheet:** "what to make for Saturday", totalled across all orders (3 chocolate cakes, 24 cupcakes) and printable. *M*
+35. ✅ *built in v10.24 (works while the admin is open; waking a closed phone needs the installed app, see 4b)* ⭐ **New-order alert:** a sound or phone notification when an order arrives, so the admin does not have to stay open. Works best together with 47. *M*
+36. ✅ *built in v10.24* ⭐ **Bake sheet:** "what to make for Saturday", totalled across all orders (3 chocolate cakes, 24 cupcakes) and printable. *M*
 37. **Shopping list** worked out from the bake sheet and your recipes. ⏳ needs your recipes. *L*
 38. **Costing helper:** type in ingredient costs and get a suggested price and the profit on each item. ⏳ *L*
 39. **Customer list with notes:** allergies, favourite flavours, birthdays, who orders again and again. *M*

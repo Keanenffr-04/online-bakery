@@ -32,7 +32,7 @@
     if (!state.isAdmin) return;
     const [o, a, pr, lg] = await Promise.all([sb.from("orders").select("*").order("created_at", { ascending: false }).limit(1000), sb.from("admins").select("*").order("added_at"), sb.from("profiles").select("*"), sb.from("order_log").select("*").order("at", { ascending: false }).limit(200)]);
     state.log = lg.data || []; state.logErr = !!lg.error;   // v10.19.1: change log (table from setup.sql section 8)
-    state.orders = o.data || []; state.admins = a.data || [];
+    state.orders = o.data || []; state.admins = a.data || []; state.known = state.known || new Set(); state.orders.forEach(x => state.known.add(x.id));   // v10.24: loaded = seen
     state.profErr = !!pr.error; state.profiles = pr.data || []; state.profile = state.profiles.find(x => x.user_id === state.user.id) || null;   // profErr = profiles table missing: do not block the admin if (o.error || a.error) state.note = "Could not load from the online database: " + ((o.error || a.error).message || "unknown error");
   }
   // First time ever: copy the menu and settings from the project files into the database so nothing is lost.
@@ -46,7 +46,7 @@
   async function enter() {
     await refreshUser();
     if (state.user && !state.isAdmin) { const who = state.user.email; await sb.auth.signOut(); state.user = null; return flash(state.setupErr ? "The online database is not set up yet (run supabase/setup.sql, see the roadmap)." : who + " is not on the admin list. Ask an existing admin to add that email.") }
-    if (state.isAdmin) { await seedDb(); await loadAdminData(); }
+    if (state.isAdmin) { await seedDb(); await loadAdminData(); watch(); }   // v10.24: new-order alert
     render();
   }
 
@@ -216,10 +216,121 @@
     }
     return sec("ocal", "Upcoming dates", c.enabled === false ? "calendar off" : (lim ? lim + " orders a day" : "no daily limit"), `<ul class="adm-list">${rows.join("")}</ul><p class="muted">Counts orders (not cancelled) by the date the customer needs them. Change the rules in Theme &amp; layout > Order calendar &amp; delivery.</p>`);
   }
+
+  // v10.24: BAKE SHEET. "What to make for Saturday": every order that still has to be baked (pending + confirmed), totalled by item.
+  // Cart orders carry details.lines [{id, q}], so they add up exactly. Custom and hand-added orders are free text, so they are listed
+  // one by one (with flavours, allergies and notes) instead of being guessed at.
+  const dayLabel = iso => { if (!/^\d{4}-\d{2}-\d{2}$/.test(iso || "")) return "No date given"; const d = new Date(iso + "T12:00"), t = SB.today(), tm = new Date(t + "T12:00"); tm.setDate(tm.getDate() + 1); const tmIso = tm.getFullYear() + "-" + String(tm.getMonth() + 1).padStart(2, "0") + "-" + String(tm.getDate()).padStart(2, "0"); return d.toLocaleDateString("en-ZA", { weekday: "short", day: "numeric", month: "short" }) + (iso === t ? " (today)" : iso === tmIso ? " (tomorrow)" : iso < t ? " (past)" : ""); };
+  const toBake = () => (state.orders || []).filter(o => o.status === "pending" || o.status === "confirmed");
+  function bakeDates() {   // the dates that have something to bake, earliest first (undated orders are kept apart)
+    const d = {}; toBake().forEach(o => { if (/^\d{4}-\d{2}-\d{2}$/.test(o.date || "")) d[o.date] = (d[o.date] || 0) + 1; });
+    return Object.keys(d).sort().map(k => [k, d[k]]);
+  }
+  function bakeModel(k) {   // k = "next" | "7" | "all" | one date
+    const t = SB.today(), all = bakeDates(), up = all.filter(x => x[0] >= t).map(x => x[0]); let days = [];
+    if (k === "all") days = all.map(x => x[0]).concat(toBake().some(o => !/^\d{4}-\d{2}-\d{2}$/.test(o.date || "")) ? [""] : []);
+    else if (k === "7") { const e = new Date(t + "T12:00"); e.setDate(e.getDate() + 7); const eIso = e.getFullYear() + "-" + String(e.getMonth() + 1).padStart(2, "0") + "-" + String(e.getDate()).padStart(2, "0"); days = up.filter(x => x < eIso); }
+    else if (/^\d{4}-\d{2}-\d{2}$/.test(k)) days = [k];
+    else days = up.length ? [up[0]] : [];
+    const names = {}, cats = {}; ((state.data && state.data.products) || []).forEach(p => { names[p.id] = p.name; cats[p.id] = p.category; });
+    const order = ((state.data && state.data.categories) || []).map(c => c.id), cname = {}; ((state.data && state.data.categories) || []).forEach(c => { cname[c.id] = c.name; });
+    return days.map(day => {
+      const list = toBake().filter(o => day === "" ? !/^\d{4}-\d{2}-\d{2}$/.test(o.date || "") : o.date === day), tot = {}, custom = [];
+      list.forEach(o => { const L = linesOf(o); if (L.length) L.forEach(l => { const r = tot[l.id] = tot[l.id] || { id: l.id, name: names[l.id] || l.id, cat: cats[l.id] || "", q: 0 }; r.q += +l.q || 0; }); else custom.push(o); });
+      const rows = Object.values(tot).sort((a, b) => (order.indexOf(a.cat) < 0 ? 99 : order.indexOf(a.cat)) - (order.indexOf(b.cat) < 0 ? 99 : order.indexOf(b.cat)) || b.q - a.q || a.name.localeCompare(b.name));
+      return { day, label: dayLabel(day), list, rows, custom, cname, units: rows.reduce((n, r) => n + r.q, 0) };
+    });
+  }
+  const bakeOrderLine = o => { const d = o.details && typeof o.details === "object" ? o.details : {}, bits = [d.method, d.flavours && "flavours: " + d.flavours, d.guide && d.guide.size && "guide: " + d.guide.size + (d.guide.flavour ? ", " + d.guide.flavour : ""), d.notes && "notes: " + d.notes].filter(Boolean).map(x => esc(x)); return bits.join(" &middot; "); };
+  function bakeBlocks() {
+    const M = bakeModel(state.bake || "next");
+    if (!M.length) return `<p class="muted">Nothing to bake for this choice. Orders that are <strong>pending</strong> or <strong>confirmed</strong> and have a date show up here.</p>`;
+    return M.map(b => {
+      let lastCat = null;
+      const rows = b.rows.map(r => { const h = r.cat !== lastCat ? `<li class="bake__cat">${esc(b.cname[r.cat] || "Other")}</li>` : ""; lastCat = r.cat; return `${h}<li><span class="bx" aria-hidden="true"></span><strong class="bake__q">${r.q}</strong> <span>${esc(r.name)}</span></li>`; }).join("");
+      const cust = b.custom.map(o => { const d = o.details && typeof o.details === "object" ? o.details : {}; return `<li><span class="bx" aria-hidden="true"></span><div><strong>${esc(o.name)}</strong>: ${esc(o.items)}${d.diet ? `<br><span class="bake__warn">Allergy / diet: ${esc(d.diet)}</span>` : ""}${bakeOrderLine(o) ? `<br><span class="muted">${bakeOrderLine(o)}</span>` : ""}</div></li>`; }).join("");
+      const pack = b.list.map(o => { const d = o.details && typeof o.details === "object" ? o.details : {}; return `<li><strong>${esc(o.name)}</strong> <span class="tag tag--${o.status}">${o.status}</span>${d.method ? ` &middot; ${esc(d.method)}` : ""}${d.delivery && d.delivery.area ? ` to ${esc(d.delivery.area)}` : ""}${d.diet ? ` &middot; <span class="bake__warn">${esc(d.diet)}</span>` : ""}</li>`; }).join("");
+      return `<section class="bake"><h3>${esc(b.label)} <span class="muted">&middot; ${b.list.length} order${b.list.length === 1 ? "" : "s"}${b.units ? ", " + b.units + " item" + (b.units === 1 ? "" : "s") + " from the cart" : ""}</span></h3>
+      ${rows ? `<h4>Make</h4><ul class="bake__list">${rows}</ul>` : ""}${cust ? `<h4>Custom and hand-added orders</h4><ul class="bake__list bake__list--c">${cust}</ul>` : ""}<h4>Who it is for</h4><ul class="bake__who">${pack}</ul></section>`;
+    }).join("");
+  }
+  function bakeBox() {
+    const dates = bakeDates(), t = SB.today(), up = dates.filter(x => x[0] >= t), late = dates.filter(x => x[0] < t).reduce((n, x) => n + x[1], 0), k = state.bake || "next";
+    const none = toBake().filter(o => !/^\d{4}-\d{2}-\d{2}$/.test(o.date || "")).length;
+    const opts = [["next", up.length ? "Next baking day (" + dayLabel(up[0][0]) + ")" : "Next baking day"], ["7", "Next 7 days"], ["all", "Everything still to bake"], ...dates.slice(-40).map(x => [x[0], dayLabel(x[0]) + " (" + x[1] + ")"])];
+    const hint = up.length ? up.length + " baking day" + (up.length === 1 ? "" : "s") + " coming up" : "nothing to bake yet";
+    return sec("obake", "Bake sheet", hint, `<div class="adm-top"><label for="bake-pick" class="muted" style="margin:0">What to make for</label><select id="bake-pick" data-act="bake" style="width:auto">${opts.map(([v, l]) => `<option value="${v}" ${v === k ? "selected" : ""}>${esc(l)}</option>`).join("")}</select></div>
+    ${late ? `<p class="msg msg--warn">${late} order${late === 1 ? " is" : "s are"} dated in the past and not marked ready yet. Choose <strong>Everything still to bake</strong> to see ${late === 1 ? "it" : "them"}.</p>` : ""}${none ? `<p class="muted">${none} order${none === 1 ? " has" : "s have"} no date and only show${none === 1 ? "s" : ""} under <strong>Everything still to bake</strong>.</p>` : ""}
+    <div class="bake-wrap">${bakeBlocks()}</div>
+    <p class="muted">Counts orders that are <strong>pending</strong> or <strong>confirmed</strong>. Ready, done and cancelled orders are left out. Cart orders are added up exactly; custom orders are listed one by one with their allergies and notes.</p>
+    <p><button class="btn btn--sm" data-act="bake-print">Print bake sheet</button></p>`);
+  }
+  function bakePage() {   // the printed copy: same content, plain black on white, a tick box on every line
+    const biz = SB._biz || {}, k = state.bake || "next";
+    return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Bake sheet</title><style>
+    body{font:15px/1.45 system-ui,Segoe UI,Arial,sans-serif;color:#111;margin:0;padding:24px;max-width:640px}h1{font-size:20px;margin:0}.sub{color:#555;margin-bottom:6px}
+    h3{font-size:18px;margin:22px 0 4px;border-bottom:2px solid #111;padding-bottom:4px;break-after:avoid}h4{font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin:12px 0 4px;color:#555}
+    .muted{color:#555;font-weight:400;font-size:13px}.bake__warn{color:#a00;font-weight:600}ul{list-style:none;margin:0;padding:0}.bake__list li{display:flex;gap:10px;align-items:center;padding:5px 0;border-bottom:1px dotted #bbb}
+    .bake__list--c li{align-items:flex-start}.bake__cat{display:block!important;font-size:12px;color:#555;text-transform:uppercase;letter-spacing:.06em;border:0!important;padding-top:10px!important}.bake__q{min-width:2.2em;font-size:18px}
+    .bx{width:14px;height:14px;border:1.5px solid #111;border-radius:3px;flex:none;display:inline-block}.bake__who li{padding:3px 0}.tag{font-size:11px;border:1px solid #999;border-radius:9px;padding:0 6px}.bake{break-inside:avoid-page}@media print{body{padding:0}}</style></head><body>
+    <h1>${esc(biz.name || "The Sweetest Bakery")}</h1><div class="sub">Bake sheet &middot; printed ${esc(new Date().toLocaleString("en-ZA", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }))}</div>${bakeBlocks()}</body></html>`;
+  }
+
+  // v10.24: NEW-ORDER ALERT. While the admin is open (on a computer or a phone) a chime plays and a notice pops up the moment a website
+  // order arrives. Two ways of noticing, either is enough: the database pushes it (realtime, setup.sql section 11) and a check every 30 s.
+  // It never redraws the page by itself, so nothing Becca is typing is lost. It cannot wake a closed phone: that needs the installed app (v10.26).
+  const AL = () => ({ sound: true, notify: false, ...J("sb_alert", {}) });
+  let actx = null;
+  const unlockAudio = () => { try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === "suspended") actx.resume(); } catch (e) { /* no sound on this device */ } };
+  ["pointerdown", "keydown"].forEach(ev => document.addEventListener(ev, unlockAudio, { once: true, capture: true }));   // browsers only allow sound after a first tap or key press
+  function chime() {
+    unlockAudio(); if (!actx) return false;
+    try { const t = actx.currentTime; [[880, 0], [1175, .17], [1568, .34]].forEach(([f, d]) => { const o = actx.createOscillator(), g = actx.createGain(); o.type = "sine"; o.frequency.value = f; g.gain.setValueAtTime(.0001, t + d); g.gain.exponentialRampToValueAtTime(.28, t + d + .03); g.gain.exponentialRampToValueAtTime(.0001, t + d + .42); o.connect(g); g.connect(actx.destination); o.start(t + d); o.stop(t + d + .45); }); return actx.state === "running"; } catch (e) { return false; }
+  }
+  const pendingCount = () => (state.orders || []).filter(o => o.status === "pending").length;
+  function badge() {   // "(3) Admin" in the browser tab, and a count on the Orders tab, so new work is visible even from another tab
+    const n = pendingCount(); document.title = (n ? "(" + n + ") " : "") + "Admin";
+    const b = app.querySelector('.adm-nav button[data-v="orders"]'); if (b) b.textContent = n ? "Orders (" + n + ")" : "Orders";
+  }
+  function toast() {
+    let el = document.getElementById("adm-toast"); const n = state.newOnes || [];
+    if (!n.length) { if (el) el.remove(); return; }
+    if (!el) { el = document.createElement("div"); el.id = "adm-toast"; el.className = "adm-toast"; el.setAttribute("role", "status"); el.setAttribute("aria-live", "polite"); document.body.appendChild(el); }
+    const first = n.slice(0, 2).map(o => esc(String(o.name || "Someone").slice(0, 40))).join(", ") + (n.length > 2 ? " and " + (n.length - 2) + " more" : "");
+    el.innerHTML = `<span aria-hidden="true">🔔</span><div><strong>${n.length === 1 ? "New order" : n.length + " new orders"}</strong><br><span>${first}</span></div><button class="btn btn--sm" data-toast="show">Show</button><button class="btn btn--sm btn--ghost" data-toast="close" aria-label="Dismiss">&times;</button>`;
+  }
+  function incoming(rows) {
+    state.known = state.known || new Set(); const fresh = [];
+    (rows || []).forEach(r => { if (!r || !r.id || state.known.has(r.id)) return; state.known.add(r.id); if (!(state.orders || []).some(x => x.id === r.id)) state.orders.unshift(r); fresh.push(r); });
+    const real = fresh.filter(r => r.source !== "admin" && !/^TEST ORDER/i.test(r.name || ""));   // hand-added orders and the Live check's test order never ring
+    badge(); if (!real.length) return;
+    state.newOnes = (state.newOnes || []).concat(real); toast();
+    const a = AL(); if (a.sound) chime();
+    if (a.notify && window.Notification && Notification.permission === "granted") { try { new Notification(real.length === 1 ? "New order" : real.length + " new orders", { body: real.map(o => o.name).slice(0, 3).join(", "), tag: "sb-order" }); } catch (e) { /* some phones only allow this from an installed app */ } }
+  }
+  async function pollNew() {
+    if (!sb || !state.isAdmin || !state.known) return;
+    const r = await sb.from("orders").select("*").order("created_at", { ascending: false }).limit(20); if (!r.error && r.data) incoming(r.data);
+  }
+  function stopWatch() { clearInterval(state.poll); state.poll = null; try { if (state.chan && sb) sb.removeChannel(state.chan); } catch (e) { /* ignore */ } state.chan = null; state.newOnes = []; toast(); document.title = "Admin"; }
+  function watch() {
+    stopWatch(); state.known = new Set((state.orders || []).map(o => o.id));
+    state.poll = setInterval(pollNew, 30000);
+    try { state.chan = sb.channel("orders-alert").on("postgres_changes", { event: "INSERT", schema: "public", table: "orders" }, p => incoming([p.new])).subscribe(); } catch (e) { /* realtime not set up: the 30 s check still works */ }
+    badge();
+  }
+  function alertBox() {
+    const a = AL(), perm = window.Notification ? Notification.permission : "unsupported";
+    return sec("oalert", "New-order alert", a.sound ? "sound on" : "sound off", `<p>When a customer sends an order from the website, this page plays a chime and shows a notice, as long as the admin is <strong>open</strong> on this device (a tab can sit in the background).</p>
+    <label class="check"><input type="checkbox" data-act="al-sound" ${a.sound ? "checked" : ""}> Play a chime</label>
+    <label class="check"><input type="checkbox" data-act="al-notify" ${a.notify && perm === "granted" ? "checked" : ""} ${perm === "unsupported" ? "disabled" : ""}> Also show a notice on this device${perm === "denied" ? " (your browser has blocked notices for this page)" : ""}</label>
+    <p><button class="btn btn--sm btn--ghost" data-act="al-test">Test the chime</button></p>
+    <p class="muted">This is per device, so tick it on your phone and your computer separately. It cannot wake a phone where the page is closed: that comes with the install-as-an-app step (v10.26). Orders you add by hand never ring.</p>`);
+  }
   function orders() {
     const o = state.orders || [], f = state.filter || "pending", list = o.filter(x => f === "all" || x.status === f), nper = state.nper || "week";
     const cnt = s => s === "all" ? o.length : o.filter(x => x.status === s).length;
-    return `${numbers(nper)}${calBox()}<div class="adm-split"><div class="adm-card"><h2>Add an order</h2>
+    return `${numbers(nper)}${calBox()}${bakeBox()}${alertBox()}<div class="adm-split"><div class="adm-card"><h2>Add an order</h2>
     <form data-form="order"><label>Customer</label><input name="name" required>${SB.phoneField("o-phone", { label: "Phone" })}
     <label>What they ordered</label><textarea name="items" required></textarea><div class="adm-row"><div><label>Needed on</label><input name="date" type="date"></div><div><label>Total (R)</label><input name="total" type="number" min="0"></div></div>
     <p><button class="btn btn--sm" type="submit">Save order</button></p></form></div>
@@ -416,7 +527,7 @@
 
   // v10.23: "Live check" = the real-world test (roadmap idea 46) as a button. It talks to the REAL online database, so it can only run from
   // the live site or from a computer with internet (not from a double-clicked file). Everything it adds is removed again.
-  const SETUP_VERSION = "10.23", TEST_NAME = "TEST ORDER - safe to delete";
+  const SETUP_VERSION = "10.24", TEST_NAME = "TEST ORDER - safe to delete";
   async function liveCheck() {
     const c = (state.data.biz || {}).supabase, R = [], add = (s, t, d) => R.push({ s, t, d: d || "" });
     if (!c || !c.url || !c.key) { add("bad", "The online database is not set up", "config/business.json has no Supabase address."); return R; }
@@ -500,15 +611,15 @@
     const body = { orders, menu, look, admins: adminsView, account, publish }[state.tab]();
     const dbw = SB.dbOK ? "" : `<div class="msg msg--warn">The online database is not answering (has <code>supabase/setup.sql</code> been run?). Changes cannot be saved until it is.</div>`;
     return `<div class="adm-top"><h1>Admin</h1><div class="adm-actions"><span class="adm-hi">${avatar(state.profile, state.user.email)}<span>Hi, ${esc((state.profile && state.profile.username) || state.user.email)}</span></span><a class="btn btn--sm btn--ghost" href="index.html">View site</a><button class="btn btn--sm" data-act="logout">Log out</button></div></div>
-    <nav class="adm-nav" aria-label="Admin sections">${TABS.map(([k, n]) => `<button class="${state.tab === k ? "is-on" : ""}" ${state.tab === k ? 'aria-current="page"' : ""} data-act="tab" data-v="${k}">${n}</button>`).join("")}</nav>
+    <nav class="adm-nav" aria-label="Admin sections">${TABS.map(([k, n]) => `<button class="${state.tab === k ? "is-on" : ""}" ${state.tab === k ? 'aria-current="page"' : ""} data-act="tab" data-v="${k}">${k === "orders" && pendingCount() ? n + " (" + pendingCount() + ")" : n}</button>`).join("")}</nav>
     ${dbw}${state.note ? `<div class="msg">${esc(state.note)}</div>` : ""}${body}`;
   }
 
   function render() {
     const inside = state.isAdmin && !state.recovering;
-    app.innerHTML = inside ? (!state.profile && !state.profErr ? setupView() : dash()) : authView(); state.note = "";   // first sign-in: choose a username before the panel opens
+    app.innerHTML = inside ? (!state.profile && !state.profErr ? setupView() : dash()) : authView(); state.note = ""; if (inside) badge();   // first sign-in: choose a username before the panel opens
   }
-    const go = (t, note) => { state.tab = t; state.note = note || ""; app.innerHTML = dash(); state.note = ""; if (t === "look") { drawDemo(); drawSeasonEditor(); drawSeasonStatus(); } };
+    const go = (t, note) => { state.tab = t; state.note = note || ""; app.innerHTML = dash(); state.note = ""; badge(); if (t === "look") { drawDemo(); drawSeasonEditor(); drawSeasonStatus(); } };
   const dl = (name, text, type) => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type: type || "application/json" })); a.download = name; a.click(); };
   const saveProducts = () => dbSave("products", { categories: state.data.categories, products: state.data.products });   // v10.17: saved online, live for everyone at once
 
@@ -609,6 +720,13 @@
     const t = e.target, a = t.dataset.act;
     if (a === "filter") { state.filter = t.value; go("orders"); }
     if (a === "nper") { state.nper = t.value; go("orders"); }   // v10.19
+    if (a === "bake") { state.bake = t.value; state.open.obake = true; go("orders"); }   // v10.24
+    if (a === "al-sound") { S("sb_alert", { ...AL(), sound: t.checked }); state.open.oalert = true; if (t.checked) chime(); go("orders"); }
+    if (a === "al-notify") {
+      state.open.oalert = true; if (!t.checked) { S("sb_alert", { ...AL(), notify: false }); return go("orders"); }
+      if (!window.Notification) return go("orders", "This browser cannot show notices. The chime and the pop-up on this page still work.");
+      Notification.requestPermission().then(p => { S("sb_alert", { ...AL(), notify: p === "granted" }); go("orders", p === "granted" ? "Notices are on for this device." : "Notices were not allowed, so they stay off. You can allow them in the browser's site settings."); });
+    }
     if (a === "pic" && t.files && t.files[0]) {
       shrink(t.files[0]).then(d => { state.picTmp = d; const el = document.getElementById("av-prev"); if (el) el.innerHTML = avatar({ avatar: d }, state.user.email, true); }).catch(() => alert("Please choose a picture file (JPG or PNG)."));
     }
@@ -630,12 +748,14 @@
   app.addEventListener("click", async e => {
     const b = e.target.closest("button[data-act]"); if (!b) return; const a = b.dataset.act, v = b.dataset.v, id = b.dataset.id, u = b.dataset.u;
     if (a === "auth") { state.authTab = v; state.note = ""; return render(); }
-    if (a === "logout") { await sb.auth.signOut(); state.user = null; state.isAdmin = false; state.profile = null; state.picTmp = null; localStorage.removeItem("sb_keep"); sessionStorage.removeItem("sb_preview"); state.authTab = "login"; return render(); }
+    if (a === "logout") { stopWatch(); await sb.auth.signOut(); state.user = null; state.isAdmin = false; state.profile = null; state.picTmp = null; localStorage.removeItem("sb_keep"); sessionStorage.removeItem("sb_preview"); state.authTab = "login"; return render(); }
     if (a === "pic-remove") { state.picTmp = ""; const el = document.getElementById("av-prev"); if (el) el.innerHTML = avatar({ username: (document.querySelector("input[name=username]") || {}).value }, state.user.email, true); return; }
     if (a === "google") { const f = app.querySelector("input[name=remember]"); return google(!!(f && f.checked)); }
     if (a === "psold") { const p = state.data.products.find(x => x.id === id); if (SB.isSoldOut(p)) delete p.soldOut; else p.soldOut = SB.today(); await saveProducts(); return go("menu", p.name + (p.soldOut ? " is marked sold out for today." : " is back in stock.")); }
     if (a === "tab") { state.tab = v; if (v === "look") await prepLook(); if (v === "menu") state.edit = null; state.picTmp = null; if (v === "orders" || v === "admins") await loadAdminData(); if (v !== "look") sessionStorage.removeItem("sb_preview"); return go(v); }
     if (a === "onext") { const o0 = state.orders.find(x => x.id === id) || {}, was = o0.status, r = await sb.from("orders").update({ status: v }).eq("id", id); if (!r.error) await logOrder(o0, "status " + was + " to " + v); await loadAdminData(); return go("orders", r.error ? "Could not update: " + r.error.message : "Order moved to " + v + "."); }   // v10.19
+    if (a === "bake-print") { const w = window.open("", "_blank"); if (!w) return go("orders", "Your browser blocked the bake sheet window. Allow pop-ups for this page and try again."); w.document.write(bakePage()); w.document.close(); w.focus(); setTimeout(() => w.print(), 300); return; }   // v10.24
+    if (a === "al-test") { state.open.oalert = true; return go("orders", chime() ? "Did you hear the chime? Then new orders will sound the same." : "No sound came out. Check the volume and that this device is not on silent, then press the button again."); }
     if (a === "oslip") { const o = state.orders.find(x => x.id === id); if (!o) return; const w = window.open("", "_blank"); if (!w) return go("orders", "Your browser blocked the slip window. Allow pop-ups for this page and try again."); w.document.write(slip(o)); w.document.close(); w.focus(); setTimeout(() => w.print(), 300); return; }
     if (a === "dl-num") { const k = v || "week"; return csvOrders(state.orders.filter(o => inPeriod(o, k)), "orders-" + k + "-" + SB.today() + ".csv"); }
     if (a === "odel") { if (!confirm("Delete this order?")) return; const o0 = state.orders.find(x => x.id === id) || {}, r = await sb.from("orders").delete().eq("id", id); if (!r.error) await logOrder(o0, "order deleted"); await loadAdminData(); return go("orders", r.error ? "Could not delete: " + r.error.message : ""); }
@@ -674,6 +794,12 @@
     if (a === "dl-backup") { await loadAdminData(); const sd = await sb.from("site_data").select("*"); return dl("sweetest-bakery-backup-" + SB.today() + ".json", JSON.stringify({ exported: new Date().toISOString(), site_data: sd.data || [], orders: state.orders, admins: state.admins }, null, 2)); }
   });
 
+  // v10.24: the "new order" pop-up sits outside the panel so it never wipes a form that is half filled in.
+  document.addEventListener("click", async e => {
+    const b = e.target.closest("[data-toast]"); if (!b) return;
+    state.newOnes = []; toast();
+    if (b.dataset.toast === "show") { state.tab = "orders"; state.filter = "pending"; await loadAdminData(); go("orders"); window.scrollTo({ top: 0, behavior: "smooth" }); }
+  });
   async function prepLook(fresh) {
     if (fresh) SB._p = null;
     state.data = await SB.load(); const s = state.data.settings;
