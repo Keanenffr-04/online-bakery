@@ -1,6 +1,6 @@
 # Roadmap: what is done, what is next, what is waiting
 
-**Current version:** v10.13 &nbsp;|&nbsp; **Next up:** v10.14 (Manage menu sections + a "New" badge on recently added items) &nbsp;|&nbsp; Rule: **max 2 to 3 things per version.**
+**Current version:** v10.14 &nbsp;|&nbsp; **Next up:** v10.15 (Manage menu sections + a "New" badge on recently added items) &nbsp;|&nbsp; Rule: **max 2 to 3 things per version.**
 
 Finished work lives in [`BACKLOG.md`](BACKLOG.md). The old, long roadmap notes are kept untouched in [`ROADMAP_ARCHIVE.md`](ROADMAP_ARCHIVE.md).
 
@@ -27,36 +27,38 @@ Owner's list always comes first; older scheduled items slide back. Photos and la
 | v10.11 | DONE | **Theme dropdown** (all themes in one dropdown, special ones marked) + **tidier admin** (tab bar, collapsible sections, neat item rows, sticky Save bar and preview) + answers: Supabase vs Firebase, top 10 ideas | Owner list 12 items 1 to 4 |
 | v10.12 | DONE | **Home page, first round**: "Shop by treat" tiles + "How ordering works" steps (each can be switched off in admin) + **admin hidden from customers** (no public link, no public sign-up) | Owner list 13 items 3 (first part) and 5 |
 | v10.13 | DONE | **Home page, round 2**: a short "Meet Becca" section + greeting and specials text that follow the season; **remember my details on this device** (name, phone, notes pre-filled on Cart and Custom Order) | Owner list 13 item 5 (customer side first); the device-only part of list 10 item 1 |
-| **v10.14** | **NEXT** | **Manage menu sections** (add / rename / reorder / hide; the Shop-by-treat tiles follow) + a "New" badge on recently added items | Older plan |
-| v10.15 | BACKEND | **Supabase foundation (decided, list 13 item 2)**: real sign-in with Google / email (Apple only if paid for), **admin panel locked on the server so only admins can enter (list 13 item 3)**, admin works across devices (no manual Publish), forgot-password by real email, orders saved online, backup | Owner list 13 items 2 and 3, list 10 item 1, list 6 item 7. One big item |
-| v10.16 | BACKEND | **"My account" page** (profile, saved details, past orders, order again, edit and delete my account) + **Privacy (POPIA) and Terms pages** | Owner list 10 item 2. Privacy page MUST ship with accounts |
-| v10.17 | BACKEND | **Order tools**: statuses, thank-you page, printable slip, weekly / monthly numbers + CSV, change log; **"Most popular" ranked automatically from real orders** | Needs v10.15 |
-| v10.18 | PLANNED | **More occasion themes** (New Year, Women's Day, Black Friday, Diwali, Eid ...). **Visitors never switch themes** (owner list 13 item 1): only Becca and the automatic seasons decide + **Top 10 #4: WhatsApp order-status buttons** ("ready for collection") | Needs v10.17 for the buttons |
-| v10.19 | PLANNED | **Top 10 #1: order calendar** (lead times, daily limit, blocked dates) + **#2: delivery or collection with fees by area** | Needs your real lead times, areas and prices |
-| v10.20 | PLANNED | **Top 10 #6: cake price guide / quote helper** + **"Order again" button** | Needs real prices; order again needs v10.16 |
-| v10.21 | PLANNED | **Top 10 #7: gift vouchers** + **#8: loyalty reward / referral** | Needs accounts (v10.15) and your rules |
-| v10.22 | PLANNED | **Top 10 #3: deposits / online payment** (Yoco / PayFast / Ozow) on its own, because it handles real money | Needs a payment account opened by the owner |
-| v10.23 | PLANNED | **Top 10 #10: opt-in specials broadcast list** (POPIA-friendly) + home page round 3 | Needs accounts + Privacy page |
+| v10.14 | DONE | **Admin "Remember me"** (tick box under Log in: stay signed in on this device for 30 days, username remembered) + the **"how many versions are left?" answer** (section 1g) | Owner list 14 items 1 and 2 |
+| **v10.15** | **NEXT** | **Manage menu sections** (add / rename / reorder / hide; the Shop-by-treat tiles follow) + a "New" badge on recently added items | Older plan |
+| v10.16 | BACKEND | **Supabase foundation (decided, list 13 item 2)**: real sign-in with Google / email (Apple only if paid for), **admin panel locked on the server so only admins can enter (list 13 item 3)**, admin works across devices (no manual Publish), forgot-password by real email, orders saved online, backup | Owner list 13 items 2 and 3, list 10 item 1, list 6 item 7. One big item |
+| v10.17 | BACKEND | **"My account" page** (profile, saved details, past orders, order again, edit and delete my account) + **Privacy (POPIA) and Terms pages** | Owner list 10 item 2. Privacy page MUST ship with accounts |
+| v10.18 | BACKEND | **Order tools**: statuses, thank-you page, printable slip, weekly / monthly numbers + CSV, change log; **"Most popular" ranked automatically from real orders** | Needs v10.16 |
+| v10.19 | PLANNED | **More occasion themes** (New Year, Women's Day, Black Friday, Diwali, Eid ...). **Visitors never switch themes** (owner list 13 item 1): only Becca and the automatic seasons decide + **Top 10 #4: WhatsApp order-status buttons** ("ready for collection") | Needs v10.18 for the buttons |
+| v10.20 | PLANNED | **Top 10 #1: order calendar** (lead times, daily limit, blocked dates) + **#2: delivery or collection with fees by area** | Needs your real lead times, areas and prices |
+| v10.21 | PLANNED | **Top 10 #6: cake price guide / quote helper** + **"Order again" button** | Needs real prices; order again needs v10.17 |
+| v10.22 | PLANNED | **Top 10 #7: gift vouchers** + **#8: loyalty reward / referral** | Needs accounts (v10.16) and your rules |
+| v10.23 | PLANNED | **Top 10 #3: deposits / online payment** (Yoco / PayFast / Ozow) on its own, because it handles real money | Needs a payment account opened by the owner |
+| v10.24 | PLANNED | **Top 10 #10: opt-in specials broadcast list** (POPIA-friendly) + home page round 3 | Needs accounts + Privacy page |
 | When photos exist | WAITING | **Real product photos** instead of emoji (set in admin; emoji stays as fallback) + **Top 10 #5: "Our work" gallery** | Owner decides when; tip: same light and background for every photo |
 | LAST (v11) | WAITING | **Get it online**: hosting (GitHub Pages or Netlify), favicon, SEO + page titles, **Top 10 #9: Google Business Profile + local search tidy-up**, share image for WhatsApp / Facebook, custom domain, launch checklist | Only when the owner says "I'm happy with everything" |
 
 ### 1b. What Claude recommends doing next (answer to owner list 11 item 1)
 In this order, and why:
-1. **Small wins first (no backend needed): v10.10 and v10.14.** "Sold out today" and menu-section control are things Becca uses every week, and remembering a customer's details on their own device removes the retyping the owner asked about, without waiting for logins.
-2. **Then decide the backend (before v10.15).** It is the biggest unlock: Google / Apple / email sign-in, the account page with past orders, orders saved online, the admin working across devices with no manual Publish, and real forgot-password emails. It needs two decisions from the owner (section 3): Supabase or Firebase, and whether to pay for Apple sign-in.
+1. **Small wins first (no backend needed): v10.10 and v10.15.** "Sold out today" and menu-section control are things Becca uses every week, and remembering a customer's details on their own device removes the retyping the owner asked about, without waiting for logins.
+2. **Then decide the backend (before v10.16).** It is the biggest unlock: Google / Apple / email sign-in, the account page with past orders, orders saved online, the admin working across devices with no manual Publish, and real forgot-password emails. It needs two decisions from the owner (section 3): Supabase or Firebase, and whether to pay for Apple sign-in.
 3. **Fill in the real content in parallel** (section 3): FAQ answers, reviews, Instagram / Facebook handles, real prices, dietary tags, photos. The site cannot launch without them, and none needs code.
 4. **Launch LAST**, once the owner says she is happy with everything.
 Why not the backend right now: every admin change still needs a manual Publish until it exists, so the backend deserves a clean, uninterrupted version of its own, and it needs the owner's account decisions first.
 
-### 1c. The next five versions at a glance (v10.13 to v10.17)
+### 1c. The next versions at a glance (v10.13 to v10.18)
 | Version | Plain-English summary |
 |---|---|
 | v10.13 (done) | More home page: a short "Meet Becca" story section, and the greeting and specials text change with the season. Repeat customers do not retype their name and phone (kept on their own device). |
-| v10.14 | Becca can add, rename, reorder and hide menu sections herself (the home tiles follow), plus a "New" badge on recent items. |
-| v10.15 | The online "back room" (Supabase, free plan): real sign-in, the admin panel locked so **only admins can get in**, the admin works on every device with no manual Publish, orders saved online. Needs you to create the free account (section 3). |
-| v10.16 | "My account" page (details, past orders, order again, delete my account) plus the Privacy (POPIA) and Terms pages. |
-| v10.17 | Order tools: statuses, thank-you page, printable slip, weekly / monthly numbers, and "Most popular" worked out from real orders. |
-After that: v10.18 to v10.23 are the more occasion themes and your approved top-10 list (see the plan table). Visitors never change the theme themselves.
+| v10.14 (done) | Admin "Remember me" tick box under the Log in button, and the count of versions left (section 1g). |
+| v10.15 | Becca can add, rename, reorder and hide menu sections herself (the home tiles follow), plus a "New" badge on recent items. |
+| v10.16 | The online "back room" (Supabase, free plan): real sign-in, the admin panel locked so **only admins can get in**, the admin works on every device with no manual Publish, orders saved online. Needs you to create the free account (section 3). |
+| v10.17 | "My account" page (details, past orders, order again, delete my account) plus the Privacy (POPIA) and Terms pages. |
+| v10.18 | Order tools: statuses, thank-you page, printable slip, weekly / monthly numbers, and "Most popular" worked out from real orders. |
+After that: v10.19 to v10.24 are the more occasion themes and your approved top-10 list (see the plan table). Visitors never change the theme themselves.
 
 ### 1d. Supabase or Firebase? (answer to owner list 12 item 1)
 **Recommendation: Supabase**, free plan for now. Checked against the providers' 2026 pricing pages:
@@ -65,10 +67,10 @@ After that: v10.18 to v10.23 are the more occasion themes and your approved top-
 - **Firebase is also free to start (Spark plan), but** the things we will want (running our own server code, e.g. emailing customers, and file storage for photos) need its pay-as-you-go plan with a card on file, and SMS sign-in is charged per text. Not a disaster, just earlier and less predictable.
 - **One catch with Supabase's free plan:** a free project pauses after a week with no activity (the data is kept, but the site stops until someone un-pauses it). A bakery getting orders will not sit idle, and a tiny scheduled ping prevents it. When you launch with real customers and are earning, the Pro plan (about US$25 per month) removes the pause and adds daily backups. That is the "pay later" step.
 - Sign in with **Apple** is separate from both: it needs an Apple Developer account (about US$99 per year), so we ship Google + email first.
-**Decided (owner list 13): Supabase.** Your one job before v10.15: create a free account at supabase.com (we will walk you through it).
+**Decided (owner list 13): Supabase.** Your one job before v10.16: create a free account at supabase.com (we will walk you through it).
 
 ### 1e. Top 10 things we suggest adding (answer to owner list 12 item 2)
-**All ten were approved by the owner (list 13 item 4) and are now in the plan table:** #4 v10.18, #1 and #2 v10.19, #6 v10.20, #7 and #8 v10.21, #3 v10.22, #10 v10.23, #5 when photos exist, #9 with the launch (v11).
+**All ten were approved by the owner (list 13 item 4) and are now in the plan table:** #4 v10.19, #1 and #2 v10.20, #6 v10.21, #7 and #8 v10.22, #3 v10.23, #10 v10.24, #5 when photos exist, #9 with the launch (v11).
 Ordered by how much they help a one-person bakery. None is scheduled yet; pick any and we will slot it in.
 1. **Order calendar with lead times and a daily limit** (e.g. "no more than 6 cakes per day", blocked dates, "3 days notice") so Becca never double-books.
 2. **Delivery or collection choice with fees by area** (needs your real delivery areas and prices).
@@ -77,7 +79,7 @@ Ordered by how much they help a one-person bakery. None is scheduled yet; pick a
 5. **"Our work" gallery** (an Instagram-style grid) so customers see real cakes. Needs your photos.
 6. **Cake price guide / quote helper** (size, servings, flavours in, estimated price out) so fewer back-and-forth messages.
 7. **Gift vouchers** (a code Becca issues; easy at Christmas, Valentine's, Mother's Day).
-8. **Loyalty reward or referral** (e.g. every 10th order a free cupcake box; needs accounts, so after v10.15).
+8. **Loyalty reward or referral** (e.g. every 10th order a free cupcake box; needs accounts, so after v10.16).
 9. **Google Business Profile + search tidy-up (SEO) + WhatsApp / Facebook share image** so local people find the bakery. Mostly setup, little code; belongs with the launch version.
 10. **Opt-in specials broadcast list** (customers who agree to hear about specials; POPIA-friendly; after accounts exist).
 Also nice but smaller: "Order again" button, birthday reminders, a "New" badge on recent items.
@@ -92,15 +94,25 @@ Goal: the customer-facing site gets the attention now, the admin only when it bl
 6. **After launch**: Instagram grid / "Our work" gallery, and reviews once real ones exist.
 Each new home section can be switched on or off in Admin > Theme & layout > Home page, so nothing is forced.
 
+### 1g. How many versions are left? (answer to owner list 14 item 1)
+Counted from the plan table above, after v10.14:
+- **10 numbered versions** still planned: v10.15 (menu sections), v10.16 (Supabase backend), v10.17 (My account + Privacy and Terms), v10.18 (order tools), v10.19 (more occasion themes + WhatsApp status buttons), v10.20 (order calendar + delivery), v10.21 (price guide + Order again), v10.22 (vouchers + loyalty), v10.23 (deposits / online payment), v10.24 (broadcast list + home page round 3).
+- **2 more steps that wait for you rather than for us:** real product photos (when you have them) and the launch version, v11 (hosting, search tidy-up, domain).
+- **So 12 steps in total, 10 of them numbered.** The backend (v10.16) is the biggest; the rest are small to medium.
+- Done so far: v1 to v10.14 (see `BACKLOG.md`; it lists only finished work, so nothing in it is still to do).
+- The number grows by about one for every new list you send, because your list always goes first and the older items slide back. Anything you add that is not in the plan sits in the ideas parking lot (section 5) until it is given a version.
+
 ## 2. Every request from the owner, and where it stands
-Newest list first. (Version numbers of the BACKEND items have moved later several times because owner lists are done first. Older notes in `BACKLOG.md` that mention v10.11 to v10.14 for backend work use older numbers; the plan table above is always the truth.) "List" is the order the owner's change lists arrived in.
+Newest list first. (Version numbers of the BACKEND items have moved later several times because owner lists are done first; v10.14 was taken by owner list 14, so every later number slid by one. Older notes in `BACKLOG.md` that mention v10.11 to v10.15 for backend work use older numbers; the plan table above is always the truth.) "List" is the order the owner's change lists arrived in.
 
 | List | # | Request (short) | Status | Where |
 |---|---|---|---|---|
-| 13 | 1 | No visitor theme switching (only Becca and the seasons choose); keep adding more themes | DONE (plan changed) | v10.12 rule; more themes v10.18 |
-| 13 | 2 | Use Supabase | DONE (decision recorded; owner creates the free account) | v10.15 |
-| 13 | 3 | Only admins can see the admin panel, not customers | PARTLY DONE: no public link, no public sign-up (v10.12); real server-side lock comes with sign-in | v10.15 |
-| 13 | 4 | Add all 10 suggested things to the roadmap | DONE | v10.18 to v10.23, photos, launch |
+| 14 | 1 | How many versions are left in the roadmap / backlog? | DONE (answered in section 1g) | v10.14 |
+| 14 | 2 | "Remember me" on the admin sign-in (tick box below the sign-in) | DONE | v10.14 |
+| 13 | 1 | No visitor theme switching (only Becca and the seasons choose); keep adding more themes | DONE (plan changed) | v10.12 rule; more themes v10.19 |
+| 13 | 2 | Use Supabase | DONE (decision recorded; owner creates the free account) | v10.16 |
+| 13 | 3 | Only admins can see the admin panel, not customers | PARTLY DONE: no public link, no public sign-up (v10.12); real server-side lock comes with sign-in | v10.16 |
+| 13 | 4 | Add all 10 suggested things to the roadmap | DONE | v10.19 to v10.24, photos, launch |
 | 13 | 5 | Start customising the home page, away from admin things | DONE (round 1 v10.12; round 2 v10.13: Meet Becca, season-aware greeting and strip) | v10.12, v10.13 |
 | 12 | 1 | Supabase or Firebase? (free for now, pay later) | DONE (answered in section 1d: Supabase) | v10.11 |
 | 12 | 2 | Top 10 things to add | DONE (answered in section 1e) | v10.11 |
@@ -109,16 +121,16 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 | 12 | 5 | "Tell me what you will do in the next 5 versions" | DONE (section 1c) | v10.11 |
 | 11 | 1 | "What would you do next?" | DONE (answered in section 1b; first pick built) | v10.10 |
 | 11 | 2 | Automatic seasons: all dates in one section with a dropdown to pick the season to change | DONE | v10.10 |
-| 10 | 1 | Sign in so it remembers people (admins and customers); Google, Apple, etc. | PARTLY DONE: device-only "remember my details" (v10.13); real sign-in is BACKEND | v10.13, v10.15 |
-| 10 | 2 | Full account page: whole account, past orders, customise, all info | BACKEND | v10.16 |
+| 10 | 1 | Sign in so it remembers people (admins and customers); Google, Apple, etc. | PARTLY DONE: device-only "remember my details" (v10.13); real sign-in is BACKEND | v10.13, v10.16 |
+| 10 | 2 | Full account page: whole account, past orders, customise, all info | BACKEND | v10.17 |
 | 10 | 3 | Preview of the moving effects when changing theme or ticking the box | DONE | v10.8 |
 | 10 | 4 | Theme changes automatically for every season | DONE | v10.9 |
 | 10 | 5 | Neat roadmap + backlog with a table of contents | DONE | v10.8 (this file) |
 | 10 | 6 | Emojis not moving when the theme changes: fix | DONE | v10.8 |
 | 9 | 1 | Father's Day + moving decorations on occasion themes only | DONE | v10.7 (made to always move in v10.8) |
-| 8 | 1 | Forgot password with a code | DONE (admin accounts) | v10.6; real email / SMS in v10.15 |
+| 8 | 1 | Forgot password with a code | DONE (admin accounts) | v10.6; real email / SMS in v10.16 |
 | 8 | 2 | Phone country-code dropdown, default +27 | DONE | v10.6 |
-| 8 | 3 | Themes for Christmas, Valentine's, Braai Day, every occasion | DONE | v10.6 (+ Father's Day v10.7); more in v10.18 |
+| 8 | 3 | Themes for Christmas, Valentine's, Braai Day, every occasion | DONE | v10.6 (+ Father's Day v10.7); more in v10.19 |
 | 7 | 1 | Rewrite or confirm the 6 FAQ answers | WAITING | owner sends the info (section 3) |
 | 7 | 2 | Add real reviews | WAITING | owner sends the info (section 3) |
 | 6 | 1 | Get it online | PLANNED | LAST (v11) |
@@ -127,10 +139,10 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 | 6 | 4 | Custom Order form | DONE | v10.2 |
 | 6 | 5 | FAQ and reviews | DONE (needs owner's answers) | v10.3 |
 | 6 | 6 | Allergen / dietary tags with filters | DONE (owner must tag products) | v10.4 |
-| 6 | 7 | Admin that works across devices | BACKEND | v10.15 |
+| 6 | 7 | Admin that works across devices | BACKEND | v10.16 |
 | 5 | 1 | Instagram + Facebook in the footer | DONE (needs real handles) | v10.5 |
 | 5 | 2 | Glass-style best-seller cards + choose how many | DONE | v10.5 |
-| 5 | 3 | Most recent + most popular section | DONE (popular = owner ticks it for now; automatic ranking in v10.17) | v10.9 |
+| 5 | 3 | Most recent + most popular section | DONE (popular = owner ticks it for now; automatic ranking in v10.18) | v10.9 |
 
 The owner re-sent the list 10 file once more with the same six items and no new requests (so nothing new was added); items 3, 4, 5, 6 are now all DONE, items 1 and 2 wait for the backend.
 
@@ -149,17 +161,17 @@ Nothing below can be built or guessed by us. Send it whenever you have it.
 | (Optional) your own Christmas / Valentine's / ... greeting and top-strip lines | Season wording (built-in text is used until you write yours) | Admin > Automatic seasons |
 | Real prices and product list (today they are SAMPLE prices) | Menu, cart totals | Admin > Menu items |
 | Product photos | Replace emoji | when ready (see plan, "When photos exist") |
-| Decision on "Sign in with Apple" | It needs an Apple Developer account (paid, about US$99 per year). Google sign-in and email sign-in are free. If you skip Apple, we ship Google + email first | before v10.15 |
-| Create a free Supabase account (decision made: Supabase, list 13). We walk you through it | v10.15 | before v10.15 |
-| For the top-10 items: real lead times and daily limit, delivery areas and fees, which payment provider (Yoco / PayFast / Ozow), voucher and loyalty rules | v10.19 to v10.22 | when we reach each one |
+| Decision on "Sign in with Apple" | It needs an Apple Developer account (paid, about US$99 per year). Google sign-in and email sign-in are free. If you skip Apple, we ship Google + email first | before v10.16 |
+| Create a free Supabase account (decision made: Supabase, list 13). We walk you through it | v10.16 | before v10.16 |
+| For the top-10 items: real lead times and daily limit, delivery areas and fees, which payment provider (Yoco / PayFast / Ozow), voucher and loyalty rules | v10.20 to v10.23 | when we reach each one |
 
 ## 4. Needs the backend
-A static website (what we have now) cannot keep an account for someone on all their devices, send real emails or SMS, or let you sign in with Google or Apple. Everything below waits for v10.15, which adds a hosted backend (login, database, email). Until then: carts, details and admin changes live on one device only.
-- Sign in with Google / Apple / email, and being remembered on every device (v10.15)
-- Customer and admin "My account" page with past orders (v10.16)
-- Real forgot-password link or SMS code instead of the admin handing over a code (v10.15)
-- Admin changes going live instantly for everyone, no manual Publish (v10.15)
-- Orders saved online, order statuses, printable slips, reports (v10.17)
+A static website (what we have now) cannot keep an account for someone on all their devices, send real emails or SMS, or let you sign in with Google or Apple. Everything below waits for v10.16, which adds a hosted backend (login, database, email). Until then: carts, details and admin changes live on one device only.
+- Sign in with Google / Apple / email, and being remembered on every device (v10.16)
+- Customer and admin "My account" page with past orders (v10.17)
+- Real forgot-password link or SMS code instead of the admin handing over a code (v10.16)
+- Admin changes going live instantly for everyone, no manual Publish (v10.16)
+- Orders saved online, order statuses, printable slips, reports (v10.18)
 - Small interim idea that does NOT need the backend: remember the customer's name, phone and last order details on their own device so they don't retype (DONE v10.13, this device only)
 
 ## 5. Ideas parking lot
@@ -175,7 +187,7 @@ Not scheduled. Tell us which to pull into a version. The ranked **top 10** is in
 - Seasonal greeting / specials text that changes with the season theme (DONE v10.13)
 - Let the owner edit the Easter / Mother's Day / Father's Day windows (today only the fixed-date seasons have editable dates; those three are worked out from the calendar)
 - Reserve space for the two strips so the page does not jump on first load
-- Customer accounts only if repeat-order history is wanted (it is now, see v10.16)
+- Customer accounts only if repeat-order history is wanted (it is now, see v10.17)
 - Finish the reference review of `online_bakery_marketplace_v2` and verify licences
 - Notes from the Keagan reference repos (what we borrowed, what we skip) are in `ROADMAP_ARCHIVE.md`
 

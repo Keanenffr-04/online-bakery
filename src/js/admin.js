@@ -15,16 +15,24 @@
   const admins = () => J("sb_admins", []), saveA = a => S("sb_admins", a);
   const find = (a, u) => a.find(x => x.u.toLowerCase() === u.toLowerCase());
   let state = { open: { theme: true }, tab: "orders", note: "", authTab: "login", edit: null, page: "index.html", draft: null, data: null };
-  const me = () => sessionStorage.getItem("sb_session");
+  // v10.14: "Remember me". The sign-in normally lasts until the tab closes (sessionStorage). With the tick box it is also kept on this
+  // device for 30 days (localStorage "sb_keep" = {u, exp}); me() brings it back. Logging out removes both. Like the whole login, this is a
+  // convenience lock on this browser, not server security (that comes with Supabase).
+  const KEEP_DAYS = 30;
+  const keep = () => { const k = J("sb_keep", null); return k && k.u && k.exp > Date.now() ? k : null; };
+  const me = () => { let u = sessionStorage.getItem("sb_session"); if (!u) { const k = keep(); if (k) { u = k.u; sessionStorage.setItem("sb_session", u); } else if (J("sb_keep", null)) localStorage.removeItem("sb_keep"); } return u; };
+  const keepFor = u => S("sb_keep", { u, exp: Date.now() + KEEP_DAYS * 864e5 });
   const flash = t => { state.note = t; render(); };
 
   async function seed() { if (!admins().length) saveA([await mk("admin", "admin1", { root: true, mustChange: true })]); }
 
-  async function login(u, p) {
+  async function login(u, p, remember) {
     const a = find(admins(), u);
     if (!a || a.h !== await hash(p, a.salt)) return flash("Wrong username or password.");
     if (a.status !== "active") return flash("This account is waiting for approval by an admin.");
-    sessionStorage.setItem("sb_session", a.u); state.note = ""; render();
+    sessionStorage.setItem("sb_session", a.u); state.note = "";
+    if (remember) { keepFor(a.u); localStorage.setItem("sb_admin_u", a.u); } else { localStorage.removeItem("sb_keep"); localStorage.removeItem("sb_admin_u"); }
+    render();
   }
   async function signup(u, p) {
     const all = admins();
@@ -73,8 +81,9 @@
     if (state.authTab === "forgot" || state.authTab === "reset") return recoverView();
     return `<div class="adm-card adm-login"><h1>Admin login</h1><p class="muted">For the bakery team only.</p>
     ${state.note ? `<div class="msg">${esc(state.note)}</div>` : ""}
-    <form data-form="login"><label>Username</label><input name="u" autocomplete="username" required>
+    <form data-form="login"><label>Username</label><input name="u" autocomplete="username" value="${esc(localStorage.getItem("sb_admin_u") || "")}" required>
     <label>Password</label><input name="p" type="password" autocomplete="current-password" required>
+    <label class="chk"><input type="checkbox" name="remember" ${localStorage.getItem("sb_admin_u") ? "checked" : ""}><span>Remember me on this device <span class="muted">(stay signed in for ${KEEP_DAYS} days)</span></span></label>
     <p style="margin-top:1rem"><button class="btn" type="submit">Log in</button></p></form>
     <p class="muted"><button type="button" class="linkbtn" data-act="auth" data-v="forgot">Forgot your password?</button></p>
     <p class="muted"><a href="index.html">Back to the website</a></p></div>`;
@@ -268,7 +277,7 @@
   /* ---------- events ---------- */
   app.addEventListener("submit", async e => {
     e.preventDefault(); const f = e.target, v = Object.fromEntries(new FormData(f)), k = f.dataset.form;
-    if (k === "login") return login(v.u.trim(), v.p);
+    if (k === "login") return login(v.u.trim(), v.p, !!v.remember);
     if (k === "signup") return signup(v.u.trim(), v.p);
     if (k === "forgot") return requestReset(v.u.trim());
     if (k === "reset") { state.resetUser = v.u.trim(); return useReset(v.u.trim(), v.code, v.p); }
@@ -290,7 +299,7 @@
     if (k === "account") {
       const all = admins(), a = find(all, me());
       if (a.h !== await hash(v.cur, a.salt)) return go("account", "Current password is wrong.");
-      if (!a.root && v.u.trim() !== a.u) { if (!ok(v.u.trim()) || find(all, v.u.trim())) return go("account", "That username is not available."); a.u = v.u.trim(); sessionStorage.setItem("sb_session", a.u); }
+      if (!a.root && v.u.trim() !== a.u) { if (!ok(v.u.trim()) || find(all, v.u.trim())) return go("account", "That username is not available."); a.u = v.u.trim(); sessionStorage.setItem("sb_session", a.u); if (keep()) keepFor(a.u); if (localStorage.getItem("sb_admin_u")) localStorage.setItem("sb_admin_u", a.u); }
       if (v.p) { if (v.p.length < 6) return go("account", "New password must be 6+ characters."); a.salt = uid() + uid(); a.h = await hash(v.p, a.salt); delete a.mustChange; }
       saveA(all); return go("account", "Account updated.");
     }
@@ -337,7 +346,7 @@
   app.addEventListener("click", async e => {
     const b = e.target.closest("button[data-act]"); if (!b) return; const a = b.dataset.act, v = b.dataset.v, id = b.dataset.id, u = b.dataset.u;
     if (a === "auth") { state.authTab = v; state.note = ""; return render(); }
-    if (a === "logout") { sessionStorage.removeItem("sb_session"); sessionStorage.removeItem("sb_preview"); return render(); }
+    if (a === "logout") { sessionStorage.removeItem("sb_session"); localStorage.removeItem("sb_keep");   /* the username stays filled in (sb_admin_u) until a login without the tick */ sessionStorage.removeItem("sb_preview"); return render(); }
     if (a === "psold") { const p = state.data.products.find(x => x.id === id); if (SB.isSoldOut(p)) delete p.soldOut; else p.soldOut = SB.today(); saveProducts(); return go("menu", p.name + (p.soldOut ? " is marked sold out for today." : " is back in stock.")); }
     if (a === "tab") { state.tab = v; if (v === "look") await prepLook(); if (v === "menu") state.edit = null; if (v !== "look") sessionStorage.removeItem("sb_preview"); return go(v); }
     if (a === "odel") { S("sb_orders", J("sb_orders", []).filter(x => x.id !== id)); return go("orders"); }
