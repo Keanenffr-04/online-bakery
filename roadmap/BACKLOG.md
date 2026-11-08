@@ -29,6 +29,7 @@ Append-only. Never delete. Newest at the bottom. What is still to do is in [`ROA
 | [v10.13](#v10-13) | "Meet Becca" section, season-aware greeting + top strip, "remember my details" on this device | 2026-11-08 |
 | [v10.14](#v10-14) | Admin "Remember me" tick box + versions-left answer (owner list 14) | 2026-11-08 |
 | [v10.15](#v10-15) | Manage menu sections (add / rename / reorder / hide / delete) + "New" badge on recent items | 2026-11-08 |
+| [v10.16](#v10-16) | Menu items list as a dropdown + Supabase walkthrough (owner list 16) | 2026-11-08 |
 
 Full details for each version follow, oldest first.
 
@@ -304,3 +305,13 @@ The owner's change-list file for this version was empty (item 1 blank), so this 
 Tests (headless browser, file://, 1100px and 360px): added "Cookies", renamed "Small Treats" to "Treats", moved Cookies above Bread, hid Bread: admin order, Menu page buttons, header dropdown and Home tiles all matched and Bread's items disappeared; `?c=bread` fell back to All; Delete is disabled on a section with items; a new item in the new section got the New badge and the admin "new" tag; setting the badge to Off removed every badge; the section manager has no sideways scroll at 360px; every link from `preview.html` loads with no script errors (the only console errors in the sandbox were Google Fonts being unreachable offline, as before).
 
 Notes: like the rest of the admin, section changes are saved on this device until you **Publish** (replace `products.json` and `offline-data.js` together, and `site-settings.json` if you changed the badge length). The sample data files were not changed, so `offline-data.js` did not need regenerating. When the Supabase version (v10.16) arrives, sections move to the database with everything else.
+
+<a id="v10-16"></a>
+## v10.16: Items dropdown + Supabase walkthrough (done, 2026-11-08)
+Owner list 16 (2 items; nothing extra to add to the backlog):
+1. **Menu items as a dropdown.** In Admin > Menu the list of items is now a collapsible "Menu items" section (title + "N items") under the "Menu sections" section, built with the same `sec()` helper as the rest of the admin. Sections stay open by default (that is the new tool); items start folded and remember open / closed while the admin is in use. Edit, Sold out today and Delete work exactly as before, and the Add / Edit form stays on the left. No change for customers.
+2. **Supabase explained.** No code. A plain-English walkthrough is in `ROADMAP.md` section 1h: what it is, why the site needs it, what it gives us, what it costs (free plan limits and the two catches, checked against 2026 pricing pages), the six steps the owner does (about 10 minutes), what v10.17 will do, privacy (POPIA) and what could go wrong.
+
+Because owner list 16 took the v10.16 slot, every later version slid back by one: **Supabase is now v10.17**, My account + Privacy v10.18, order tools v10.19, more themes v10.20, calendar + delivery v10.21, price guide + Order again v10.22, vouchers + loyalty v10.23, payments v10.24, broadcast list v10.25. (`ROADMAP.md` is always the truth; older backlog notes use older numbers.)
+
+Tests (headless browser, file://): sections open and items folded on first visit, sections listed above items; opening items, then Sold out today, keeps both open; Edit and Save still work; no sideways scroll at 1100px or 360px; no script errors. `offline-data.js` did not need regenerating (no data files changed).
