@@ -1,10 +1,10 @@
 # online-bakery 🐇🍰
 Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
 
-**Current version:** v10.21.1. The latest three versions:
+**Current version:** v10.21.2. The latest three versions:
+- **v10.21.2** (patch): a list of 60 ideas to make the website better than the others. Pick the numbers you like (roadmap section 4c). Nothing on the website itself changed.
 - **v10.21.1** (patch): a plain-English roadmap, backlog and this README.
 - **v10.21:** order calendar (notice days, days off, blocked dates, daily limit) and delivery or collection fees by area. The numbers are samples until you set yours.
-- **v10.20:** five more occasion themes and ready-made WhatsApp messages for each order status.
 
 Every version, in plain English, is in [`roadmap/BACKLOG.md`](roadmap/BACKLOG.md).
 

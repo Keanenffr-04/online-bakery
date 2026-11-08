@@ -1,6 +1,6 @@
 # 🗺️ Roadmap: what's next and what we need from you
 
-**Where we are:** v10.21.1 &nbsp;|&nbsp; **Next up:** v10.22 (cake price guide + "Order again" on the thank-you page) &nbsp;|&nbsp; **Rule:** 2 to 3 things per version.
+**Where we are:** v10.21.2 &nbsp;|&nbsp; **Next up:** v10.22 (cake price guide + "Order again" on the thank-you page) &nbsp;|&nbsp; **Rule:** 2 to 3 things per version.
 
 *This page is written for Becca. No website or coding knowledge needed. Words you might not know are explained in the "Words explained" list in the [README](../README.md). Finished work is in [`BACKLOG.md`](BACKLOG.md).*
 
@@ -92,6 +92,7 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 
 | List | # | Request (short) | Status | Where |
 |---|---|---|---|---|
+| - | - | (Change list: give me a list of everything we should still add to make the website better than the others, and I will say what I like. Only 2 changes per patch, the rest to the backlog. The list is in section 4c; nothing was built) | DONE | v10.21.2 |
 | - | - | (Change list: tidy the roadmap and backlog so Becca can read them; add what is useful to the README. Two changes, ideas for later collected in section 4b) | DONE | v10.21.1 |
 | - | - | (Owner said "follow the roadmap" and asked for the next 5 versions, so the version marked NEXT was built with placeholder numbers: order calendar + delivery fees; next five listed in the plan, section 1) | DONE | v10.21 |
 | - | - | (No change list came with "start next v/patch", so the version marked NEXT was built: five more occasion themes + WhatsApp order-status buttons) | DONE | v10.20 |
@@ -156,7 +157,7 @@ Older lists (1 to 5) are all finished; see `ROADMAP_ARCHIVE.md` and `BACKLOG.md`
 
 <a id="ideas"></a>
 ## 4. Ideas for later (not scheduled)
-Tell us which of these to pull into a version. The ranked top 10 is in guide 5d.
+Tell us which of these to pull into a version. The newest and biggest list is **4c** (60 numbered ideas, pick by number). The ranked top 10 is in guide 5b.
 
 ### 4a. From your earlier lists
 Not scheduled. Tell us which to pull into a version. The ranked **top 10** is in guide 5b; the older ideas are below.
@@ -223,6 +224,85 @@ Every version leaves a few "good idea, but not now" notes. They used to be sprea
 - A one-page printable cheat sheet for the day-to-day admin jobs
 - Screenshots in the README next to each admin job
 - A short "What's new" note in admin after each version
+
+### 4c. "Better than the other bakery sites": the full list (new in v10.21.2)
+You asked for everything we think the website could still add. Nothing here is built yet. **Tell us the numbers you like** (for example "1, 11, 36") and we will slot them in, two per version. ⭐ = our top picks. 📅 = already on the plan above. ⏳ = we need something from you first. **S / M / L** = a small, medium or large amount of work.
+
+**A. Get more orders (people find you and trust you)**
+1. ⭐ **Review link.** When an order is done, the "thank you" WhatsApp message carries a link to a short review form. You approve each review before it shows. (Reviews are empty today and would otherwise be typed by hand.) *M*
+2. **Real photos on every item and an "Our work" gallery.** 📅 ⏳ waits for your photos. *M*
+3. **A page for each item:** big photo, full description, sizes, "serves 8 to 10", allergens and an Add button. *M*
+4. **Shop status banner:** "Taking orders" or "On holiday until 3 January", with one tick that pauses ordering. *S*
+5. **"Order by Thursday for a Saturday"** countdown on Home and the Cart, worked out from your order calendar. *S*
+6. **Instagram grid on Home** (after launch). *M*
+7. **Wedding and events page:** packages, a tasting-box option and an enquiry form. ⏳ needs your packages. *M*
+8. **Office and bulk orders:** a simple form for treat boxes with a minimum quantity. *S*
+9. **Google Business Profile, search tidy-up, share picture, your own web address.** 📅 v11. *M*
+10. **A page for each area you deliver to,** so local searches find you (after launch). *S*
+
+**B. Make ordering easier**
+11. ⭐ **Cake price guide:** size, servings and flavour give an estimated price. 📅 v10.22 ⏳ needs your sizes and prices. *M*
+12. **Cake builder, step by step:** size, flavour, filling, icing, message, with the price updating as you go. Builds on 11. *L*
+13. ⭐ **Upload an inspiration photo with a custom order.** You see it in the admin next to the order. *M*
+14. **Extras in the cart:** candles, a card, a topper, a message on the cake. *S*
+15. **"This is a gift":** recipient's name, a gift-card message and delivery to a different address. *S*
+16. **Party boxes and bundles** at a bundle price (for example a cake and 12 cupcakes). *M*
+17. **Regular orders** such as "every Friday" for bread or lunchbox treats. You confirm each one. *M*
+18. **Favourites heart** on items, kept on the phone or in the account. *S*
+19. **"Tell me when it's back"** on sold-out items (one tap to WhatsApp you). *S*
+20. **Limited drops:** an item that starts and ends on set dates with a stock number, such as 20 Easter eggs. *M*
+21. **How many are left today** for an item ("only 3 left"), going beyond "Sold out today". *M*
+22. **Different notice days per item** (cakes 3 days, cookies 1 day). *M*
+23. **Delivery fee by distance or postcode,** a time slot and an address search. *L*
+24. **"Order again" on the thank-you page.** 📅 v10.22. *S*
+25. **Birthday and occasion reminders:** a customer saves a date, you get a list, and they can opt in to a nudge (POPIA-friendly). *M*
+
+**C. Payments**
+26. **Deposits and card payments** (Yoco, PayFast or Ozow). 📅 v10.24 ⏳ needs a payment account. *L*
+27. ⭐ **EFT, SnapScan or Capitec Pay details on the thank-you page,** plus "upload your proof of payment", so you stop chasing people. *M*
+28. **Quote link:** you send a custom-cake quote, the customer taps Accept and pays the deposit. Needs 26. *L*
+29. **Gift vouchers and a loyalty reward.** 📅 v10.23. *M*
+30. **Refer-a-friend reward.** Needs 29. *M*
+
+**D. Keep customers informed**
+31. **An order number on the thank-you page and a "track my order" link** that works without an account. *M*
+32. **Automatic confirmation the moment an order is saved.** Email needs your email sender; automatic WhatsApp needs a paid WhatsApp Business service. ⏳ *L*
+33. **Specials list** (customers who tick "send me specials", with an easy unsubscribe). 📅 v10.25. *M*
+34. **Editable WhatsApp wording for each order status.** *S*
+
+**E. Save Becca time (admin)**
+35. ⭐ **New-order alert:** a sound or phone notification when an order arrives, so the admin does not have to stay open. Works best together with 47. *M*
+36. ⭐ **Bake sheet:** "what to make for Saturday", totalled across all orders (3 chocolate cakes, 24 cupcakes) and printable. *M*
+37. **Shopping list** worked out from the bake sheet and your recipes. ⏳ needs your recipes. *L*
+38. **Costing helper:** type in ingredient costs and get a suggested price and the profit on each item. ⏳ *L*
+39. **Customer list with notes:** allergies, favourite flavours, birthdays, who orders again and again. *M*
+40. **Calendar grid of orders,** and block a whole holiday week at once. *M*
+41. **Quote and invoice PDF** with your logo. *M*
+42. **One tap to "mark ready and open WhatsApp".** *S*
+43. **Monthly report:** sales, best sellers, busiest weekdays and repeat customers. *M*
+44. **"What's new" note in the admin,** a printable one-page cheat sheet and screenshots in the README. *S*
+45. **Fix the old "Publish" and "Save to this device" wording in the admin** (already on the to-fix list). *S*
+
+**F. Safe, fast and dependable**
+46. ⭐ **A proper test against your real online database.** Everything so far was tested against a pretend database because our workshop has no internet. We would walk through it with you (about 20 minutes): place an order, change its status, sign up as a customer, delete an account, check "Most popular". Do this before launch. *S*
+47. **Install on the home screen like an app,** and keep the menu and cart working when the internet is flaky or during load shedding. *M*
+48. **Spam protection** on orders and sign-up, plus a keep-alive so the free online database never pauses. *M*
+49. **Backup reminder** (or a weekly backup file) because the free plan has no automatic backups. *S*
+50. **Screen-reader, keyboard and small-phone check.** *M*
+51. **Afrikaans version** with a language switch. ⏳ needs translations. *L*
+52. **Allergen details per item** (contains milk, eggs, gluten, nuts; a statement about your kitchen). Stronger than today's tags. ⏳ only what is definitely true. *M*
+53. **Privacy-friendly visitor statistics** (which pages people look at and where they leave). *M*
+54. **Photos that resize themselves** so the site stays fast once real photos exist. *M*
+
+**G. Brand and content**
+55. **A real About page with your story** (today it says "coming soon"). ⏳ *S*
+56. **Care and storage page** ("keep in the fridge, eat within 3 days") with a QR code on a card in the box. *S*
+57. **"How much cake do I need?"** servings guide. *S*
+58. **Seasonal landing pages** that appear by themselves (a Mother's Day pre-order page in May). *M*
+59. **A QR code** for flyers, boxes and your Instagram bio that opens the menu or the review form. *S*
+60. **Tasting boxes:** a small sample box customers can order before a big cake. *S*
+
+**Our suggestion for the next versions:** v10.22 stays as planned (price guide + Order again). After that, the best "two at a time" pairs are **46 + 48** (make it safe and real before anyone relies on it), **36 + 35** (the admin starts saving you hours), and **1 + 13** (more trust and fewer messages back and forth).
 
 ---
 

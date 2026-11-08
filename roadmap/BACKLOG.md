@@ -2,7 +2,7 @@
 
 *Written for Becca. This page is the list of **finished** work. What is still to do is in [`ROADMAP.md`](ROADMAP.md). New entries are added at the bottom and nothing is ever deleted.*
 
-**Latest version:** v10.21.1
+**Latest version:** v10.21.2
 
 ## Contents
 1. [What the website can do today](#today)
@@ -83,6 +83,7 @@ Oldest first. Click a version to jump to its detailed record. A version like **v
 | [v10.20](#v10-20) | 2026-11-08 | Five more occasion themes (New Year, Women's Day, Black Friday, Diwali, Eid) and ready-made WhatsApp messages for each order status. |
 | [v10.21](#v10-21) | 2026-11-08 | Order calendar (notice days, days off, blocked dates, daily limit) and delivery or collection fees by area. |
 | [v10.21.1](#v10-21-1) | 2026-11-08 | Patch: this tidy-up. A plain-English roadmap, backlog and README for Becca. |
+| [v10.21.2](#v10-21-2) | 2026-11-08 | Patch: the big "what else could we add" list (60 ideas, pick by number). No website change. |
 
 ---
 
@@ -495,3 +496,12 @@ Files: `README.md`, `roadmap/ROADMAP.md`, `roadmap/BACKLOG.md`, `roadmap/ROADMAP
 Checks: every link between the files (contents lists, version links, section references) was checked; no entry was removed from the backlog (all version records are still there, in order); the old roadmap is in the archive in full.
 Notes: (a) the admin screen still says "Save to this device. Then use Publish" and "after you Publish" although saving has gone live straight away since v10.17; the README tells Becca to ignore that wording and the fix is listed in the roadmap (section 4b); (b) "Words explained" lives in the README, the roadmap and backlog point to it.
 Pushed to the backlog (not built), also in `ROADMAP.md` section 4b: a one-page printable cheat sheet for the day-to-day admin jobs; screenshots in the README next to each admin job; a short "What's new" note in admin after each version; fixing the out-of-date Publish wording in admin.
+
+<a id="v10-21-2"></a>
+## v10.21.2: "Better than the others" ideas list (done, 2026-11-08)
+Owner change list (`Changes for next version.md`): one request, a list of everything we think should still be added to make the website better than other bakery sites (the owner picks what they like), plus the standing rule of 2 changes per patch with the rest in the backlog. Docs-only patch: no website code or database changed, so **nothing needs to be run in Supabase** and `offline-data.js` did not change.
+1. **The list.** `ROADMAP.md` section 4c holds 60 numbered ideas in seven groups (get more orders; make ordering easier; payments; keep customers informed; save Becca time in the admin; safe, fast and dependable; brand and content). Each has a plain-English line, a size (S / M / L), a star for our top picks, a calendar mark when it is already planned and an hourglass when we need something from the owner. The ideas were checked against what is built so nothing already done is listed as new (for example the order calendar, delivery fees, statuses, WhatsApp status messages and Most popular are not repeated). Items 11, 24, 26, 29, 33 and 2 / 9 are the already-planned ones.
+Files: `roadmap/ROADMAP.md` (section 4c, "Where we are", tracker row, pointer in 4), `roadmap/BACKLOG.md`, `README.md`, `docs/AI_HANDOFF.md`, `VERSION`.
+Checks: the new links and the anchor `#v10-21-2` resolve; no existing roadmap or backlog text was removed.
+Notes: (a) Honest flag, item 46: every Supabase-backed feature since v10.17 (orders, accounts, statuses, calendar limit, Most popular) was only tested against a pretend database; a short real-world test with the owner is the most valuable next step before launch. (b) The owner's list contained one request, so nothing else was added to this patch (the "Publish" wording fix is item 45).
+Pushed to the backlog (not built): all 60 ideas in `ROADMAP.md` section 4c.
