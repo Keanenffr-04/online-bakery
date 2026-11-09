@@ -1,7 +1,8 @@
 # online-bakery 🐇🍰
 Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
 
-**Current version:** v10.26.8. The latest three versions:
+**Current version:** v10.26.9. The latest three versions:
+- **v10.26.9:** (your list 27, item 1, step 2 of 3) the **delivery-area list now holds all the areas of Gauteng** (118 of them: Johannesburg, Sandton, Centurion, Pretoria, Boksburg, Krugersdorp, Vereeniging and so on) instead of "Close to the bakery / Further out". **The fees are samples** (R 80 Johannesburg and Tshwane, R 90 East Rand, R 110 West Rand, R 130 Vaal) until you set yours in Admin > Ordering & payment > Order calendar & delivery. Nothing to update in the database. Grouping the list by region comes in v10.26.10.
 - **v10.26.8:** (your list 27, item 2, step 1 of 3) the **delivery map now shows by itself** under the address box a moment after the customer stops typing. There is no button to press any more (a small **Try again** button only appears if the free map service did not answer). Changing the delivery area refreshes it. The Gauteng areas (v10.26.9 and v10.26.10) come next. Nothing to update in the database.
 - **v10.26.7:** (your list 25, item 3, step 2 of 3) under the **delivery address** box the customer can press **Show on map** (or just click out of the box) and see the spot on a **free OpenStreetMap map**, so a typo is easy to spot. It is only a check: an order is never blocked by it. Cart and Custom Order. The map later became automatic (v10.26.8). Nothing to update in the database.
 - **v10.26.6:** (your list 25, item 3, step 1 of 3) when a customer picks **Delivery** they now **type their delivery address** on the Cart and Custom Order. It goes into the WhatsApp message and the saved order, and shows next to the order in the admin and on the printed slip. The map (v10.26.7) was added next. Nothing to update in the database.
@@ -53,7 +54,7 @@ When you press **Save**, the change is live for everyone straight away. *(Some w
 | See how many orders this week or month | The **Numbers** box at the top of Orders (it can download a spreadsheet) |
 | Mark something as sold out for today | Admin > **Menu items** > **Sold out today** (it switches itself back on at midnight) |
 | Add a cake, change a price or hide an item | Admin > **Menu items** (use **Menu sections** to add or reorder the groups) |
-| Close a day, set notice days, a daily limit or delivery fees | Admin > **Ordering & payment** > **Order calendar & delivery** |
+| Close a day, set notice days, a daily limit or delivery fees (one per area; **Add the missing Gauteng areas** adds any you removed) | Admin > **Ordering & payment** > **Order calendar & delivery** |
 | Add my bank / SnapScan / Capitec Pay details for customers | Admin > **Ordering & payment** > **How to pay** |
 | Change cake sizes, flavours or prices in the price guide | Admin > **Ordering & payment** > **Cake price guide** |
 | Change the look, the season dates or the Home page order | Admin > **Theme & layout** |

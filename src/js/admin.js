@@ -429,6 +429,8 @@
     ${f("pay-note", "Note at the bottom", p.note, "", 200)}
     <p class="muted">Customers see the box after they send an order, with a Copy button on each number and their name as the payment reference. Proof-of-payment upload comes in a later patch (v10.26.2).</p>`;
   }
+  // v10.26.9: Gauteng areas that are not on Becca's list yet (matched by name, any capitals). Adding them never changes an area she already has.
+  const gMissing = d => { const have = new Set((d.areas || []).map(a => String(a.name).trim().toLowerCase())); return SB.GAUTENG.filter(a => !have.has(a.name.toLowerCase())); };
   function rulesBox(s) {
     const c = s.calendar || {}, d = s.delivery || {}, DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], rng = (n, cur, f) => Array.from({ length: n + 1 }, (_, i) => `<option value="${i}" ${i === cur ? "selected" : ""}>${f(i)}</option>`).join("");
     const nice = iso => { try { return new Date(iso + "T12:00").toLocaleDateString("en-ZA", { weekday: "short", day: "numeric", month: "long", year: "numeric" }); } catch (e) { return iso; } };
@@ -444,7 +446,7 @@
     <p class="adm-sub">Delivery or collection</p>
     <label class="chk"><input type="checkbox" data-act="dl-on" ${d.enabled !== false ? "checked" : ""}>Ask delivery customers for their area and add the fee</label>
     <ul class="adm-list">${(d.areas || []).map((a, i) => `<li><div class="csec"><input data-act="dl-an" data-i="${i}" value="${esc(a.name)}" maxlength="40" aria-label="Area name" placeholder="Area name"><input type="number" min="0" max="5000" data-act="dl-af" data-i="${i}" value="${+a.fee || 0}" aria-label="Fee in rand"></div><button class="btn btn--sm btn--ghost" type="button" data-act="dl-rm" data-i="${i}" aria-label="Remove ${esc(a.name)}">Remove</button></li>`).join("") || "<li>No areas yet. Delivery customers will not be asked for one.</li>"}</ul>
-    <p><button class="btn btn--sm btn--ghost" type="button" data-act="dl-add">Add an area</button></p>
+    <p><button class="btn btn--sm btn--ghost" type="button" data-act="dl-add">Add an area</button>${gMissing(d).length ? ` <button class="btn btn--sm btn--ghost" type="button" data-act="dl-gp">Add the missing Gauteng areas (${gMissing(d).length})</button>` : ""}</p>
     <div class="adm-row"><div><label>Free delivery on orders from R <span class="muted">(0 = never free)</span></label><input type="number" min="0" data-act="dl-free" value="${+d.freeOver || 0}"></div></div>
     <label>Collection message <span class="muted">(shown when a customer picks Collection)</span></label><input data-act="dl-note" maxlength="160" value="${esc(d.collectionNote || "")}">
     <p class="muted">Cart orders add the fee to the total. Custom orders show \"from R fee\" and you confirm the final fee in your quote.</p>`;
@@ -850,11 +852,12 @@
       else if (a === "pg-fadd") g.flavours = [...g.flavours, { name: "", extra: 0 }].slice(0, 15); else g.flavours = g.flavours.filter((_, i) => i !== +b.dataset.i);
       draftKey(); go("shop"); return;
     }
-    if (a === "cal-blk-add" || a === "cal-blk-rm" || a === "dl-add" || a === "dl-rm") {   // v10.21
+    if (a === "cal-blk-add" || a === "cal-blk-rm" || a === "dl-add" || a === "dl-rm" || a === "dl-gp") {   // v10.21
       const sd = state.draft; if (!sd) return; const c = sd.calendar = sd.calendar || {}, d = sd.delivery = sd.delivery || {}; state.open.rules = true;
       if (a === "cal-blk-add") { const iso = (document.getElementById("cal-blk") || {}).value; if (!/^\d{4}-\d{2}-\d{2}$/.test(iso || "")) return; c.blocked = [...new Set([...(c.blocked || []), iso])].sort(); c.draft = false; }
       else if (a === "cal-blk-rm") { c.blocked = (c.blocked || []).filter(x => x !== v); c.draft = false; }
-      else if (a === "dl-add") { d.areas = [...(d.areas || []), { name: "", fee: 0 }].slice(0, 12); d.draft = false; }
+      else if (a === "dl-add") { d.areas = [...(d.areas || []), { name: "", fee: 0 }].slice(0, 150); d.draft = false; }
+      else if (a === "dl-gp") { const add = gMissing(d); d.areas = [...(d.areas || []), ...add.map(x => ({ ...x }))].slice(0, 150); d.draft = false; draftKey(); return go("shop", add.length + " Gauteng areas added with sample fees. Check the fees, then press Save."); }
       else { d.areas = (d.areas || []).filter((_, i) => i !== +b.dataset.i); d.draft = false; }
       draftKey(); go("shop"); return;
     }

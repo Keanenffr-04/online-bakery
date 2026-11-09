@@ -186,12 +186,594 @@
     "draft": true,
     "areas": [
       {
-        "name": "Close to the bakery",
-        "fee": 50
+        "name": "Alexandra",
+        "fee": 80,
+        "region": "Johannesburg"
       },
       {
-        "name": "Further out",
-        "fee": 90
+        "name": "Braamfontein",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Bryanston",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Cresta",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Dainfern",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Diepkloof",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Douglasdale",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Eldorado Park",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Emmarentia",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Florida",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Fourways",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Greenside",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Honeydew",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Houghton",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Johannesburg CBD",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Johannesburg South",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Kensington",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Lenasia",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Linden",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Lonehill",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Maboneng",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Marlboro",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Melrose",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Melville",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Midrand",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Mondeor",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Morningside",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Northcliff",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Northriding",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Orlando",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Parkhurst",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Parktown",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Paulshof",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Randburg",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Rivonia",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Roodepoort",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Rosebank",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Rosettenville",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Sandton",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Soweto",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Sunninghill",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Waterfall",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Wendywood",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Woodmead",
+        "fee": 80,
+        "region": "Johannesburg"
+      },
+      {
+        "name": "Akasia",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Arcadia",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Atteridgeville",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Brooklyn",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Centurion",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Cullinan",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Eldoraigne",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Equestria",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Erasmuskloof",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Faerie Glen",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Garsfontein",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Hammanskraal",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Hatfield",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Highveld",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Irene",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Laudium",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Lynnwood",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Mamelodi",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Menlyn",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Montana",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Moreleta Park",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Olievenhoutbosch",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Pretoria CBD",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Pretoria East",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Pretoria North",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Pretoria West",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Rayton",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Rooihuiskraal",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Silverton",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Soshanguve",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Sunnyside",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Waterkloof",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Wierda Park",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Wonderboom",
+        "fee": 80,
+        "region": "Tshwane"
+      },
+      {
+        "name": "Alberton",
+        "fee": 90,
+        "region": "Ekurhuleni"
+      },
+      {
+        "name": "Bedfordview",
+        "fee": 90,
+        "region": "Ekurhuleni"
+      },
+      {
+        "name": "Benoni",
+        "fee": 90,
+        "region": "Ekurhuleni"
+      },
+      {
+        "name": "Boksburg",
+        "fee": 90,
+        "region": "Ekurhuleni"
+      },
+      {
+        "name": "Brakpan",
+        "fee": 90,
+        "region": "Ekurhuleni"
+      },
+      {
+        "name": "Daveyton",
+        "fee": 90,
+        "region": "Ekurhuleni"
+      },
+      {
+        "name": "Duduza",
+        "fee": 90,
+        "region": "Ekurhuleni"
+      },
+      {
+        "name": "Edenvale",
+        "fee": 90,
+        "region": "Ekurhuleni"
+      },
+      {
+        "name": "Germiston",
+        "fee": 90,
+        "region": "Ekurhuleni"
+      },
+      {
+        "name": "Isando",
+        "fee": 90,
+        "region": "Ekurhuleni"
+      },
+      {
+        "name": "Katlehong",
+        "fee": 90,
+        "region": "Ekurhuleni"
+      },
+      {
+        "name": "Kempton Park",
+        "fee": 90,
+        "region": "Ekurhuleni"
+      },
+      {
+        "name": "Modderfontein",
+        "fee": 90,
+        "region": "Ekurhuleni"
+      },
+      {
+        "name": "Nigel",
+        "fee": 90,
+        "region": "Ekurhuleni"
+      },
+      {
+        "name": "OR Tambo Airport",
+        "fee": 90,
+        "region": "Ekurhuleni"
+      },
+      {
+        "name": "Primrose",
+        "fee": 90,
+        "region": "Ekurhuleni"
+      },
+      {
+        "name": "Springs",
+        "fee": 90,
+        "region": "Ekurhuleni"
+      },
+      {
+        "name": "Tembisa",
+        "fee": 90,
+        "region": "Ekurhuleni"
+      },
+      {
+        "name": "Thokoza",
+        "fee": 90,
+        "region": "Ekurhuleni"
+      },
+      {
+        "name": "Vosloorus",
+        "fee": 90,
+        "region": "Ekurhuleni"
+      },
+      {
+        "name": "Bekkersdal",
+        "fee": 110,
+        "region": "West Rand"
+      },
+      {
+        "name": "Carletonville",
+        "fee": 110,
+        "region": "West Rand"
+      },
+      {
+        "name": "Cradle of Humankind",
+        "fee": 110,
+        "region": "West Rand"
+      },
+      {
+        "name": "Fochville",
+        "fee": 110,
+        "region": "West Rand"
+      },
+      {
+        "name": "Kagiso",
+        "fee": 110,
+        "region": "West Rand"
+      },
+      {
+        "name": "Krugersdorp",
+        "fee": 110,
+        "region": "West Rand"
+      },
+      {
+        "name": "Magaliesburg",
+        "fee": 110,
+        "region": "West Rand"
+      },
+      {
+        "name": "Muldersdrift",
+        "fee": 110,
+        "region": "West Rand"
+      },
+      {
+        "name": "Randfontein",
+        "fee": 110,
+        "region": "West Rand"
+      },
+      {
+        "name": "Westonaria",
+        "fee": 110,
+        "region": "West Rand"
+      },
+      {
+        "name": "Eikenhof",
+        "fee": 130,
+        "region": "Sedibeng"
+      },
+      {
+        "name": "Evaton",
+        "fee": 130,
+        "region": "Sedibeng"
+      },
+      {
+        "name": "Heidelberg",
+        "fee": 130,
+        "region": "Sedibeng"
+      },
+      {
+        "name": "Henley on Klip",
+        "fee": 130,
+        "region": "Sedibeng"
+      },
+      {
+        "name": "Meyerton",
+        "fee": 130,
+        "region": "Sedibeng"
+      },
+      {
+        "name": "Sebokeng",
+        "fee": 130,
+        "region": "Sedibeng"
+      },
+      {
+        "name": "Sharpeville",
+        "fee": 130,
+        "region": "Sedibeng"
+      },
+      {
+        "name": "Vanderbijlpark",
+        "fee": 130,
+        "region": "Sedibeng"
+      },
+      {
+        "name": "Vereeniging",
+        "fee": 130,
+        "region": "Sedibeng"
+      },
+      {
+        "name": "Walkerville",
+        "fee": 130,
+        "region": "Sedibeng"
       }
     ],
     "freeOver": 0,
