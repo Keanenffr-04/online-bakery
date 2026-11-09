@@ -1,7 +1,8 @@
 # online-bakery 🐇🍰
 Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
 
-**Current version:** v10.26.4. The latest three versions:
+**Current version:** v10.26.5. The latest three versions:
+- **v10.26.5:** (your list 26) a **dark mode for every theme**. It turns on by itself when you open the website on your own computer (double-click `preview.html`), so working late is easier on the eyes. The real website is always light and visitors get no switch. Nothing to update in the database.
 - **v10.26.4:** (your list 25, part 1 of 3) the **cart empties by itself** after an order is sent, and **"Order the same again" is removed** (thank-you page and My account). The thank-you page's **Open WhatsApp** button now carries the order text. Nothing to update in the database.
 - *(older)* **v10.26.3:** a **backup WhatsApp number** (Keanen) on the Contact and thank-you pages, plus a step-by-step **how to order** guide in the roadmap (section 5g). Nothing to update in the database.
 - *(older)* **v10.26.2:** a **fix for the photo storage warning** in the Live check. The check is now accurate (it tries a test picture the way a stranger would, then removes it), and the database gets an extra lock so nobody but an admin can ever see an inspiration photo. **Run the newest `setup.sql` once**, then run the Live check again.
@@ -135,6 +136,7 @@ online-bakery/
 ├── preview.html    double-click to browse every page locally (no install, no server)
 ├── config/         business.json (name, WhatsApp, public Supabase url + key, etc.)
 ├── .github/        workflows/keep-alive.yml (keeps the free database awake)
+├── tools/          make-dark.py (rebuilds the dark colours for every theme; run it after adding a theme)
 ├── supabase/       setup.sql (paste into the Supabase SQL Editor when a version says so: tables, admin emails, locks; safe to run again)
 ├── assets/logo/    logo files
 └── src/            index.html + placeholder pages, css/, js/, themes/, theme-preview.html
