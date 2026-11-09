@@ -566,7 +566,7 @@
 
   // v10.23: "Live check" = the real-world test (roadmap idea 46) as a button. It talks to the REAL online database, so it can only run from
   // the live site or from a computer with internet (not from a double-clicked file). Everything it adds is removed again.
-  const SETUP_VERSION = "10.25", TEST_NAME = "TEST ORDER - safe to delete";
+  const SETUP_VERSION = "10.26.2", TEST_NAME = "TEST ORDER - safe to delete";
   async function liveCheck() {
     const c = (state.data.biz || {}).supabase, R = [], add = (s, t, d) => R.push({ s, t, d: d || "" });
     if (!c || !c.url || !c.key) { add("bad", "The online database is not set up", "config/business.json has no Supabase address."); return R; }
@@ -607,8 +607,22 @@
       add(r.error ? "warn" : "ok", r.error ? "Reviews are not switched on yet" : "Reviews can be read (" + (r.count || 0) + " waiting)", r.error ? "Run the newest setup.sql (roadmap 2c)." : "");
       const b = await sb.storage.from("inspiration").list("", { limit: 1 });
       add(b.error ? "warn" : "ok", b.error ? "The photo storage is not set up yet" : "Inspiration photos have a private place to live", b.error ? "Run the newest setup.sql (roadmap 2c). Custom orders still work without it, just with no photo." : "");
-      const g = await raw("/storage/v1/object/list/inspiration", "POST", { prefix: "", limit: 1 });
-      add(g.ok ? "bad" : "ok", g.ok ? "Strangers CAN look inside the photo storage" : "Strangers cannot look inside the photo storage", g.ok ? "Run the newest setup.sql now (roadmap 2c) and run this check again." : "");
+      // v10.26.2: the old test called the storage "list" answer a leak whenever it came back with no error, but a locked bucket also answers "OK, here is an empty list".
+      // Now a tiny test picture is put in the way a customer would, a stranger (no sign-in) tries to list it and to open it, and the picture is removed again.
+      const pic = Uint8Array.from(atob("/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA="), ch => ch.charCodeAt(0));
+      const nm = (crypto.randomUUID ? crypto.randomUUID() : "00000000-0000-4000-8000-" + String(Date.now()).padStart(12, "0")) + ".jpg", H = { apikey: c.key };
+      const up = await fetch(c.url + "/storage/v1/object/inspiration/" + nm, { method: "POST", headers: { ...H, "Content-Type": "image/jpeg" }, body: new Blob([pic], { type: "image/jpeg" }) }).catch(() => ({ ok: false }));
+      if (!up.ok) {
+        const g = await raw("/storage/v1/object/list/inspiration", "POST", { prefix: "", limit: 5 }); let seen = []; if (g.ok) { try { seen = await g.json(); } catch (e) { seen = []; } }
+        add(Array.isArray(seen) && seen.length ? "bad" : "warn", Array.isArray(seen) && seen.length ? "Strangers CAN look inside the photo storage" : "The photo lock could not be tried", Array.isArray(seen) && seen.length ? "Run the newest setup.sql now (roadmap 2c) and run this check again." : "A test picture could not be added, so the lock was not fully tried. Run the newest setup.sql (roadmap 2c) and run this check again.");
+      } else {
+        let seen = false, opened = false;
+        try { const g = await raw("/storage/v1/object/list/inspiration", "POST", { prefix: "", limit: 100 }); if (g.ok) { const j = await g.json(); seen = Array.isArray(j) && j.some(x => x && x.name === nm); } } catch (e) { /* counts as not seen */ }
+        for (const path of ["/storage/v1/object/inspiration/", "/storage/v1/object/public/inspiration/"]) { try { const o = await fetch(c.url + path + nm, { headers: H }); if (o.ok) opened = true; } catch (e) { /* counts as not opened */ } }
+        add(seen || opened ? "bad" : "ok", seen || opened ? "Strangers CAN " + (seen ? "look inside" : "open pictures in") + " the photo storage" : "Strangers cannot look inside or open the photo storage", seen || opened ? "Run the newest setup.sql now (roadmap 2c) and run this check again." : "Tried with a test picture, which is removed again straight away.");
+        const rm = await sb.storage.from("inspiration").remove([nm]);
+        if (rm.error) add("warn", "A tiny test picture was left in the photo storage", "Open supabase.com > Storage > inspiration and delete the file called " + nm + ".");
+      }
     });
 
     // The locks, tried the way a stranger would try them (no sign-in).

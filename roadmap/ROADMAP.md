@@ -1,6 +1,6 @@
 # 🗺️ Roadmap: what's next and what we need from you
 
-**Where we are:** v10.26.1 &nbsp;|&nbsp; **Next up:** v10.26.2 (upload proof of payment), then v10.26.3 (install as an app) &nbsp;|&nbsp; **Rule:** 2 things per version.
+**Where we are:** v10.26.2 &nbsp;|&nbsp; **Next up:** v10.26.3 (upload proof of payment), then v10.26.4 (install as an app) &nbsp;|&nbsp; **Rule:** 2 things per version.
 
 *This page is written for Becca. No website or coding knowledge needed. Words you might not know are explained in the "Words explained" list in the [README](../README.md). Finished work is in [`BACKLOG.md`](BACKLOG.md).*
 
@@ -11,7 +11,8 @@
 - ✅ **New in v10.25:** a **review page** (customers write a short review, you press Approve before it shows, and the thank-you WhatsApp message carries the link) and **inspiration photos** on Custom Orders (stored privately, you press View photo next to the order). You need to run the newest `setup.sql` once (section 2c).
 - ✅ **New in v10.26:** a **"How to pay" box** on the thank-you page (your EFT details, SnapScan button and Capitec Pay number with Copy buttons). It stays hidden until you type your real details in Admin > Theme & layout > How to pay. No database update needed.
 - ✅ **New in v10.26.1:** the **admin is tidied** (your list 22). A new **Ordering & payment** tab holds the order calendar and delivery, the cake price guide and How to pay; **Theme & layout** only has the look of the site. No database update needed.
-- ⏭️ **Next:** v10.26.2 (customers upload proof of payment, you see it next to the order), then v10.26.3 (installing the website on a phone like an app). Your original v10.26 was split in three to keep each step small. The build order for all 60 ideas is in section 1.
+- ✅ **New in v10.26.2:** the Live check's photo-storage warning is fixed (list 23). The check was too jumpy (a locked storage also answers with an empty list), so it now tries a real test picture the way a stranger would and removes it again. The database also gets an extra lock so only admins can ever see an inspiration photo. **Run the newest `setup.sql` once** (section 2c), then run the Live check again.
+- ⏭️ **Next:** v10.26.3 (customers upload proof of payment, you see it next to the order), then v10.26.4 (installing the website on a phone like an app). Your original v10.26 was split in three to keep each step small. The build order for all 60 ideas is in section 1.
 - ⏳ **Waiting on you:** real prices, FAQ answers, reviews, your story, Instagram / Facebook names and photos. The full checklist is in section 2.
 - 🚀 **Last step:** putting the website online, only when you say "I'm happy with everything".
 
@@ -33,8 +34,8 @@ Your change lists always go **first**, so the versions below may slide back by o
 
 | Version | Status | What you will get | What we need from you |
 |---|---|---|---|
-| **v10.26.2** | ⏭️ Next | **Upload proof of payment** on the thank-you page (stored privately, you open it next to the order) + a **"paid" tick** per order (idea 27, part 2). Needs the newest `setup.sql`. | Nothing new |
-| v10.26.3 | 📅 Planned | **Install on the home screen like an app**, and the menu and cart keep working when the internet is flaky or during load shedding (idea 47). | Nothing new |
+| **v10.26.3** | ⏭️ Next | **Upload proof of payment** on the thank-you page (stored privately, you open it next to the order) + a **"paid" tick** per order (idea 27, part 2). Needs the newest `setup.sql`. | Nothing new |
+| v10.26.4 | 📅 Planned | **Install on the home screen like an app**, and the menu and cart keep working when the internet is flaky or during load shedding (idea 47). | Nothing new |
 | v10.27 | 📅 Planned | **Shop status banner** ("on holiday until 3 Jan", pauses orders) + the **old "Publish" wording fixed** in the admin (4 and 45). | Nothing new |
 | v10.28 | 📅 Planned | **Gift vouchers** (you give a code, the customer types it in the cart, it comes off the total) + a **loyalty reward** (for example every 10th order a free cupcake box). | Your voucher and loyalty rules |
 | v10.29 | 📅 Planned | **Deposits / online payment** (Yoco, PayFast or Ozow). A deposit secures the date. On its own because it handles real money. | A payment account that you open |
@@ -50,7 +51,7 @@ Your change lists always go **first**, so the versions below may slide back by o
 Nothing here can be built or guessed by us. Send things whenever you have them (in your next change list is fine).
 
 ### 2a. Your to-do list
-- [ ] **Update the online database** with the newest `supabase/setup.sql` (steps in 2c). Latest change: **v10.25** (it switches on reviews and the private place for inspiration photos; without it the review page says "not switched on yet" and custom orders send without the photo). **v10.24** only made the new-order alert instant. If you have not run it since v10.22, run it now too: **v10.23** added the spam guard, which is only half on until you do.
+- [ ] **Update the online database** with the newest `supabase/setup.sql` (steps in 2c). Latest change: **v10.26.2** (it adds an extra lock on the photo storage; run it, then run the Live check again). Before that, **v10.25** (it switched on reviews and the private place for inspiration photos; without it the review page says "not switched on yet" and custom orders send without the photo). **v10.24** only made the new-order alert instant. If you have not run it since v10.22, run it now too: **v10.23** added the spam guard, which is only half on until you do.
 - [ ] **Replace the placeholder numbers** in Admin > Ordering & payment > **Order calendar & delivery**: days of notice, orders per day, days off, delivery areas and fees. Today they are samples.
 - [ ] **Real prices and product list.** Today the menu prices are samples (Admin > Menu items).
 - [ ] **Real cake sizes, servings, flavours and prices** for the price guide (Admin > Ordering & payment > **Cake price guide**). Until you change them customers see a "Sample prices" tag.
@@ -104,6 +105,8 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 
 | List | # | Request (short) | Status | Where |
 |---|---|---|---|---|
+| 23 | 1 | The live check says strangers can look inside the photo storage; I do not want that, fix it | DONE (accurate check with a test picture + an extra database lock; run the newest setup.sql) | v10.26.2 |
+| 23 | 2 | Only 2 changes per version, the rest to the backlog | DONE (only 1 change came; ideas in 4b) | v10.26.2 |
 | 22 | 1 | In the admin, put everything under the right header (no cake stuff under Themes, and so on). Add to the roadmap | DONE (new Ordering & payment tab; the rest of the sorting is in 4b) | v10.26.1 |
 | 22 | 2 | Only 2 changes per version, the rest to the backlog | DONE (only 1 change came; ideas in 4b) | v10.26.1 |
 | - | - | (Owner said "start next v/patch" and asked to split v10.26 into 2 or 3 smaller versions, so it became v10.26 (How to pay box, built), v10.26.1 (proof of payment) and v10.26.2 (install as an app)) | DONE (part 1) | v10.26 |
@@ -265,6 +268,12 @@ Every version leaves a few "good idea, but not now" notes. They used to be sprea
 - A "tidy unused photos" job for pictures whose order was never sent (v10.25)
 - A "reply to this review" line under a review; ask for a Google review too (v10.25)
 - A review reminder sent a few days after "Mark done" (needs WhatsApp / email sending first); a QR code for the review page (idea 59) (v10.25)
+
+**Photo storage lock (v10.26.2)**
+- Run the Live check by itself once a week and keep its history (v10.26.2)
+- Delete leftover test pictures from the photo storage automatically (v10.26.2)
+- Show the same "photos are private" tick for the proof-of-payment storage once it exists (v10.26.2)
+- Keep customer photos for a set time (for example 12 months) and then remove them, with a line on the Privacy page (v10.26.2)
 
 **Admin tidy-up (v10.26.1)**
 - Move "Reviews to approve" out of Orders into its own spot (a Customers or Reviews area) (v10.26.1)

@@ -2,7 +2,7 @@
 
 *Written for Becca. This page is the list of **finished** work. What is still to do is in [`ROADMAP.md`](ROADMAP.md). New entries are added at the bottom and nothing is ever deleted.*
 
-**Latest version:** v10.26.1
+**Latest version:** v10.26.2
 
 ## Contents
 1. [What the website can do today](#today)
@@ -97,6 +97,7 @@ Oldest first. Click a version to jump to its detailed record. A version like **v
 | [v10.23](#v10-23) | 2026-11-08 | **Live check** button in the admin (tests the real database), **spam protection** on orders and sign-up, and a **keep-alive** so the free database never pauses. Run the newest `setup.sql` once. |
 | [v10.24](#v10-24) | 2026-11-08 | **Bake sheet** (what to make for a day, added up and printable, allergies in red) and a **new-order alert** (chime + pop-up while the admin is open). Run the newest `setup.sql` once (optional, makes the alert instant). |
 | [v10.25](#v10-25) | 2026-11-09 | **Review link** (a short review page; you approve each review before it shows; the thank-you WhatsApp message carries the link) and **inspiration photo upload** on Custom Orders (stored privately, you open it next to the order). Run the newest `setup.sql` once (section 12). |
+| [v10.26.2](#v10-26-2) | 2026-11-09 | **Photo storage warning fixed** (your list 23): the Live check now tests the photo storage properly, and the database gets an extra lock so only admins can see an inspiration photo. **Run the newest `setup.sql` once**, then run the Live check again. |
 | [v10.26.1](#v10-26-1) | 2026-11-09 | **Admin tidy-up** (your list 22): a new **Ordering & payment** tab holds the order calendar and delivery, the cake price guide and How to pay, so **Theme & layout** only has looks. Nothing to update in the database. |
 | [v10.26](#v10-26) | 2026-11-09 | **"How to pay" box** on the thank-you page (your EFT bank details, a SnapScan button and a Capitec Pay number, each with a Copy button, shown only after you type your real details). This is part 1 of 3: upload proof of payment is v10.26.1 and install-as-an-app is v10.26.2. No database update needed. |
 
@@ -580,3 +581,12 @@ Owner list 22 had one change: in the admin, put everything under its own header 
 Files: `src/js/admin.js`, `src/css/admin.css`, `src/js/store.js` (comments only), `README.md`, `roadmap/*`, `docs/AI_HANDOFF.md`, `VERSION`. No `setup.sql` change (`SETUP_VERSION` stays `10.25`).
 Tests (headless Chromium with a **mock Supabase**, the sandbox has no internet): seven tabs show; Theme & layout lists its 5 sections and Ordering & payment its 3; typing a bank name and holder, adding a size and a delivery area keep you on the tab; switching tabs keeps the unsaved text; Save writes the payment details and clears `draft`; no page errors. This also ran the v10.26 How to pay admin box for the first time (against the mock).
 Pushed to the backlog (also in `ROADMAP.md` 4b): "Reviews to approve" in its own area; where "Menu page" belongs; a tidy of the Orders tab; a one-line "what is on this tab" under each tab name; renaming tabs if the new names do not feel right.
+
+<a id="v10-26-2"></a>
+## v10.26.2: Photo storage lock (done, 2026-11-09)
+Owner list 23 had one change: the Live check said "Strangers CAN look inside the photo storage"; make that safe. Only 1 change came. **Run the newest `supabase/setup.sql` once** (section 13), then run the Live check again. Because of this patch, **proof of payment is now v10.26.3 and the installable app v10.26.4**.
+1. **The old check was too jumpy.** It POSTed to `/storage/v1/object/list/inspiration` with no sign-in and called any HTTP 200 a leak. A locked bucket also answers 200 with an empty list, so the warning appeared even when nothing could be seen (especially with no photos yet). The new "Reviews and photos" step in `liveCheck()` puts a 1-pixel test JPEG into the bucket the way a customer does (allowed), then as a stranger tries the list call (looks for the test file's name) and `/object/inspiration/<name>` + `/object/public/inspiration/<name>`, and removes the file as the signed-in admin. Red only if the file is really listed or opened. If the test file cannot be added the line is yellow ("could not be tried") unless the list shows real names. A leftover test file is reported with its name.
+2. **setup.sql section 13** adds a **restrictive** policy "inspiration is admin only to read" on `storage.objects` (SELECT, `bucket_id <> 'inspiration' or public.is_admin()`). Restrictive rules are ANDed with every other rule, so a leftover permissive "anyone can read" rule (for example one added in the Supabase dashboard) can no longer expose the bucket. It also re-sets the bucket to `public = false`. Customers can still upload. `SETUP_VERSION` / `setup_version()` are `10.26.2`.
+Files: `src/js/admin.js`, `supabase/setup.sql`, `README.md`, `roadmap/*`, `docs/AI_HANDOFF.md`, `VERSION`.
+Tests (headless Chromium, mock Supabase + mocked storage answers): locked storage = green and the test file removed; listing leaks = red; the object opens = red; the test upload refused = yellow, nothing removed; no page errors. **The new SQL was NOT run on a real Postgres** (none in the sandbox): the owner's Live check is the real test. Honest note: this is probably a false alarm in the old check, but the extra lock makes the answer safe either way.
+Pushed to the backlog (also in `ROADMAP.md` 4b): a weekly automatic Live check with history; auto-removal of leftover test pictures; the same private-storage tick for proof of payment; deleting customer photos after a set time (with a Privacy page line).

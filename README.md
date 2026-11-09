@@ -1,7 +1,8 @@
 # online-bakery 🐇🍰
 Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
 
-**Current version:** v10.26.1. The latest three versions:
+**Current version:** v10.26.2. The latest three versions:
+- **v10.26.2:** a **fix for the photo storage warning** in the Live check. The check is now accurate (it tries a test picture the way a stranger would, then removes it), and the database gets an extra lock so nobody but an admin can ever see an inspiration photo. **Run the newest `setup.sql` once**, then run the Live check again.
 - **v10.26.1:** the **admin is tidied**: a new tab, **Ordering & payment**, holds the order calendar and delivery, the cake price guide and How to pay. **Theme & layout** now only has looks (theme, seasons, Home page, strips, Menu page). Nothing to update in the database.
 - **v10.26:** a **"How to pay" box** on the thank-you page (your bank details, SnapScan and Capitec Pay, with Copy buttons). Type your details in Admin > Ordering & payment > **How to pay**; customers see nothing until you do. No database update needed.
 - **v10.25:** a **review page** (customers write a short review; you press **Approve** in the admin before it shows) and **inspiration photos** on Custom Orders (stored privately; **View photo** next to the order). Run the newest `setup.sql` once.
@@ -80,6 +81,7 @@ The full checklist is in [`roadmap/ROADMAP.md`, section 2](roadmap/ROADMAP.md#ne
 | WhatsApp did not open after an order | Your browser may have blocked the pop-up. The thank-you page has an **Open WhatsApp** button. The order is saved either way. |
 | An item I marked "Sold out today" is back | That is on purpose: it switches itself off at midnight. |
 | The moving decorations are too much | Admin > Theme & layout > Theme: untick **Moving decorations**. Customers can also press the Pause button. |
+| The live check says **"Strangers CAN look inside the photo storage"** | Run the newest `setup.sql` (roadmap section 2c), then run the live check again. If it still says so, send us a screenshot and switch the photo upload off by not using it until we fix it. |
 | The live check shows a yellow or red line | The line says what to do. Most often it is "run the newest `setup.sql`" (roadmap section 2c). Red means stop and send us a screenshot. |
 | I did not hear the new-order chime | Browsers only allow sound after you have touched the page once, so tap anywhere after reloading. Then press Orders > New-order alert > **Test the chime** and check the volume. The pop-up always shows. The alert cannot reach a closed phone yet (that comes with the install-as-an-app step). |
 | Orders from one customer or phone are not saved online | The spam guard allows 6 an hour per phone number. The WhatsApp message always works, so the order still reaches you. |

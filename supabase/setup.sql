@@ -1,4 +1,4 @@
--- The Sweetest Bakery, v10.25: online database setup (sections 1 to 12).
+-- The Sweetest Bakery, v10.26.2: online database setup (sections 1 to 13).
 -- Run ONCE: Supabase dashboard > SQL Editor > New query > paste this whole file > Run.
 -- Safe to run again (it never deletes your data).
 
@@ -266,8 +266,21 @@ exception when others then
   raise notice 'The photo storage could not be set up here (%). Custom orders still work; they just cannot attach a photo.', sqlerrm;
 end $$;
 
+-- 13. (v10.26.2) Make the photo storage private no matter what else exists. A RESTRICTIVE rule is added on top of every other rule, so even a leftover
+-- "anyone can read" rule (for example one the Supabase dashboard adds for a new bucket) cannot show anyone a picture in the "inspiration" bucket
+-- unless they are an admin. Customers can still ADD a picture. Re-runnable; nothing is deleted.
+do $$
+begin
+  update storage.buckets set public = false where id = 'inspiration';
+  drop policy if exists "inspiration is admin only to read" on storage.objects;
+  create policy "inspiration is admin only to read" on storage.objects as restrictive for select
+    using (bucket_id <> 'inspiration' or public.is_admin());
+exception when others then
+  raise notice 'The extra photo lock could not be added here (%). Run this script again, or tell the person who builds the site.', sqlerrm;
+end $$;
+
 -- The admin's "Live check" asks this to see whether the database has the newest setup.sql.
 create or replace function public.setup_version() returns text
-language sql immutable as $$ select '10.25'::text $$;
+language sql immutable as $$ select '10.26.2'::text $$;
 revoke all on function public.setup_version() from public;
 grant execute on function public.setup_version() to anon, authenticated;
