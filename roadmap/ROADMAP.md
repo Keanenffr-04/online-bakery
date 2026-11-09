@@ -1,6 +1,6 @@
 # 🗺️ Roadmap: what's next and what we need from you
 
-**Where we are:** v10.26 &nbsp;|&nbsp; **Next up:** v10.26.1 (upload proof of payment), then v10.26.2 (install as an app) &nbsp;|&nbsp; **Rule:** 2 things per version.
+**Where we are:** v10.26.1 &nbsp;|&nbsp; **Next up:** v10.26.2 (upload proof of payment), then v10.26.3 (install as an app) &nbsp;|&nbsp; **Rule:** 2 things per version.
 
 *This page is written for Becca. No website or coding knowledge needed. Words you might not know are explained in the "Words explained" list in the [README](../README.md). Finished work is in [`BACKLOG.md`](BACKLOG.md).*
 
@@ -10,7 +10,8 @@
 - ✅ **New in v10.24:** a **bake sheet** in Orders ("what to make for Saturday", added up across every order, allergies in red, printable) and a **new-order alert** (a chime and a pop-up while the admin is open). Updating the database (section 2c) is optional here: it only makes the alert instant instead of within 30 seconds.
 - ✅ **New in v10.25:** a **review page** (customers write a short review, you press Approve before it shows, and the thank-you WhatsApp message carries the link) and **inspiration photos** on Custom Orders (stored privately, you press View photo next to the order). You need to run the newest `setup.sql` once (section 2c).
 - ✅ **New in v10.26:** a **"How to pay" box** on the thank-you page (your EFT details, SnapScan button and Capitec Pay number with Copy buttons). It stays hidden until you type your real details in Admin > Theme & layout > How to pay. No database update needed.
-- ⏭️ **Next:** v10.26.1 (customers upload proof of payment, you see it next to the order), then v10.26.2 (installing the website on a phone like an app). Your original v10.26 was split in three to keep each step small. The build order for all 60 ideas is in section 1.
+- ✅ **New in v10.26.1:** the **admin is tidied** (your list 22). A new **Ordering & payment** tab holds the order calendar and delivery, the cake price guide and How to pay; **Theme & layout** only has the look of the site. No database update needed.
+- ⏭️ **Next:** v10.26.2 (customers upload proof of payment, you see it next to the order), then v10.26.3 (installing the website on a phone like an app). Your original v10.26 was split in three to keep each step small. The build order for all 60 ideas is in section 1.
 - ⏳ **Waiting on you:** real prices, FAQ answers, reviews, your story, Instagram / Facebook names and photos. The full checklist is in section 2.
 - 🚀 **Last step:** putting the website online, only when you say "I'm happy with everything".
 
@@ -32,8 +33,8 @@ Your change lists always go **first**, so the versions below may slide back by o
 
 | Version | Status | What you will get | What we need from you |
 |---|---|---|---|
-| **v10.26.1** | ⏭️ Next | **Upload proof of payment** on the thank-you page (stored privately, you open it next to the order) + a **"paid" tick** per order (idea 27, part 2). Needs the newest `setup.sql`. | Nothing new |
-| v10.26.2 | 📅 Planned | **Install on the home screen like an app**, and the menu and cart keep working when the internet is flaky or during load shedding (idea 47). | Nothing new |
+| **v10.26.2** | ⏭️ Next | **Upload proof of payment** on the thank-you page (stored privately, you open it next to the order) + a **"paid" tick** per order (idea 27, part 2). Needs the newest `setup.sql`. | Nothing new |
+| v10.26.3 | 📅 Planned | **Install on the home screen like an app**, and the menu and cart keep working when the internet is flaky or during load shedding (idea 47). | Nothing new |
 | v10.27 | 📅 Planned | **Shop status banner** ("on holiday until 3 Jan", pauses orders) + the **old "Publish" wording fixed** in the admin (4 and 45). | Nothing new |
 | v10.28 | 📅 Planned | **Gift vouchers** (you give a code, the customer types it in the cart, it comes off the total) + a **loyalty reward** (for example every 10th order a free cupcake box). | Your voucher and loyalty rules |
 | v10.29 | 📅 Planned | **Deposits / online payment** (Yoco, PayFast or Ozow). A deposit secures the date. On its own because it handles real money. | A payment account that you open |
@@ -50,16 +51,16 @@ Nothing here can be built or guessed by us. Send things whenever you have them (
 
 ### 2a. Your to-do list
 - [ ] **Update the online database** with the newest `supabase/setup.sql` (steps in 2c). Latest change: **v10.25** (it switches on reviews and the private place for inspiration photos; without it the review page says "not switched on yet" and custom orders send without the photo). **v10.24** only made the new-order alert instant. If you have not run it since v10.22, run it now too: **v10.23** added the spam guard, which is only half on until you do.
-- [ ] **Replace the placeholder numbers** in Admin > Theme & layout > **Order calendar & delivery**: days of notice, orders per day, days off, delivery areas and fees. Today they are samples.
+- [ ] **Replace the placeholder numbers** in Admin > Ordering & payment > **Order calendar & delivery**: days of notice, orders per day, days off, delivery areas and fees. Today they are samples.
 - [ ] **Real prices and product list.** Today the menu prices are samples (Admin > Menu items).
-- [ ] **Real cake sizes, servings, flavours and prices** for the price guide (Admin > Theme & layout > **Cake price guide**). Until you change them customers see a "Sample prices" tag.
+- [ ] **Real cake sizes, servings, flavours and prices** for the price guide (Admin > Ordering & payment > **Cake price guide**). Until you change them customers see a "Sample prices" tag.
 - [ ] **FAQ answers, reviews, your "Meet Becca" story, Instagram and Facebook names** (details in 2b).
 - [ ] **Read the Privacy and Terms pages** and fix anything that is not true for your bakery. They are drafts.
 - [ ] **Which items are vegan, gluten-free, nut-free, dairy-free** (only what is definitely true).
 - [ ] **Email sender for customers** (guide 5c). Easiest once you own a web address.
 - [ ] **Run the Live check** (Admin > Backup & files) after updating the database, and do the short hand-test in guide 5e (about 20 minutes).
 - [ ] **Switch on the keep-alive** (guide 5f, two minutes) so the free database never pauses.
-- [ ] **Type your payment details** in Admin > Theme & layout > **How to pay** (bank, account name and number, SnapScan link, Capitec Pay number). Until you do, customers see no payment box.
+- [ ] **Type your payment details** in Admin > Ordering & payment > **How to pay** (bank, account name and number, SnapScan link, Capitec Pay number). Until you do, customers see no payment box.
 - [ ] **Photos** when you have them.
 - [ ] **Tell us when you are happy** and we will put the website online.
 
@@ -73,8 +74,8 @@ Nothing here can be built or guessed by us. Send things whenever you have them (
 | Which products are vegan, gluten-free, nut-free, dairy-free | Tags and filters on the Menu | Admin > Menu items > Edit |
 | Your own wording for Christmas, Valentine's and other seasons (optional) | Greeting and top strip during that season | Admin > Theme & layout > Automatic seasons |
 | Real prices and product list | Menu and cart totals | Admin > Menu items |
-| Real cake sizes, servings, flavours and extra costs | Cake price guide on Custom Orders | Admin > Theme & layout > Cake price guide |
-| Real notice days, daily limit, delivery areas and fees | Order calendar and delivery | Admin > Theme & layout > Order calendar & delivery |
+| Real cake sizes, servings, flavours and extra costs | Cake price guide on Custom Orders | Admin > Ordering & payment > Cake price guide |
+| Real notice days, daily limit, delivery areas and fees | Order calendar and delivery | Admin > Ordering & payment > Order calendar & delivery |
 | Product photos | Replace the emoji | When you are ready |
 | Voucher and loyalty rules, payment provider | v10.28 and v10.29 | When we reach those versions |
 | *Decided:* Sign in with Apple is **skipped for now** (it costs about US$99 a year). Google and email sign-in are free and built. | | |
@@ -103,6 +104,8 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 
 | List | # | Request (short) | Status | Where |
 |---|---|---|---|---|
+| 22 | 1 | In the admin, put everything under the right header (no cake stuff under Themes, and so on). Add to the roadmap | DONE (new Ordering & payment tab; the rest of the sorting is in 4b) | v10.26.1 |
+| 22 | 2 | Only 2 changes per version, the rest to the backlog | DONE (only 1 change came; ideas in 4b) | v10.26.1 |
 | - | - | (Owner said "start next v/patch" and asked to split v10.26 into 2 or 3 smaller versions, so it became v10.26 (How to pay box, built), v10.26.1 (proof of payment) and v10.26.2 (install as an app)) | DONE (part 1) | v10.26 |
 | - | - | (Owner said "start next v/patch" and asked for the next 5 versions at 2 changes each, so the version marked NEXT was built: review link (idea 1) + inspiration photo upload (idea 13); next five in the plan, section 1) | DONE | v10.25 |
 | - | - | (Owner said "start next v/patch" with no change list, so the version marked NEXT was built: the bake sheet (idea 36) and the new-order alert (idea 35)) | DONE | v10.24 |
@@ -262,6 +265,12 @@ Every version leaves a few "good idea, but not now" notes. They used to be sprea
 - A "tidy unused photos" job for pictures whose order was never sent (v10.25)
 - A "reply to this review" line under a review; ask for a Google review too (v10.25)
 - A review reminder sent a few days after "Mark done" (needs WhatsApp / email sending first); a QR code for the review page (idea 59) (v10.25)
+
+**Admin tidy-up (v10.26.1)**
+- Move "Reviews to approve" out of Orders into its own spot (a Customers or Reviews area) (v10.26.1)
+- Decide where "Menu page" (grid or list) belongs: Theme & layout or Menu items (v10.26.1)
+- Same tidy-up for the Orders tab (it now holds numbers, dates, bake sheet, reviews and the alert) and a short "what is on each tab" line under each tab name (v10.26.1)
+- Rename or reorder tabs if the new names do not feel right (v10.26.1)
 
 **Helping Becca (new in v10.21.1)**
 - A one-page printable cheat sheet for the day-to-day admin jobs

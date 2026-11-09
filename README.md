@@ -1,10 +1,11 @@
 # online-bakery 🐇🍰
 Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
 
-**Current version:** v10.26. The latest three versions:
-- **v10.26:** a **"How to pay" box** on the thank-you page (your bank details, SnapScan and Capitec Pay, with Copy buttons). Type your details in Admin > Theme & layout > **How to pay**; customers see nothing until you do. No database update needed.
+**Current version:** v10.26.1. The latest three versions:
+- **v10.26.1:** the **admin is tidied**: a new tab, **Ordering & payment**, holds the order calendar and delivery, the cake price guide and How to pay. **Theme & layout** now only has looks (theme, seasons, Home page, strips, Menu page). Nothing to update in the database.
+- **v10.26:** a **"How to pay" box** on the thank-you page (your bank details, SnapScan and Capitec Pay, with Copy buttons). Type your details in Admin > Ordering & payment > **How to pay**; customers see nothing until you do. No database update needed.
 - **v10.25:** a **review page** (customers write a short review; you press **Approve** in the admin before it shows) and **inspiration photos** on Custom Orders (stored privately; **View photo** next to the order). Run the newest `setup.sql` once.
-- **v10.24:** a **bake sheet** in the admin (what to make for a day, added up from every order, printable) and a **new-order alert** (a chime and a pop-up while the admin is open). Run the newest `setup.sql` once (optional, makes the alert instant).
+- *(older)* **v10.24:** a **bake sheet** in the admin (what to make for a day, added up from every order, printable) and a **new-order alert** (a chime and a pop-up while the admin is open). Run the newest `setup.sql` once (optional, makes the alert instant).
 - *(older)* **v10.23:** a **Live check** button in the admin that tests the real online database, **spam protection** on orders and sign-up, and a **keep-alive** so the free database never pauses. Run the newest `setup.sql` once.
 
 Every version, in plain English, is in [`roadmap/BACKLOG.md`](roadmap/BACKLOG.md).
@@ -28,7 +29,7 @@ Open the project folder and **double-click `preview.html`**. It opens in your br
 The admin is where you change things. It is **not linked from the public website on purpose**, so customers never see it.
 1. Double-click `preview.html` and click the **Staff admin** tile (or open `src/admin.html`).
 2. Sign in with your email and password. Only the emails on the admin list can get in.
-3. Pick a tab: **Orders**, **Menu items**, **Theme & layout**, **Admins**, **My account**, **Backup & files**.
+3. Pick a tab: **Orders**, **Menu items**, **Ordering & payment**, **Theme & layout**, **Admins**, **My account**, **Backup & files**.
 
 When you press **Save**, the change is live for everyone straight away. *(Some words on the admin screens still mention "Publish" or "save to this device". Ignore them; it is already live. This is on the to-fix list.)*
 
@@ -45,9 +46,9 @@ When you press **Save**, the change is live for everyone straight away. *(Some w
 | See how many orders this week or month | The **Numbers** box at the top of Orders (it can download a spreadsheet) |
 | Mark something as sold out for today | Admin > **Menu items** > **Sold out today** (it switches itself back on at midnight) |
 | Add a cake, change a price or hide an item | Admin > **Menu items** (use **Menu sections** to add or reorder the groups) |
-| Close a day, set notice days, a daily limit or delivery fees | Admin > **Theme & layout** > **Order calendar & delivery** |
-| Add my bank / SnapScan / Capitec Pay details for customers | Admin > **Theme & layout** > **How to pay** |
-| Change cake sizes, flavours or prices in the price guide | Admin > **Theme & layout** > **Cake price guide** |
+| Close a day, set notice days, a daily limit or delivery fees | Admin > **Ordering & payment** > **Order calendar & delivery** |
+| Add my bank / SnapScan / Capitec Pay details for customers | Admin > **Ordering & payment** > **How to pay** |
+| Change cake sizes, flavours or prices in the price guide | Admin > **Ordering & payment** > **Cake price guide** |
 | Change the look, the season dates or the Home page order | Admin > **Theme & layout** |
 | Change the scrolling words at the top or bottom | Admin > Theme & layout > **Top and bottom strips** |
 | Check that everything online still works | Admin > **Backup & files** > **Run the live check** (it sends a test order and removes it again) |
@@ -75,7 +76,7 @@ The full checklist is in [`roadmap/ROADMAP.md`, section 2](roadmap/ROADMAP.md#ne
 | You cannot sign in to the admin, or no email arrives | Emails from the free sender often never arrive. Create the login directly: Supabase > Authentication > Users > **Add user**, tick **Auto Confirm User** (roadmap section 2d). The email must be on the admin list. |
 | A customer says their confirm or reset email never came | Customers need your own email sender first (roadmap guide 5c). **Continue with Google** and WhatsApp still work. |
 | I saved a change but customers do not see it | Make sure you pressed **Save** in that section, then reload the page. |
-| A customer cannot pick the date they want | That is the **order calendar**: not enough notice, a day off, a blocked date or a full day. Change the rules in Theme & layout > Order calendar & delivery. |
+| A customer cannot pick the date they want | That is the **order calendar**: not enough notice, a day off, a blocked date or a full day. Change the rules in Ordering & payment > Order calendar & delivery. |
 | WhatsApp did not open after an order | Your browser may have blocked the pop-up. The thank-you page has an **Open WhatsApp** button. The order is saved either way. |
 | An item I marked "Sold out today" is back | That is on purpose: it switches itself off at midnight. |
 | The moving decorations are too much | Admin > Theme & layout > Theme: untick **Moving decorations**. Customers can also press the Pause button. |

@@ -146,3 +146,5 @@
 .adm-toast>span:first-child{font-size:1.4rem}
 .adm-toast div{flex:1;min-width:0;overflow-wrap:anywhere}
 @media (max-width:480px){.adm-toast{left:1rem;right:1rem;bottom:.8rem;max-width:none}}
+/* v10.26.1: the Ordering & payment tab is one column */
+.adm-side--one{max-width:760px}

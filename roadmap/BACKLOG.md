@@ -2,7 +2,7 @@
 
 *Written for Becca. This page is the list of **finished** work. What is still to do is in [`ROADMAP.md`](ROADMAP.md). New entries are added at the bottom and nothing is ever deleted.*
 
-**Latest version:** v10.26
+**Latest version:** v10.26.1
 
 ## Contents
 1. [What the website can do today](#today)
@@ -97,6 +97,7 @@ Oldest first. Click a version to jump to its detailed record. A version like **v
 | [v10.23](#v10-23) | 2026-11-08 | **Live check** button in the admin (tests the real database), **spam protection** on orders and sign-up, and a **keep-alive** so the free database never pauses. Run the newest `setup.sql` once. |
 | [v10.24](#v10-24) | 2026-11-08 | **Bake sheet** (what to make for a day, added up and printable, allergies in red) and a **new-order alert** (chime + pop-up while the admin is open). Run the newest `setup.sql` once (optional, makes the alert instant). |
 | [v10.25](#v10-25) | 2026-11-09 | **Review link** (a short review page; you approve each review before it shows; the thank-you WhatsApp message carries the link) and **inspiration photo upload** on Custom Orders (stored privately, you open it next to the order). Run the newest `setup.sql` once (section 12). |
+| [v10.26.1](#v10-26-1) | 2026-11-09 | **Admin tidy-up** (your list 22): a new **Ordering & payment** tab holds the order calendar and delivery, the cake price guide and How to pay, so **Theme & layout** only has looks. Nothing to update in the database. |
 | [v10.26](#v10-26) | 2026-11-09 | **"How to pay" box** on the thank-you page (your EFT bank details, a SnapScan button and a Capitec Pay number, each with a Copy button, shown only after you type your real details). This is part 1 of 3: upload proof of payment is v10.26.1 and install-as-an-app is v10.26.2. No database update needed. |
 
 ---
@@ -570,3 +571,12 @@ The owner said "start next v/patch" and asked for the roadmap item v10.26 (ideas
 3. **Admin** (Theme & layout > "How to pay", `payBox(s)` + `pay-*` handlers in `admin.js`). No database change, so `SETUP_VERSION` stays `10.25`.
 Tests (headless Chromium, file://): box hidden while draft, shown with real details (EFT rows, SnapScan, Capitec, reference), hidden when bank is off and nothing else is on, a `javascript:` SnapScan link is refused; admin / index / cart / custom orders / menu load with no page errors. **Not tested:** the admin box itself (the sandbox has no internet so the admin cannot sign in); the first real check is Becca opening Theme & layout > How to pay.
 Pushed to the backlog: a QR code for SnapScan; a different reference using an order number (idea 31); payment details also on the Cart page; a "paid" tick per order (planned with v10.26.1).
+
+<a id="v10-26-1"></a>
+## v10.26.1: Admin tidy-up (done, 2026-11-09)
+Owner list 22 had one change: in the admin, put everything under its own header (no cake stuff under Themes) and add it to the roadmap. Only 1 change came, so the rest of the slot was left free to keep this patch small. Because of the new patch, **proof of payment is now v10.26.2 and the installable app v10.26.3**.
+1. **New tab "Ordering & payment"** (`shop()` in `admin.js`, tab key `shop`, between Menu items and Theme & layout). It holds three sections moved out of Theme & layout without any change to their code or settings: Order calendar & delivery, Cake price guide, How to pay. Theme & layout now has Theme, Automatic seasons, Home page, Top and bottom strips, Menu page.
+2. **Shared draft and Save.** Both tabs edit the same `state.draft` and both show the same bar (`saveBar()`), so Save on either saves everything. Switching between the two tabs keeps unsaved edits (`prepLook()` runs only when coming from another tab). Save / Reset, and the add / remove buttons for sizes, flavours, blocked dates and delivery areas, stay on the tab you are on. The bar wording is now "Save makes it live for everyone straight away" (the old "Save to this device ... Publish" text on this bar is gone; the same old wording elsewhere is still v10.27).
+Files: `src/js/admin.js`, `src/css/admin.css`, `src/js/store.js` (comments only), `README.md`, `roadmap/*`, `docs/AI_HANDOFF.md`, `VERSION`. No `setup.sql` change (`SETUP_VERSION` stays `10.25`).
+Tests (headless Chromium with a **mock Supabase**, the sandbox has no internet): seven tabs show; Theme & layout lists its 5 sections and Ordering & payment its 3; typing a bank name and holder, adding a size and a delivery area keep you on the tab; switching tabs keeps the unsaved text; Save writes the payment details and clears `draft`; no page errors. This also ran the v10.26 How to pay admin box for the first time (against the mock).
+Pushed to the backlog (also in `ROADMAP.md` 4b): "Reviews to approve" in its own area; where "Menu page" belongs; a tidy of the Orders tab; a one-line "what is on this tab" under each tab name; renaming tabs if the new names do not feel right.

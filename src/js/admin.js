@@ -139,7 +139,7 @@
   }
 
   /* ---------- tabs ---------- */
-  const TABS = [["orders", "Orders"], ["menu", "Menu items"], ["look", "Theme & layout"], ["admins", "Admins"], ["account", "My account"], ["publish", "Backup & files"]];
+  const TABS = [["orders", "Orders"], ["menu", "Menu items"], ["shop", "Ordering & payment"], ["look", "Theme & layout"], ["admins", "Admins"], ["account", "My account"], ["publish", "Backup & files"]];
 
   // v10.19: order tools. Status colours + one-tap "next step", a printable slip, and this week / this month numbers.
   const ST = ["pending", "confirmed", "ready", "completed", "cancelled"];
@@ -427,7 +427,7 @@
     <label class="chk"><input type="checkbox" data-act="pay-c-on" ${cp.on ? "checked" : ""}>Show my Capitec Pay cell number</label>
     ${f("pay-c-cell", "Cell number", cp.cell, "e.g. 082 000 0000", 20)}
     ${f("pay-note", "Note at the bottom", p.note, "", 200)}
-    <p class="muted">Customers see the box after they send an order, with a Copy button on each number and their name as the payment reference. Proof-of-payment upload comes in the next patch (v10.26.1).</p>`;
+    <p class="muted">Customers see the box after they send an order, with a Copy button on each number and their name as the payment reference. Proof-of-payment upload comes in a later patch (v10.26.2).</p>`;
   }
   function rulesBox(s) {
     const c = s.calendar || {}, d = s.delivery || {}, DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], rng = (n, cur, f) => Array.from({ length: n + 1 }, (_, i) => `<option value="${i}" ${i === cur ? "selected" : ""}>${f(i)}</option>`).join("");
@@ -448,6 +448,16 @@
     <div class="adm-row"><div><label>Free delivery on orders from R <span class="muted">(0 = never free)</span></label><input type="number" min="0" data-act="dl-free" value="${+d.freeOver || 0}"></div></div>
     <label>Collection message <span class="muted">(shown when a customer picks Collection)</span></label><input data-act="dl-note" maxlength="160" value="${esc(d.collectionNote || "")}">
     <p class="muted">Cart orders add the fee to the total. Custom orders show \"from R fee\" and you confirm the final fee in your quote.</p>`;
+  }
+  // v10.26.1: the "Ordering & payment" tab. Everything about how customers order and pay lives here (it used to sit under Theme & layout). Same draft + Save as Theme & layout.
+  const saveBar = () => `<div class="adm-save"><button class="btn btn--sm" data-act="lsave">Save</button> <button class="btn btn--sm btn--ghost" data-act="lreset">Reset</button><span class="muted">Save makes it live for everyone straight away. It saves both Ordering &amp; payment and Theme &amp; layout.</span></div>`;
+  function shop() {
+    const s = state.draft;
+    return `<div class="adm-side adm-side--one">
+    ${sec("rules", "Order calendar & delivery", (s.calendar || {}).enabled === false ? "calendar off" : ((s.calendar || {}).draft || (s.delivery || {}).draft ? "placeholder numbers" : "notice, limit, areas"), rulesBox(s))}
+    ${sec("guide", "Cake price guide", (s.priceGuide || {}).enabled === false ? "off" : ((s.priceGuide || {}).draft ? "sample prices" : ((s.priceGuide || {}).sizes || []).length + " sizes"), guideBox(s))}
+    ${sec("pay", "How to pay (EFT, SnapScan, Capitec Pay)", (s.payment || {}).enabled === false ? "off" : ((s.payment || {}).draft ? "not set up yet" : "shown to customers"), payBox(s))}
+    ${saveBar()}</div>`;
   }
   function look() {
     const s = state.draft, pg = (v, n) => `<button class="btn btn--sm ${state.page === v ? "" : "btn--ghost"}" data-act="ppage" data-v="${v}">${n}</button>`;
@@ -474,12 +484,9 @@
     ${sec("theme", "Theme", themeName(s.theme), themeBox(s))}
     ${sec("seasons", "Automatic seasons", (s.autoTheme || {}).enabled === false ? "off" : "on", seasonsBox(s))}
     ${sec("home", "Home page", "what shows and how many", homeBox)}
-    ${sec("rules", "Order calendar & delivery", (s.calendar || {}).enabled === false ? "calendar off" : ((s.calendar || {}).draft || (s.delivery || {}).draft ? "placeholder numbers" : "notice, limit, areas"), rulesBox(s))}
-    ${sec("guide", "Cake price guide", (s.priceGuide || {}).enabled === false ? "off" : ((s.priceGuide || {}).draft ? "sample prices" : ((s.priceGuide || {}).sizes || []).length + " sizes"), guideBox(s))}
-    ${sec("pay", "How to pay (EFT, SnapScan, Capitec Pay)", (s.payment || {}).enabled === false ? "off" : ((s.payment || {}).draft ? "not set up yet" : "shown to customers"), payBox(s))}
     ${sec("strips", "Top and bottom strips", "specials and order messages", stripBox)}
     ${sec("menu", "Menu page", s.menuLayout === "list" ? "list" : "grid", menuBox)}
-    <div class="adm-save"><button class="btn btn--sm" data-act="lsave">Save to this device</button> <button class="btn btn--sm btn--ghost" data-act="lreset">Reset</button><span class="muted">Then use Publish to make it live.</span></div></div>
+    ${saveBar()}</div>
     <div class="adm-preview"><div class="adm-tabs">${pg("index.html", "Home")}${pg("menu.html", "Menu")}</div>
     <iframe title="Live preview" src="${state.page}"></iframe></div></div>`;
   }
@@ -649,7 +656,7 @@
   }
 
   function dash() {
-    const body = { orders, menu, look, admins: adminsView, account, publish }[state.tab]();
+    const body = { orders, menu, shop, look, admins: adminsView, account, publish }[state.tab]();
     const dbw = SB.dbOK ? "" : `<div class="msg msg--warn">The online database is not answering (has <code>supabase/setup.sql</code> been run?). Changes cannot be saved until it is.</div>`;
     return `<div class="adm-top"><h1>Admin</h1><div class="adm-actions"><span class="adm-hi">${avatar(state.profile, state.user.email)}<span>Hi, ${esc((state.profile && state.profile.username) || state.user.email)}</span></span><a class="btn btn--sm btn--ghost" href="index.html">View site</a><button class="btn btn--sm" data-act="logout">Log out</button></div></div>
     <nav class="adm-nav" aria-label="Admin sections">${TABS.map(([k, n]) => `<button class="${state.tab === k ? "is-on" : ""}" ${state.tab === k ? 'aria-current="page"' : ""} data-act="tab" data-v="${k}">${k === "orders" && pendingCount() ? n + " (" + pendingCount() + ")" : n}</button>`).join("")}</nav>
@@ -801,7 +808,7 @@
     if (a === "pic-remove") { state.picTmp = ""; const el = document.getElementById("av-prev"); if (el) el.innerHTML = avatar({ username: (document.querySelector("input[name=username]") || {}).value }, state.user.email, true); return; }
     if (a === "google") { const f = app.querySelector("input[name=remember]"); return google(!!(f && f.checked)); }
     if (a === "psold") { const p = state.data.products.find(x => x.id === id); if (SB.isSoldOut(p)) delete p.soldOut; else p.soldOut = SB.today(); await saveProducts(); return go("menu", p.name + (p.soldOut ? " is marked sold out for today." : " is back in stock.")); }
-    if (a === "tab") { state.tab = v; if (v === "look") await prepLook(); if (v === "menu") state.edit = null; state.picTmp = null; if (v === "orders" || v === "admins") await loadAdminData(); if (v !== "look") sessionStorage.removeItem("sb_preview"); return go(v); }
+    if (a === "tab") { const was = state.tab, DT = k => k === "look" || k === "shop"; state.tab = v; if (DT(v) && !DT(was)) await prepLook(); if (v === "menu") state.edit = null; state.picTmp = null; if (v === "orders" || v === "admins") await loadAdminData(); if (v !== "look") sessionStorage.removeItem("sb_preview"); else draftKey(); return go(v); }
     if (a === "onext") { const o0 = state.orders.find(x => x.id === id) || {}, was = o0.status, r = await sb.from("orders").update({ status: v }).eq("id", id); if (!r.error) await logOrder(o0, "status " + was + " to " + v); await loadAdminData(); return go("orders", r.error ? "Could not update: " + r.error.message : "Order moved to " + v + "."); }   // v10.19
     if (a === "bake-print") { const w = window.open("", "_blank"); if (!w) return go("orders", "Your browser blocked the bake sheet window. Allow pop-ups for this page and try again."); w.document.write(bakePage()); w.document.close(); w.focus(); setTimeout(() => w.print(), 300); return; }   // v10.24
     if (a === "al-test") { state.open.oalert = true; return go("orders", chime() ? "Did you hear the chime? Then new orders will sound the same." : "No sound came out. Check the volume and that this device is not on silent, then press the button again."); }
@@ -827,7 +834,7 @@
       const sd = state.draft; if (!sd) return; const g = sd.priceGuide = sd.priceGuide || {}; state.open.guide = true; g.draft = false; g.sizes = g.sizes || []; g.flavours = g.flavours || [];
       if (a === "pg-sadd") g.sizes = [...g.sizes, { name: "", serves: 10, price: 0 }].slice(0, 10); else if (a === "pg-srm") g.sizes = g.sizes.filter((_, i) => i !== +b.dataset.i);
       else if (a === "pg-fadd") g.flavours = [...g.flavours, { name: "", extra: 0 }].slice(0, 15); else g.flavours = g.flavours.filter((_, i) => i !== +b.dataset.i);
-      draftKey(); go("look"); return;
+      draftKey(); go("shop"); return;
     }
     if (a === "cal-blk-add" || a === "cal-blk-rm" || a === "dl-add" || a === "dl-rm") {   // v10.21
       const sd = state.draft; if (!sd) return; const c = sd.calendar = sd.calendar || {}, d = sd.delivery = sd.delivery || {}; state.open.rules = true;
@@ -835,14 +842,14 @@
       else if (a === "cal-blk-rm") { c.blocked = (c.blocked || []).filter(x => x !== v); c.draft = false; }
       else if (a === "dl-add") { d.areas = [...(d.areas || []), { name: "", fee: 0 }].slice(0, 12); d.draft = false; }
       else { d.areas = (d.areas || []).filter((_, i) => i !== +b.dataset.i); d.draft = false; }
-      draftKey(); go("look"); return;
+      draftKey(); go("shop"); return;
     }
     if (a === "hmove") { const o = SB.homeOrder(state.draft.homeOrder), k = b.dataset.k, i = o.indexOf(k), j = i + +b.dataset.d; if (j < 0 || j >= o.length) return; o.splice(j, 0, o.splice(i, 1)[0]); state.draft.homeOrder = o; state.page = "index.html"; draftKey(); go("look"); const nb = document.querySelector(`[data-act="hmove"][data-k="${k}"][data-d="${b.dataset.d}"]`) || document.querySelector(`[data-act="hmove"][data-k="${k}"]`); if (nb) nb.focus(); return; }   // v10.17.4
     if (a === "theme") { state.draft.theme = v; state.peek = null; draftKey(); return go("look"); }
     if (a === "speek") { state.peek = v; draftKey(); return go("look"); }   // look at a season's theme without changing the saved one
     if (a === "ppage") { state.page = v; return go("look"); }
-    if (a === "lsave") { if (!await dbSave("settings", state.draft)) return; await prepLook(true); return go("look", "Saved. It is live for everyone now."); }
-    if (a === "lreset") { await prepLook(true); return go("look", "Reset to the saved settings."); }
+    if (a === "lsave") { if (!await dbSave("settings", state.draft)) return; await prepLook(true); return go(state.tab === "shop" ? "shop" : "look", "Saved. It is live for everyone now."); }
+    if (a === "lreset") { await prepLook(true); return go(state.tab === "shop" ? "shop" : "look", "Reset to the saved settings."); }
     if (a === "adel") { if (confirm("Remove " + u + " from the admins?")) { const r = await sb.from("admins").delete().eq("email", u); await loadAdminData(); return go("admins", r.error ? "Could not remove: " + r.error.message : u + " removed."); } return; }
     if (a === "live") { if (state.live === "running") return; state.live = "running"; go("publish"); try { state.live = await liveCheck(); } catch (err) { state.live = [{ s: "bad", t: "The live check stopped", d: String(err && err.message || err) }]; } return go("publish"); }   // v10.23
     if (a === "dl-set") return dl("site-settings.json", JSON.stringify(state.draft || state.data.settings, null, 2));
