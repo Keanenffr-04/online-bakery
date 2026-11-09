@@ -193,6 +193,57 @@
       ok: s => SB.addr.clean(s).length >= 6,
       MSG: "Please type your delivery address (street and suburb)."
     },
+    // v10.26.7: free delivery map. Finds the typed address with OpenStreetMap's search (Nominatim, no account or key) and shows it in an OpenStreetMap map, so a mistyped address is easy to spot.
+    // Only runs when the customer presses "Show on map" or leaves the address box (never while typing, as the service asks). It is a CHECK only: it never blocks an order and never changes the address.
+    map: {
+      cache: {},
+      queries(addr, area) {   // best guess first, then a simpler one (gate / complex details often confuse the search)
+        const a = SB.addr.clean(addr), parts = a.split(",").map(x => x.trim()).filter(Boolean), tail = area ? ", " + area : "", out = [a + tail + ", South Africa"];
+        if (parts.length > 2) out.push(parts.slice(-2).join(", ") + tail + ", South Africa");
+        return out;
+      },
+      async find(addr, area) {
+        const key = SB.addr.clean(addr).toLowerCase() + "|" + (area || "").toLowerCase(); if (key in SB.map.cache) return SB.map.cache[key];
+        let hit = null;
+        for (const q of SB.map.queries(addr, area)) {
+          try {
+            const c = new AbortController(), t = setTimeout(() => c.abort(), 8000);
+            const r = await fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=za&accept-language=en&q=" + encodeURIComponent(q), { signal: c.signal, headers: { Accept: "application/json" } });
+            clearTimeout(t); if (!r.ok) throw new Error("search " + r.status);
+            const j = await r.json(); if (j && j[0] && isFinite(+j[0].lat) && isFinite(+j[0].lon)) { hit = { lat: +j[0].lat, lon: +j[0].lon }; break; }
+          } catch (x) { return { error: true }; }   // not cached: the customer can try again
+          await new Promise(r => setTimeout(r, 1100));   // the free service asks for at most one search a second
+        }
+        return (SB.map.cache[key] = hit);
+      },
+      frame(h) {   // the map picture + a link to a bigger one (the embed carries its own OpenStreetMap credit)
+        const d = 0.004, e = 0.0028, f = n => n.toFixed(6);
+        return `<iframe title="Map of your delivery address" loading="lazy" referrerpolicy="no-referrer" src="https://www.openstreetmap.org/export/embed.html?bbox=${f(h.lon - d)}%2C${f(h.lat - e)}%2C${f(h.lon + d)}%2C${f(h.lat + e)}&amp;layer=mapnik&amp;marker=${f(h.lat)}%2C${f(h.lon)}"></iframe>
+          <p class="muted small"><a href="https://www.openstreetmap.org/?mlat=${f(h.lat)}&amp;mlon=${f(h.lon)}#map=17/${f(h.lat)}/${f(h.lon)}" target="_blank" rel="noopener">Open a bigger map</a> &middot; &copy; OpenStreetMap contributors</p>`;
+      },
+      // Adds the map check inside `wrap` (the address box's wrapper, so it hides with it). get() returns { addr, area }.
+      mount(wrap, get) {
+        if (!wrap || wrap.querySelector(".amap")) return;
+        const box = document.createElement("div"); box.className = "amap";
+        box.innerHTML = `<button type="button" class="btn btn--ghost btn--sm" data-amap-go>Show on map</button><p class="muted small amap__msg" role="status" aria-live="polite" hidden></p><div class="amap__frame" hidden></div>`;
+        wrap.appendChild(box);
+        const go = box.querySelector("[data-amap-go]"), msg = box.querySelector(".amap__msg"), fr = box.querySelector(".amap__frame"); let n = 0, lastKey = "";
+        const say = t => { msg.textContent = t || ""; msg.hidden = !t; };
+        const run = async force => {
+          const { addr, area } = get(), a = SB.addr.clean(addr), key = a + "|" + (area || "");
+          if (!SB.addr.ok(a)) { fr.hidden = true; say(a ? "Type a little more of the address (street and suburb) to see it on the map." : ""); lastKey = ""; return; }
+          if (!force && key === lastKey) return; lastKey = key;
+          const me = ++n; say("Looking for your address\u2026"); go.disabled = true;
+          const h = await SB.map.find(a, area); if (me !== n) return; go.disabled = false;
+          if (h && h.error) { fr.hidden = true; lastKey = ""; say("The map is not answering right now. That is fine, you can still send your order and Becca will check the address with you."); return; }
+          if (!h) { fr.hidden = true; say("We could not find that on the map. Please check the spelling or add the suburb. You can still send your order and Becca will check it with you."); return; }
+          fr.innerHTML = SB.map.frame(h); fr.hidden = false; say("Is this the right spot? If not, add the suburb or a landmark. The map is only a check: Becca confirms your delivery with you.");
+        };
+        go.addEventListener("click", () => run(true));
+        wrap.addEventListener("change", e => { if (e.target.matches("textarea")) run(false); });
+        if (SB.addr.ok(get().addr) && SB.map.cache[SB.addr.clean(get().addr).toLowerCase() + "|" + (get().area || "").toLowerCase()]) run(true);   // redrawn page: show a map we already found, no new search
+      }
+    },
     // v10.21: delivery fee for an area (0 when the order is over the free-delivery amount). Returns { fee, free } or null if the area is not on the list.
     deliveryFee(dl, area, total) {
       if (!dl || dl.enabled === false) return null; const a = (dl.areas || []).find(x => x.name === area); if (!a) return null;

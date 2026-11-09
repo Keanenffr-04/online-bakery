@@ -459,3 +459,8 @@ button.btn:disabled{opacity:.6;cursor:not-allowed}
 .rate__row input:focus-visible+label{outline:2px solid var(--link);outline-offset:2px;border-radius:6px}
 /* v10.26: How to pay box on the thank-you page */
 .thanks__tbl{border-collapse:collapse;width:100%;margin:.2rem 0 .8rem}.thanks__tbl th{text-align:left;font-weight:600;padding:.3rem .8rem .3rem 0;white-space:nowrap;vertical-align:top}.thanks__tbl td{padding:.3rem 0;word-break:break-word}
+
+/* v10.26.7: delivery map check */
+.amap{margin-top:.6rem}.amap .btn--sm{padding:.4rem .9rem;font-size:.85rem}.amap__msg{margin:.5rem 0 0}
+.amap__frame iframe{display:block;width:100%;height:220px;border:1px solid var(--border);border-radius:var(--radius-card);margin-top:.6rem;background:var(--surface-alt)}
+.amap__frame p{margin:.35rem 0 0}.amap__frame[hidden],.amap__msg[hidden]{display:none}
