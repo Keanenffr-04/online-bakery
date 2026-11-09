@@ -1,6 +1,6 @@
 # 🗺️ Roadmap: what's next and what we need from you
 
-**Where we are:** v10.26.2 &nbsp;|&nbsp; **Next up:** v10.26.3 (upload proof of payment), then v10.26.4 (install as an app) &nbsp;|&nbsp; **Rule:** 2 things per version.
+**Where we are:** v10.26.3 &nbsp;|&nbsp; **Next up:** v10.26.4 (upload proof of payment), then v10.26.5 (install as an app) &nbsp;|&nbsp; **Rule:** 2 things per version.
 
 *This page is written for Becca. No website or coding knowledge needed. Words you might not know are explained in the "Words explained" list in the [README](../README.md). Finished work is in [`BACKLOG.md`](BACKLOG.md).*
 
@@ -12,7 +12,8 @@
 - ✅ **New in v10.26:** a **"How to pay" box** on the thank-you page (your EFT details, SnapScan button and Capitec Pay number with Copy buttons). It stays hidden until you type your real details in Admin > Theme & layout > How to pay. No database update needed.
 - ✅ **New in v10.26.1:** the **admin is tidied** (your list 22). A new **Ordering & payment** tab holds the order calendar and delivery, the cake price guide and How to pay; **Theme & layout** only has the look of the site. No database update needed.
 - ✅ **New in v10.26.2:** the Live check's photo-storage warning is fixed (list 23). The check was too jumpy (a locked storage also answers with an empty list), so it now tries a real test picture the way a stranger would and removes it again. The database also gets an extra lock so only admins can ever see an inspiration photo. **Run the newest `setup.sql` once** (section 2c), then run the Live check again.
-- ⏭️ **Next:** v10.26.3 (customers upload proof of payment, you see it next to the order), then v10.26.4 (installing the website on a phone like an app). Your original v10.26 was split in three to keep each step small. The build order for all 60 ideas is in section 1.
+- ✅ **New in v10.26.3:** your **backup WhatsApp number** (Keanen, 081 211 8414). It shows as "Can't reach Becca?" on the Contact page and on the thank-you page (with the order typed out). Orders still go to Becca's number and are saved online for both admins. A step-by-step **how to order** guide is in section 5g.
+- ⏭️ **Next:** v10.26.4 (customers upload proof of payment, you see it next to the order), then v10.26.5 (installing the website on a phone like an app). Your original v10.26 was split in three to keep each step small. The build order for all 60 ideas is in section 1.
 - ⏳ **Waiting on you:** real prices, FAQ answers, reviews, your story, Instagram / Facebook names and photos. The full checklist is in section 2.
 - 🚀 **Last step:** putting the website online, only when you say "I'm happy with everything".
 
@@ -34,8 +35,8 @@ Your change lists always go **first**, so the versions below may slide back by o
 
 | Version | Status | What you will get | What we need from you |
 |---|---|---|---|
-| **v10.26.3** | ⏭️ Next | **Upload proof of payment** on the thank-you page (stored privately, you open it next to the order) + a **"paid" tick** per order (idea 27, part 2). Needs the newest `setup.sql`. | Nothing new |
-| v10.26.4 | 📅 Planned | **Install on the home screen like an app**, and the menu and cart keep working when the internet is flaky or during load shedding (idea 47). | Nothing new |
+| **v10.26.4** | ⏭️ Next | **Upload proof of payment** on the thank-you page (stored privately, you open it next to the order) + a **"paid" tick** per order (idea 27, part 2). Needs the newest `setup.sql`. | Nothing new |
+| v10.26.5 | 📅 Planned | **Install on the home screen like an app**, and the menu and cart keep working when the internet is flaky or during load shedding (idea 47). | Nothing new |
 | v10.27 | 📅 Planned | **Shop status banner** ("on holiday until 3 Jan", pauses orders) + the **old "Publish" wording fixed** in the admin (4 and 45). | Nothing new |
 | v10.28 | 📅 Planned | **Gift vouchers** (you give a code, the customer types it in the cart, it comes off the total) + a **loyalty reward** (for example every 10th order a free cupcake box). | Your voucher and loyalty rules |
 | v10.29 | 📅 Planned | **Deposits / online payment** (Yoco, PayFast or Ozow). A deposit secures the date. On its own because it handles real money. | A payment account that you open |
@@ -105,6 +106,8 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 
 | List | # | Request (short) | Status | Where |
 |---|---|---|---|---|
+| 24 | 1 | Add my WhatsApp number (Keanen Russon 081 211 8414) so messages can still reach me if they cannot reach Becca | DONE (Contact page + thank-you page; orders still go to Becca's number) | v10.26.3 |
+| 24 | 2 | After adding it, a step-by-step guide on how to order with the latest version | DONE (section 5g, and in the reply) | v10.26.3 |
 | 23 | 1 | The live check says strangers can look inside the photo storage; I do not want that, fix it | DONE (accurate check with a test picture + an extra database lock; run the newest setup.sql) | v10.26.2 |
 | 23 | 2 | Only 2 changes per version, the rest to the backlog | DONE (only 1 change came; ideas in 4b) | v10.26.2 |
 | 22 | 1 | In the admin, put everything under the right header (no cake stuff under Themes, and so on). Add to the roadmap | DONE (new Ordering & payment tab; the rest of the sorting is in 4b) | v10.26.1 |
@@ -268,6 +271,12 @@ Every version leaves a few "good idea, but not now" notes. They used to be sprea
 - A "tidy unused photos" job for pictures whose order was never sent (v10.25)
 - A "reply to this review" line under a review; ask for a Google review too (v10.25)
 - A review reminder sent a few days after "Mark done" (needs WhatsApp / email sending first); a QR code for the review page (idea 59) (v10.25)
+
+**Backup WhatsApp number (v10.26.3)**
+- Put the "Can't reach Becca?" line on the Cart and Custom Order pages too, and under the green floating WhatsApp button (v10.26.3)
+- Include the payment details in the "confirmed" WhatsApp message Becca sends, so a customer who closed the thank-you page still gets them (v10.26.3)
+- Mention Keanen on the Privacy page as a second person who can see WhatsApp messages and orders, once the owner confirms the wording (POPIA) (v10.26.3)
+- Let the number be changed in the admin instead of in the project file; choose which number a day or time of week goes to (v10.26.3)
 
 **Photo storage lock (v10.26.2)**
 - Run the Live check by itself once a week and keep its history (v10.26.2)
@@ -451,6 +460,27 @@ Free Supabase projects pause after about 7 days with nobody using them. The proj
 2. Click **Keep database awake** on the left, then **Run workflow** once to try it. A green tick means it works.
 3. After that nothing else is needed. (GitHub switches scheduled jobs off after 60 days with no changes to the project; if that happens, press **Run workflow** again. Using the admin also counts as activity.)
 4. If a run ever shows a red cross, the database is probably paused: open supabase.com and click **Restore**.
+
+### 5g. How to order, step by step (v10.26.3)
+**A cart order (menu items)**
+1. Open the website and go to **Menu**. Tap **Add** on each item you want. The cart icon at the top shows how many.
+2. Open the **Cart**. Change quantities with the + and - buttons, or remove things.
+3. Fill in your **name** and **WhatsApp number** (the country code is +27 already), then pick **Collection** or **Delivery**. For delivery choose your **area**; the fee is added to the total.
+4. Pick the **date** you need it. Dates that are too soon, a day off or already full cannot be chosen, and a message tells you the first free date. Add **notes** (allergies, a message on the cake) if you like.
+5. Press **Send order on WhatsApp**. WhatsApp opens with the whole order typed out. **Press send in WhatsApp**: the order only reaches Becca when you do.
+6. The website takes you to the **thank-you page**. It shows what you sent, and a **How to pay** box once Becca has typed her payment details in the admin. Nothing is paid yet.
+7. **Becca replies on WhatsApp** to confirm the order and the final total. Only pay after that. Pay by EFT, SnapScan or Capitec Pay, using your name as the reference, and send her the proof of payment on WhatsApp.
+8. **Can't reach Becca?** On the thank-you page (and on the Contact page) press **Can't reach Becca? WhatsApp Keanen**. The message is typed for you. Your order is also saved online, so Becca and Keanen can both see it in the admin.
+
+**A custom cake**
+1. Go to **Custom Orders**. Describe the cake, pick the occasion and how many people it must serve.
+2. *Optional:* use the **price guide** (size and flavour give a rough price) and add an **inspiration photo**.
+3. Fill in your name, WhatsApp number, date and collection or delivery, then press **Send on WhatsApp** and press send in WhatsApp.
+4. Becca replies with what she can do and the price. Confirming and paying work like a cart order (steps 6 to 8).
+
+**What Becca does in the admin:** Orders > the new order is **pending** > **Confirm** > the green **WhatsApp** button (the message is typed for her) > later **Mark ready** and **Mark done**. Both Becca and Keanen can use the admin.
+
+**Today's limits (so nothing surprises you):** payment is by hand (EFT, SnapScan or Capitec Pay), there is no upload-your-proof button yet (planned v10.26.4), and the prices, notice days and delivery fees are samples until Becca replaces them (checklist 2a).
 
 ---
 

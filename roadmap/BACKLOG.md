@@ -2,7 +2,7 @@
 
 *Written for Becca. This page is the list of **finished** work. What is still to do is in [`ROADMAP.md`](ROADMAP.md). New entries are added at the bottom and nothing is ever deleted.*
 
-**Latest version:** v10.26.2
+**Latest version:** v10.26.3
 
 ## Contents
 1. [What the website can do today](#today)
@@ -97,6 +97,7 @@ Oldest first. Click a version to jump to its detailed record. A version like **v
 | [v10.23](#v10-23) | 2026-11-08 | **Live check** button in the admin (tests the real database), **spam protection** on orders and sign-up, and a **keep-alive** so the free database never pauses. Run the newest `setup.sql` once. |
 | [v10.24](#v10-24) | 2026-11-08 | **Bake sheet** (what to make for a day, added up and printable, allergies in red) and a **new-order alert** (chime + pop-up while the admin is open). Run the newest `setup.sql` once (optional, makes the alert instant). |
 | [v10.25](#v10-25) | 2026-11-09 | **Review link** (a short review page; you approve each review before it shows; the thank-you WhatsApp message carries the link) and **inspiration photo upload** on Custom Orders (stored privately, you open it next to the order). Run the newest `setup.sql` once (section 12). |
+| [v10.26.3](#v10-26-3) | 2026-11-09 | **Backup WhatsApp number** (Keanen, your list 24): a "Can't reach Becca?" button on the Contact page and the thank-you page, with the order typed out. Plus a step-by-step **how to order** guide. Nothing to update in the database. |
 | [v10.26.2](#v10-26-2) | 2026-11-09 | **Photo storage warning fixed** (your list 23): the Live check now tests the photo storage properly, and the database gets an extra lock so only admins can see an inspiration photo. **Run the newest `setup.sql` once**, then run the Live check again. |
 | [v10.26.1](#v10-26-1) | 2026-11-09 | **Admin tidy-up** (your list 22): a new **Ordering & payment** tab holds the order calendar and delivery, the cake price guide and How to pay, so **Theme & layout** only has looks. Nothing to update in the database. |
 | [v10.26](#v10-26) | 2026-11-09 | **"How to pay" box** on the thank-you page (your EFT bank details, a SnapScan button and a Capitec Pay number, each with a Copy button, shown only after you type your real details). This is part 1 of 3: upload proof of payment is v10.26.1 and install-as-an-app is v10.26.2. No database update needed. |
@@ -590,3 +591,12 @@ Owner list 23 had one change: the Live check said "Strangers CAN look inside the
 Files: `src/js/admin.js`, `supabase/setup.sql`, `README.md`, `roadmap/*`, `docs/AI_HANDOFF.md`, `VERSION`.
 Tests (headless Chromium, mock Supabase + mocked storage answers): locked storage = green and the test file removed; listing leaks = red; the object opens = red; the test upload refused = yellow, nothing removed; no page errors. **The new SQL was NOT run on a real Postgres** (none in the sandbox): the owner's Live check is the real test. Honest note: this is probably a false alarm in the old check, but the extra lock makes the answer safe either way.
 Pushed to the backlog (also in `ROADMAP.md` 4b): a weekly automatic Live check with history; auto-removal of leftover test pictures; the same private-storage tick for proof of payment; deleting customer photos after a set time (with a Privacy page line).
+
+<a id="v10-26-3"></a>
+## v10.26.3: Backup WhatsApp number + how-to-order guide (done, 2026-11-09)
+Owner list 24 had two changes: (1) add Keanen Russon's WhatsApp (081 211 8414) so messages still reach the owner if Becca cannot be reached; (2) give a step-by-step guide to ordering with the latest version. Because of this patch, **proof of payment is now v10.26.4 and the installable app v10.26.5**.
+1. **Backup number.** `config/business.json` has `backupWhatsapp {name, phoneDisplay, number}` (`27812118414`; leave `number` empty to hide it everywhere); the offline copy is regenerated. `SB.backupWa(biz, text)` in `store.js` builds the `wa.me` link from the number (digits only, 9 to 15) and returns null when unset. Contact page: a line under Becca's button, filled by `site.js` (`[data-wa-backup]`, hidden when unset). Thank-you page: `backupBtn()` in `thanks.js` adds "Can't reach Becca? WhatsApp Keanen" with the order typed out (name, date, items, total, method). **Orders still go to Becca's number** and are saved online as before, so both admins see them. Cart, Custom Order and the floating button were deliberately left alone (their send step also saves the order and redirects; changing it is riskier), see 4b.
+2. **Guide.** ROADMAP section 5g (also given in the reply) covers a cart order, a custom cake and what Becca does in the admin, with today's limits (payment by hand, no proof upload yet, sample prices).
+Files: `config/business.json`, `src/js/offline-data.js`, `src/js/store.js`, `src/js/site.js`, `src/js/thanks.js`, `src/contact.html`, `README.md`, `roadmap/*`, `docs/AI_HANDOFF.md`, `VERSION`. No `setup.sql` change (`SETUP_VERSION` stays `10.26.2`).
+Tests (headless Chromium, file://): Contact shows Keanen's button with `wa.me/27812118414` and Becca's buttons unchanged; the thank-you page button opens a chat with the order typed out; with the number emptied both buttons disappear; index, cart, custom orders, menu, FAQ and About load with no page errors.
+Pushed to the backlog (also in `ROADMAP.md` 4b): the line on the Cart / Custom Order pages and under the floating button; payment details inside the "confirmed" WhatsApp message (a customer who closed the thank-you page never sees them); a Privacy page line about Keanen (POPIA, owner to confirm); changing the number in the admin; routing by day or time.

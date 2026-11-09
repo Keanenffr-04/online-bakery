@@ -4,10 +4,15 @@
   "phoneDisplay": "083 341 3166",
   "whatsappNumber": "27833413166",
   "whatsappLink": "https://wa.me/27833413166",
+  "backupWhatsapp": {
+    "name": "Keanen",
+    "phoneDisplay": "081 211 8414",
+    "number": "27812118414"
+  },
   "country": "ZA",
   "currency": "ZAR",
   "mode": "online-only",
-  "_note": "Single source of truth for business details. Never hardcode these elsewhere. instagram / facebook are PLACEHOLDER handles (v10.5) until the owner gives the real ones; leave one empty to hide that link. supabase.url / supabase.key (v10.17) are PUBLIC by design (the publishable key); the data is protected by the locks in supabase/setup.sql. Never put a secret / service_role key here.",
+  "_note": "Single source of truth for business details. Never hardcode these elsewhere. instagram / facebook are PLACEHOLDER handles (v10.5) until the owner gives the real ones; leave one empty to hide that link. supabase.url / supabase.key (v10.17) are PUBLIC by design (the publishable key); the data is protected by the locks in supabase/setup.sql. Never put a secret / service_role key here. backupWhatsapp (v10.26.3) is a second WhatsApp number shown as \"Can't reach Becca?\" on the Contact and thank-you pages; orders still go to the main number and are saved online for both admins. Leave the number empty to hide it.",
   "instagram": "sweetest.bakery",
   "facebook": "sweetest.bakery",
   "supabase": {

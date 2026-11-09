@@ -141,6 +141,11 @@
   // SB.load() reads the JSON on a server, or its offline copy when the page is opened straight from disk.
   (window.SB ? SB.load().then(d => d.biz) : Promise.resolve({})).then(b => {
     document.querySelectorAll("[data-biz]").forEach(el => { const v = b[el.dataset.biz]; if (v) el.textContent = el.dataset.biz === "owner" ? v.split(" ")[0] : v; });
+    document.querySelectorAll("[data-wa-backup]").forEach(el => {   // v10.26.3: "Can't reach Becca?" second WhatsApp number (hidden when not set)
+      const w = window.SB && SB.backupWa(b, el.dataset.waText || "Hi! I tried to reach Becca at The Sweetest Bakery on WhatsApp but could not. I'd like to order."), box = el.closest("[data-wa-backup-box]") || el;
+      if (!w) { box.hidden = true; return; }
+      el.href = w.link; el.target = "_blank"; el.rel = "noopener"; el.textContent = "Message " + w.name + " on WhatsApp" + (w.display ? " (" + w.display + ")" : ""); box.hidden = false;
+    });
     document.querySelectorAll("[data-wa]").forEach(el => {
       if (!b.whatsappLink) { el.href = "contact.html"; return; }
       const msg = el.dataset.waText || "Hi! I'd like to order from The Sweetest Bakery.";

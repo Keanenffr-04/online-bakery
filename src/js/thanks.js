@@ -16,6 +16,11 @@ document.addEventListener("click", e => {   // v10.26: Copy buttons in the How t
   const t = b.getAttribute("data-copy"), say = ok => { const m = document.getElementById("copy-msg"); if (m) { m.textContent = ok ? "Copied: " + t : "Could not copy. Please type it in."; m.hidden = false; } };
   if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(() => say(true), () => say(false)); else say(false);
 });
+/* v10.26.3: "Can't reach Becca?" button: the same order, typed out for the backup WhatsApp number. Only shown when backupWhatsapp is set in config/business.json. */
+function backupBtn(biz, o) {
+  const msg = ["Hi! I sent an order on The Sweetest Bakery website but could not reach " + ((biz.owner || "Becca").split(" ")[0]) + " on WhatsApp.", o.name ? "Name: " + o.name : "", o.date ? "Needed for: " + o.date : "", "", ...(o.items || []).map(i => "- " + i), o.total ? "Total: R " + Math.round(o.total) : "", o.method && o.method !== "Not sure yet" ? o.method : ""].filter((x, i, a) => x !== "" || (a[i - 1] !== "" && i < a.length - 1)).join("\n"), w = SB.backupWa(biz, msg);
+  return w ? `<a class="btn btn--ghost" target="_blank" rel="noopener" href="${SB.esc(w.link)}">Can't reach ${SB.esc((biz.owner || "Becca").split(" ")[0])}? WhatsApp ${SB.esc(w.name)}</a>` : "";
+}
 SB.load().then(({ biz, settings }) => {
   const root = document.getElementById("thanks-root"), o = SB.lastOrder(), esc = SB.esc;
   if (!o) { root.innerHTML = `<h1>Thank you!</h1><p>If you have just sent an order, Becca will reply on WhatsApp to confirm it.</p><p><a class="btn" href="menu.html">Back to the menu</a></p>`; return; }
@@ -24,7 +29,7 @@ SB.load().then(({ biz, settings }) => {
     <p>Your ${o.source === "custom" ? "custom cake request" : "order"} is saved${when}. <strong>It is not confirmed yet:</strong> Becca replies on WhatsApp to confirm it and the price. If WhatsApp did not open, or you did not press send there, use the button below.</p>
     <div class="thanks__box"><h2>What you sent</h2><ul>${(o.items || []).map(i => `<li>${esc(i)}</li>`).join("")}</ul>${o.total ? `<p><strong>Total: R ${esc(Math.round(o.total))}</strong></p>` : ""}${o.method && o.method !== "Not sure yet" ? `<p class="muted">${esc(o.method)}</p>` : ""}</div>
     ${payBox(SB.payInfo(settings.payment), o, esc)}
-    <p class="thanks__actions">${biz.whatsappLink ? `<a class="btn btn--whatsapp" target="_blank" rel="noopener" href="${esc(biz.whatsappLink)}">Open WhatsApp</a>` : ""}<a class="btn btn--ghost" href="menu.html">Back to the menu</a><a class="btn btn--ghost" href="account.html">My account</a></p>
+    <p class="thanks__actions">${biz.whatsappLink ? `<a class="btn btn--whatsapp" target="_blank" rel="noopener" href="${esc(biz.whatsappLink)}">Open WhatsApp</a>` : ""}${backupBtn(biz, o)}<a class="btn btn--ghost" href="menu.html">Back to the menu</a><a class="btn btn--ghost" href="account.html">My account</a></p>
     ${o.source === "cart" && (o.lines || []).length ? `<p><button class="btn btn--ghost" id="again" type="button">Order the same again</button> <span class="muted">Puts these items back in your cart.</span></p><p class="thanks__msg" id="again-msg" role="status" hidden></p>` : ""}${o.source === "custom" ? `<p><a class="btn btn--ghost" href="custom-orders.html">Make another custom request</a></p>` : ""}
     ${o.source === "cart" && window.SBCart && window.SBCart.count && window.SBCart.count() ? `<p><button class="btn btn--ghost" id="clear-cart" type="button">Empty my cart</button> <span class="muted">Your cart still holds these items.</span></p>` : ""}`;
   const again = document.getElementById("again");   // v10.22: Order again. Replaces the cart with the same items (so nothing doubles if the cart still holds them); skips items that are gone or sold out today.

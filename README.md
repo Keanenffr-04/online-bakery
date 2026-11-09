@@ -1,9 +1,10 @@
 # online-bakery 🐇🍰
 Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
 
-**Current version:** v10.26.2. The latest three versions:
+**Current version:** v10.26.3. The latest three versions:
+- **v10.26.3:** a **backup WhatsApp number** (Keanen) on the Contact and thank-you pages, plus a step-by-step **how to order** guide in the roadmap (section 5g). Nothing to update in the database.
 - **v10.26.2:** a **fix for the photo storage warning** in the Live check. The check is now accurate (it tries a test picture the way a stranger would, then removes it), and the database gets an extra lock so nobody but an admin can ever see an inspiration photo. **Run the newest `setup.sql` once**, then run the Live check again.
-- **v10.26.1:** the **admin is tidied**: a new tab, **Ordering & payment**, holds the order calendar and delivery, the cake price guide and How to pay. **Theme & layout** now only has looks (theme, seasons, Home page, strips, Menu page). Nothing to update in the database.
+- *(older)* **v10.26.1:** the **admin is tidied**: a new tab, **Ordering & payment**, holds the order calendar and delivery, the cake price guide and How to pay. **Theme & layout** now only has looks (theme, seasons, Home page, strips, Menu page). Nothing to update in the database.
 - **v10.26:** a **"How to pay" box** on the thank-you page (your bank details, SnapScan and Capitec Pay, with Copy buttons). Type your details in Admin > Ordering & payment > **How to pay**; customers see nothing until you do. No database update needed.
 - **v10.25:** a **review page** (customers write a short review; you press **Approve** in the admin before it shows) and **inspiration photos** on Custom Orders (stored privately; **View photo** next to the order). Run the newest `setup.sql` once.
 - *(older)* **v10.24:** a **bake sheet** in the admin (what to make for a day, added up from every order, printable) and a **new-order alert** (a chime and a pop-up while the admin is open). Run the newest `setup.sql` once (optional, makes the alert instant).
@@ -75,6 +76,7 @@ The full checklist is in [`roadmap/ROADMAP.md`, section 2](roadmap/ROADMAP.md#ne
 |---|---|
 | Admin says **"The online database is not answering"** | Open supabase.com and check the project is not paused (click **Restore** if it is). If it was never set up, run `supabase/setup.sql` (roadmap section 2c). |
 | You cannot sign in to the admin, or no email arrives | Emails from the free sender often never arrive. Create the login directly: Supabase > Authentication > Users > **Add user**, tick **Auto Confirm User** (roadmap section 2d). The email must be on the admin list. |
+| A customer cannot reach me on WhatsApp | The Contact page and thank-you page show **"Can't reach Becca? WhatsApp Keanen"**. The number lives in `config/business.json` (`backupWhatsapp`). |
 | A customer says their confirm or reset email never came | Customers need your own email sender first (roadmap guide 5c). **Continue with Google** and WhatsApp still work. |
 | I saved a change but customers do not see it | Make sure you pressed **Save** in that section, then reload the page. |
 | A customer cannot pick the date they want | That is the **order calendar**: not enough notice, a day off, a blocked date or a full day. Change the rules in Ordering & payment > Order calendar & delivery. |

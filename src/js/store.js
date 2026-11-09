@@ -166,6 +166,12 @@
       const n = SB.nextFreeDate(kind, cal, booked);
       return r.reason + (n ? " The first free date is " + new Date(n + "T12:00").toLocaleDateString("en-ZA", { weekday: "long", day: "numeric", month: "long" }) + "." : "");
     },
+    // v10.26.3: the backup WhatsApp number (config/business.json backupWhatsapp). Returns { name, display, link } or null when it is not set. text is optional and prefilled.
+    backupWa(biz, text) {
+      const b = (biz || {}).backupWhatsapp, n = String((b && b.number) || "").replace(/\D/g, "");
+      if (!/^\d{9,15}$/.test(n)) return null;
+      return { name: String(b.name || "").trim() || "us", display: String(b.phoneDisplay || "").trim(), link: "https://wa.me/" + n + (text ? "?text=" + encodeURIComponent(text) : "") };
+    },
     // v10.26: which payment methods are ready to show. Returns null while the details are still the empty placeholder (draft), switched off, or empty.
     payInfo(pay) {
       if (!pay || pay.enabled === false || pay.draft) return null;
