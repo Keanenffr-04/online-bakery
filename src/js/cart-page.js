@@ -92,8 +92,10 @@ SB.load().then(async ({ biz, settings }) => {
       const g = id => (document.getElementById(id) || {}).value || "", ph0 = SB.phoneRead("c-phone");
       if (state.lines.length) SB.saveOrder({ source: "cart", name: g("c-name").trim().slice(0, 120), phone: ph0.digits || "", items: state.lines.map(l => l.q + " x " + l.p.name).join(", ").slice(0, 3000), date: g("c-date"), total: state.total + extras().fee, details: { lines: state.lines.map(l => ({ id: l.p.id, q: l.q })), method: g("c-method"), notes: g("c-notes").trim().slice(0, 500), ...(extras().area ? { delivery: { area: extras().area, fee: extras().fee } } : {}) } });
       if (state.lines.length && biz.whatsappLink) {   // v10.19.1: show the thank-you page once the WhatsApp tab has opened (gives the save a moment to leave)
-        SB.lastOrder({ source: "cart", lines: state.lines.map(l => ({ id: l.p.id, q: l.q })), name: g("c-name").trim(), items: state.lines.map(l => l.q + " x " + l.p.name), date: g("c-date"), total: state.total + extras().fee, method: extras().area ? "Delivery to " + extras().area + (extras().free ? " (free)" : " (" + C.money(extras().fee) + ")") : g("c-method") });
-        setTimeout(() => { location.href = "thanks.html"; }, 900);
+        let wa = ""; try { wa = new URL(document.getElementById("cart-send").href).searchParams.get("text") || ""; } catch (x) { /* no message text: the thank-you button just opens the chat */ }
+        SB.lastOrder({ source: "cart", wa, name: g("c-name").trim(), items: state.lines.map(l => l.q + " x " + l.p.name), date: g("c-date"), total: state.total + extras().fee, method: extras().area ? "Delivery to " + extras().area + (extras().free ? " (free)" : " (" + C.money(extras().fee) + ")") : g("c-method") });
+        // v10.26.4: the order is sent, so the cart starts fresh (items + this order's date / notes / area; name and phone stay for the next order). The message text is kept in sb_last so the thank-you page can still re-open the chat with it.
+        setTimeout(() => { C.clear(); C.meta({ dateISO: "", notes: "", area: "" }); location.href = "thanks.html"; }, 900);
       }
     }
     if (e.target.closest("#cart-send")) { const v = id => (document.getElementById(id) || {}).value || ""; SB.me.commit("c-remember", { name: v("c-name").trim(), phone: v("c-phone").trim(), method: v("c-method") }); const f = root.querySelector("[data-forget]"); if (f) f.hidden = !SB.me.has(); }

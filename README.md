@@ -1,9 +1,10 @@
 # online-bakery 🐇🍰
 Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
 
-**Current version:** v10.26.3. The latest three versions:
-- **v10.26.3:** a **backup WhatsApp number** (Keanen) on the Contact and thank-you pages, plus a step-by-step **how to order** guide in the roadmap (section 5g). Nothing to update in the database.
-- **v10.26.2:** a **fix for the photo storage warning** in the Live check. The check is now accurate (it tries a test picture the way a stranger would, then removes it), and the database gets an extra lock so nobody but an admin can ever see an inspiration photo. **Run the newest `setup.sql` once**, then run the Live check again.
+**Current version:** v10.26.4. The latest three versions:
+- **v10.26.4:** (your list 25, part 1 of 3) the **cart empties by itself** after an order is sent, and **"Order the same again" is removed** (thank-you page and My account). The thank-you page's **Open WhatsApp** button now carries the order text. Nothing to update in the database.
+- *(older)* **v10.26.3:** a **backup WhatsApp number** (Keanen) on the Contact and thank-you pages, plus a step-by-step **how to order** guide in the roadmap (section 5g). Nothing to update in the database.
+- *(older)* **v10.26.2:** a **fix for the photo storage warning** in the Live check. The check is now accurate (it tries a test picture the way a stranger would, then removes it), and the database gets an extra lock so nobody but an admin can ever see an inspiration photo. **Run the newest `setup.sql` once**, then run the Live check again.
 - *(older)* **v10.26.1:** the **admin is tidied**: a new tab, **Ordering & payment**, holds the order calendar and delivery, the cake price guide and How to pay. **Theme & layout** now only has looks (theme, seasons, Home page, strips, Menu page). Nothing to update in the database.
 - **v10.26:** a **"How to pay" box** on the thank-you page (your bank details, SnapScan and Capitec Pay, with Copy buttons). Type your details in Admin > Ordering & payment > **How to pay**; customers see nothing until you do. No database update needed.
 - **v10.25:** a **review page** (customers write a short review; you press **Approve** in the admin before it shows) and **inspiration photos** on Custom Orders (stored privately; **View photo** next to the order). Run the newest `setup.sql` once.

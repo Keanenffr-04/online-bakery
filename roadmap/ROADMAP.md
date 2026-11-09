@@ -1,6 +1,6 @@
 # 🗺️ Roadmap: what's next and what we need from you
 
-**Where we are:** v10.26.3 &nbsp;|&nbsp; **Next up:** v10.26.4 (upload proof of payment), then v10.26.5 (install as an app) &nbsp;|&nbsp; **Rule:** 2 things per version.
+**Where we are:** v10.26.4 &nbsp;|&nbsp; **Next up:** v10.26.5 (delivery map + cosier WhatsApp message), then v10.26.6 (orders reach both WhatsApps) &nbsp;|&nbsp; **Rule:** 2 things per version.
 
 *This page is written for Becca. No website or coding knowledge needed. Words you might not know are explained in the "Words explained" list in the [README](../README.md). Finished work is in [`BACKLOG.md`](BACKLOG.md).*
 
@@ -13,7 +13,8 @@
 - ✅ **New in v10.26.1:** the **admin is tidied** (your list 22). A new **Ordering & payment** tab holds the order calendar and delivery, the cake price guide and How to pay; **Theme & layout** only has the look of the site. No database update needed.
 - ✅ **New in v10.26.2:** the Live check's photo-storage warning is fixed (list 23). The check was too jumpy (a locked storage also answers with an empty list), so it now tries a real test picture the way a stranger would and removes it again. The database also gets an extra lock so only admins can ever see an inspiration photo. **Run the newest `setup.sql` once** (section 2c), then run the Live check again.
 - ✅ **New in v10.26.3:** your **backup WhatsApp number** (Keanen, 081 211 8414). It shows as "Can't reach Becca?" on the Contact page and on the thank-you page (with the order typed out). Orders still go to Becca's number and are saved online for both admins. A step-by-step **how to order** guide is in section 5g.
-- ⏭️ **Next:** v10.26.4 (customers upload proof of payment, you see it next to the order), then v10.26.5 (installing the website on a phone like an app). Your original v10.26 was split in three to keep each step small. The build order for all 60 ideas is in section 1.
+- ✅ **New in v10.26.4:** (your list 25, part 1 of 3) the **cart empties by itself** once the order is sent, and **"Order the same again" is gone** (from the thank-you page and from My account). The thank-you page's **Open WhatsApp** button now brings the order text with it, so nothing is lost if WhatsApp did not open. No database update needed.
+- ⏭️ **Next:** v10.26.5 (a map where the customer gives a delivery address + a cosier, friendlier WhatsApp message), then v10.26.6 (every order reaching **both** your WhatsApps; this one needs a decision from you, see the plan). Your list 25 was split in 3 to keep each step small. Proof of payment and the installable app slid back to v10.26.7 and v10.26.8.
 - ⏳ **Waiting on you:** real prices, FAQ answers, reviews, your story, Instagram / Facebook names and photos. The full checklist is in section 2.
 - 🚀 **Last step:** putting the website online, only when you say "I'm happy with everything".
 
@@ -31,12 +32,14 @@
 
 <a id="plan"></a>
 ## 1. What is still to build (the plan)
-Your change lists always go **first**, so the versions below may slide back by one when you send a list. **The order below is the one you agreed in v10.22:** safe and real first (v10.23), then things that save you time, then trust, then money, then launch. Done: **v10.22** (price guide + Order again), **v10.23** (Live check + spam protection + keep-alive), **v10.24** (bake sheet + new-order alert) and **v10.25** (review link + inspiration photo upload). Photos and going online are deliberately **last**. Everything already built is listed in [`BACKLOG.md`](BACKLOG.md) (start with "What the website can do today").
+Your change lists always go **first**, so the versions below may slide back by one when you send a list. **The order below is the one you agreed in v10.22:** safe and real first (v10.23), then things that save you time, then trust, then money, then launch. Done: **v10.22** (price guide; its "Order again" part was removed in v10.26.4 at your request), **v10.23** (Live check + spam protection + keep-alive), **v10.24** (bake sheet + new-order alert) and **v10.25** (review link + inspiration photo upload). Photos and going online are deliberately **last**. Everything already built is listed in [`BACKLOG.md`](BACKLOG.md) (start with "What the website can do today").
 
 | Version | Status | What you will get | What we need from you |
 |---|---|---|---|
-| **v10.26.4** | ⏭️ Next | **Upload proof of payment** on the thank-you page (stored privately, you open it next to the order) + a **"paid" tick** per order (idea 27, part 2). Needs the newest `setup.sql`. | Nothing new |
-| v10.26.5 | 📅 Planned | **Install on the home screen like an app**, and the menu and cart keep working when the internet is flaky or during load shedding (idea 47). | Nothing new |
+| **v10.26.5** | ⏭️ Next | **Delivery map:** when a customer picks Delivery they type their address and see it on a free map (OpenStreetMap / Google Maps preview, no account or key); the address goes into the WhatsApp message and the saved order. Plus a **cosier, friendlier WhatsApp message** (cart + custom order; your list 25, items 3 and 7). | Your own words for the message if you want them (otherwise we write it warm and short) |
+| v10.26.6 | 📅 Planned | **Every order reaches both of your WhatsApps** (list 25, item 6). A website cannot message two chats by itself: the tap-to-send link opens one chat. Real automatic sending to two numbers needs the **WhatsApp Business Platform** (a Meta business account, a number registered for it, and a small cost per message) plus a small server step in Supabase. We will first set up what is free and close to it, and ask you which way you want to go. | A decision from you: free workaround or Meta WhatsApp Business account |
+| v10.26.7 | 📅 Planned | **Upload proof of payment** on the thank-you page (stored privately, you open it next to the order) + a **"paid" tick** per order (idea 27, part 2). Needs the newest `setup.sql`. | Nothing new |
+| v10.26.8 | 📅 Planned | **Install on the home screen like an app**, and the menu and cart keep working when the internet is flaky or during load shedding (idea 47). | Nothing new |
 | v10.27 | 📅 Planned | **Shop status banner** ("on holiday until 3 Jan", pauses orders) + the **old "Publish" wording fixed** in the admin (4 and 45). | Nothing new |
 | v10.28 | 📅 Planned | **Gift vouchers** (you give a code, the customer types it in the cart, it comes off the total) + a **loyalty reward** (for example every 10th order a free cupcake box). | Your voucher and loyalty rules |
 | v10.29 | 📅 Planned | **Deposits / online payment** (Yoco, PayFast or Ozow). A deposit secures the date. On its own because it handles real money. | A payment account that you open |
@@ -106,6 +109,15 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 
 | List | # | Request (short) | Status | Where |
 |---|---|---|---|---|
+| 25 | 1 | Add my WhatsApp number (Keanen Russon 081 211 8414) | DONE earlier (same as list 24 item 1) | v10.26.3 |
+| 25 | 2 | A step-by-step guide on how to order with the latest version | DONE (section 5g, updated each version) | v10.26.3 / v10.26.4 |
+| 25 | 3 | In the order summary, after picking Delivery and the area, show an actual map (Google Maps or any free thing) | PLANNED (delivery address box + free map preview) | v10.26.5 |
+| 25 | 4 | After they order, empty their cart | DONE (the cart empties itself 1 second after the order is sent; your name and number stay for next time) | v10.26.4 |
+| 25 | 5 | Remove the whole "order the same again" thing | DONE (removed from the thank-you page and from My account) | v10.26.4 |
+| 25 | 6 | Every order goes to my WhatsApp and my girlfriend's WhatsApp at the same time | PLANNED (needs a decision, see the plan) | v10.26.6 |
+| 25 | 7 | Make the WhatsApp message cosier and friendlier | PLANNED | v10.26.5 |
+| 25 | 8 | Later: a full online ordering shop like Takealot | IDEA (the cart, accounts and past orders exist; the missing parts are paying online (v10.29), stock counts and order tracking; listed in 4a) | v10.29 / after launch |
+| 25 | - | Only 2 changes per version, the rest to the backlog | DONE (list 25 was split in 3: v10.26.4, v10.26.5, v10.26.6) | v10.26.4 |
 | 24 | 1 | Add my WhatsApp number (Keanen Russon 081 211 8414) so messages can still reach me if they cannot reach Becca | DONE (Contact page + thank-you page; orders still go to Becca's number) | v10.26.3 |
 | 24 | 2 | After adding it, a step-by-step guide on how to order with the latest version | DONE (section 5g, and in the reply) | v10.26.3 |
 | 23 | 1 | The live check says strangers can look inside the photo storage; I do not want that, fix it | DONE (accurate check with a test picture + an extra database lock; run the newest setup.sql) | v10.26.2 |
@@ -200,6 +212,8 @@ Not scheduled. Tell us which to pull into a version. The ranked **top 10** is in
 - Customer accounts only if repeat-order history is wanted (it is now, see v10.18)
 - Finish the reference review of `online_bakery_marketplace_v2` and verify licences
 - Notes from the Keagan reference repos (what we borrowed, what we skip) are in `ROADMAP_ARCHIVE.md`
+
+- **A full online shop like Takealot (list 25, item 8).** Today customers fill a cart and send it on WhatsApp, Becca confirms and they pay by hand. A Takealot-style flow adds: paying on the website (v10.29), live stock counts, an order-tracking page for the customer ("baking", "ready"), and email receipts (needs the email sender, 2a). We will do it in small steps after v10.29, only when you say so.
 
 ### 4b. Collected from finished versions (gathered here in v10.21.1)
 Every version leaves a few "good idea, but not now" notes. They used to be spread through the backlog; here they are in one place. The tag shows which version they came from.
@@ -461,16 +475,16 @@ Free Supabase projects pause after about 7 days with nobody using them. The proj
 3. After that nothing else is needed. (GitHub switches scheduled jobs off after 60 days with no changes to the project; if that happens, press **Run workflow** again. Using the admin also counts as activity.)
 4. If a run ever shows a red cross, the database is probably paused: open supabase.com and click **Restore**.
 
-### 5g. How to order, step by step (v10.26.3)
+### 5g. How to order, step by step (v10.26.4)
 **A cart order (menu items)**
 1. Open the website and go to **Menu**. Tap **Add** on each item you want. The cart icon at the top shows how many.
 2. Open the **Cart**. Change quantities with the + and - buttons, or remove things.
 3. Fill in your **name** and **WhatsApp number** (the country code is +27 already), then pick **Collection** or **Delivery**. For delivery choose your **area**; the fee is added to the total.
 4. Pick the **date** you need it. Dates that are too soon, a day off or already full cannot be chosen, and a message tells you the first free date. Add **notes** (allergies, a message on the cake) if you like.
-5. Press **Send order on WhatsApp**. WhatsApp opens with the whole order typed out. **Press send in WhatsApp**: the order only reaches Becca when you do.
+5. Press **Send order on WhatsApp**. WhatsApp opens with the whole order typed out. **Press send in WhatsApp**: the order only reaches Becca when you do. (The **cart empties itself** a second after you press the button, so your next order starts clean.)
 6. The website takes you to the **thank-you page**. It shows what you sent, and a **How to pay** box once Becca has typed her payment details in the admin. Nothing is paid yet.
 7. **Becca replies on WhatsApp** to confirm the order and the final total. Only pay after that. Pay by EFT, SnapScan or Capitec Pay, using your name as the reference, and send her the proof of payment on WhatsApp.
-8. **Can't reach Becca?** On the thank-you page (and on the Contact page) press **Can't reach Becca? WhatsApp Keanen**. The message is typed for you. Your order is also saved online, so Becca and Keanen can both see it in the admin.
+8. **WhatsApp did not open, or you did not press send?** On the thank-you page press **Open WhatsApp**: it brings your order text with it. **Can't reach Becca?** On the thank-you page (and the Contact page) press **Can't reach Becca? WhatsApp Keanen**. The message is typed for you. Your order is also saved online, so Becca and Keanen can both see it in the admin.
 
 **A custom cake**
 1. Go to **Custom Orders**. Describe the cake, pick the occasion and how many people it must serve.
@@ -480,7 +494,7 @@ Free Supabase projects pause after about 7 days with nobody using them. The proj
 
 **What Becca does in the admin:** Orders > the new order is **pending** > **Confirm** > the green **WhatsApp** button (the message is typed for her) > later **Mark ready** and **Mark done**. Both Becca and Keanen can use the admin.
 
-**Today's limits (so nothing surprises you):** payment is by hand (EFT, SnapScan or Capitec Pay), there is no upload-your-proof button yet (planned v10.26.4), and the prices, notice days and delivery fees are samples until Becca replaces them (checklist 2a).
+**Today's limits (so nothing surprises you):** payment is by hand (EFT, SnapScan or Capitec Pay), there is no upload-your-proof button yet (planned v10.26.7), and the prices, notice days and delivery fees are samples until Becca replaces them (checklist 2a).
 
 ---
 
