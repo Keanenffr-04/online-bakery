@@ -1,6 +1,6 @@
 # 🗺️ Roadmap: what's next and what we need from you
 
-**Where we are:** v10.26.7 &nbsp;|&nbsp; **Next up:** v10.26.8 (cosier WhatsApp message), then v10.26.9 (orders reach both WhatsApps) &nbsp;|&nbsp; **Rule:** 2 things per version.
+**Where we are:** v10.26.8 &nbsp;|&nbsp; **Next up:** v10.26.9 (all the Gauteng delivery areas), then v10.26.10 (areas grouped by region), then v10.26.11 (cosier WhatsApp message) &nbsp;|&nbsp; **Rule:** 2 things per version.
 
 *This page is written for Becca. No website or coding knowledge needed. Words you might not know are explained in the "Words explained" list in the [README](../README.md). Finished work is in [`BACKLOG.md`](BACKLOG.md).*
 
@@ -17,7 +17,8 @@
 - ✅ **New in v10.26.5:** (your list 26) a **dark mode for every theme** (all 15). It switches on **by itself when you open the website on your own computer** (double-click `preview.html`, or any file / `localhost` copy), so late-night work is easy on the eyes. **The real website is never dark and visitors get no switch.** No database update needed.
 - ✅ **New in v10.26.6:** (your list 25, item 3, **part 1 of 3**) when a customer picks **Delivery** they now **type their delivery address** (Cart and Custom Order). It is required for delivery, goes into the WhatsApp message, is saved with the order, shows on the thank-you page, and shows next to the order in the admin and on the printed slip. No database update needed.
 - ✅ **New in v10.26.7:** (your list 25, item 3, **part 2 of 3**) a **free map** under the delivery address box (Cart and Custom Order). The customer presses **Show on map** or clicks out of the box and sees the spot on an OpenStreetMap map (no account, no key, no cost), so a mistyped address is easy to spot. It is only a check and never stops an order. No database update needed.
-- ⏭️ **Next:** v10.26.8 (a **cosier, friendlier WhatsApp message**), then v10.26.9 (every order reaching **both** your WhatsApps; needs a decision from you, see the plan). Proof of payment and the installable app slid back to v10.26.10 and v10.26.11. *We split the old v10.26.6 in 3 because it was too big to build safely in one go.*
+- ✅ **New in v10.26.8:** (your list 27, item 2, **step 1 of 3**) the delivery **map now shows by itself** under the address box a moment after the customer stops typing, with no button. A small **Try again** button only appears if the free map service did not answer. No database update needed.
+- ⏭️ **Next:** v10.26.9 (**all the Gauteng areas** in the delivery list instead of "Close to the bakery / Further out"), then v10.26.10 (the areas **grouped by region** with one fee per region), then v10.26.11 (a **cosier WhatsApp message**), then v10.26.12 (every order reaching **both** your WhatsApps; needs a decision from you, see the plan). Proof of payment and the installable app slid back to v10.26.13 and v10.26.14. *Your list 27 was split in 3 because it was too big to build safely in one go.* *We split the old v10.26.6 in 3 because it was too big to build safely in one go.*
 - ⏳ **Waiting on you:** real prices, FAQ answers, reviews, your story, Instagram / Facebook names and photos. The full checklist is in section 2.
 - 🚀 **Last step:** putting the website online, only when you say "I'm happy with everything".
 
@@ -41,10 +42,13 @@ Your change lists always go **first**, so the versions below may slide back by o
 |---|---|---|---|
 | ~~v10.26.6~~ | ✅ Done | **Delivery address box** (step 1 of 3 of the old v10.26.6): Delivery asks for a street address on the Cart and Custom Order; it goes into the WhatsApp message and the saved order, and shows in the admin and on the slip. | Nothing |
 | ~~v10.26.7~~ | ✅ Done | **Delivery map** (step 2 of 3): under the address box the customer sees their address on a **free map** (OpenStreetMap, no account or key), so a mistyped address is easy to spot. Cart + Custom Order; your list 25, item 3. | Nothing |
-| **v10.26.8** | ⏭️ Next | **Cosier, friendlier WhatsApp message** (step 3 of 3): a warmer greeting and sign-off for the Cart and Custom Order messages, keeping every line Becca needs (your list 25, item 7). | Your own words for the message if you want them (otherwise we write it warm and short) |
-| v10.26.9 | 📅 Planned | **Every order reaches both of your WhatsApps** (list 25, item 6). A website cannot message two chats by itself: the tap-to-send link opens one chat. Real automatic sending to two numbers needs the **WhatsApp Business Platform** (a Meta business account, a number registered for it, and a small cost per message) plus a small server step in Supabase. We will first set up what is free and close to it, and ask you which way you want to go. | A decision from you: free workaround or Meta WhatsApp Business account |
-| v10.26.10 | 📅 Planned | **Upload proof of payment** on the thank-you page (stored privately, you open it next to the order) + a **"paid" tick** per order (idea 27, part 2). Needs the newest `setup.sql`. | Nothing new |
-| v10.26.11 | 📅 Planned | **Install on the home screen like an app**, and the menu and cart keep working when the internet is flaky or during load shedding (idea 47). | Nothing new |
+| ~~v10.26.8~~ | ✅ Done | **Map shows by itself** (list 27, item 2, step 1 of 3): no button; the free map appears under the address box a moment after the customer stops typing. | Nothing |
+| **v10.26.9** | ⏭️ Next | **All the Gauteng delivery areas** (list 27, item 1, step 2 of 3): the delivery-area list holds the areas of Gauteng (Johannesburg, Sandton, Centurion, Pretoria and so on) with sample fees, instead of "Close to the bakery / Further out". Reaches the live site too, and you edit the fees in the admin. | Your real fee per area (samples until you set them) |
+| v10.26.10 | 📅 Planned | **Areas grouped by region** (list 27, item 1, step 3 of 3): the area list is grouped (Johannesburg, Tshwane, Ekurhuleni, West Rand, Sedibeng), and in the admin you can set one fee for a whole region at once. | Your fee per region |
+| v10.26.11 | 📅 Planned | **Cosier, friendlier WhatsApp message** (old step 3 of 3 of list 25): a warmer greeting and sign-off for the Cart and Custom Order messages, keeping every line Becca needs (your list 25, item 7). | Your own words for the message if you want them (otherwise we write it warm and short) |
+| v10.26.12 | 📅 Planned | **Every order reaches both of your WhatsApps** (list 25, item 6). A website cannot message two chats by itself: the tap-to-send link opens one chat. Real automatic sending to two numbers needs the **WhatsApp Business Platform** (a Meta business account, a number registered for it, and a small cost per message) plus a small server step in Supabase. We will first set up what is free and close to it, and ask you which way you want to go. | A decision from you: free workaround or Meta WhatsApp Business account |
+| v10.26.13 | 📅 Planned | **Upload proof of payment** on the thank-you page (stored privately, you open it next to the order) + a **"paid" tick** per order (idea 27, part 2). Needs the newest `setup.sql`. | Nothing new |
+| v10.26.14 | 📅 Planned | **Install on the home screen like an app**, and the menu and cart keep working when the internet is flaky or during load shedding (idea 47). | Nothing new |
 | v10.27 | 📅 Planned | **Shop status banner** ("on holiday until 3 Jan", pauses orders) + the **old "Publish" wording fixed** in the admin (4 and 45). | Nothing new |
 | v10.28 | 📅 Planned | **Gift vouchers** (you give a code, the customer types it in the cart, it comes off the total) + a **loyalty reward** (for example every 10th order a free cupcake box). | Your voucher and loyalty rules |
 | v10.29 | 📅 Planned | **Deposits / online payment** (Yoco, PayFast or Ozow). A deposit secures the date. On its own because it handles real money. | A payment account that you open |
@@ -116,16 +120,19 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 |---|---|---|---|---|
 | 26 | 1 | Add a dark mode for all the themes (I work late at night and it is too bright). Make the local preview dark by default; I do not want to be able to change it on the website | DONE (all 15 themes have a dark set; dark switches on by itself when the site is opened from your own computer; the real website stays light and has no switch) | v10.26.5 |
 | 26 | 2 | Only 2 changes per version, the rest to the backlog | DONE (only 1 change came; ideas in 4b) | v10.26.5 |
+| 28 | 1 | Delivery areas: do not remove the "Choose your area" list; instead of "near the bakery" add all the areas in Gauteng (Centurion, Johannesburg and so on) | IN PROGRESS (split: v10.26.9 the Gauteng areas with sample fees, v10.26.10 grouped by region with one fee per region) | v10.26.9 / v10.26.10 |
+| 28 | 2 | The map shows up by itself under the address box, no button to click | DONE (after a short pause in typing; Try again button only if the map service did not answer) | v10.26.8 |
+| 28 | - | Split the next task in 3 steps (standing request) and only 2 changes per version, the rest to the backlog | DONE (2 changes came, split into v10.26.8 / .9 / .10; nothing extra to add) | v10.26.8 |
 | 27 | - | "Split the next task into 3 steps or 3 versions, because some things it tries to do in one go and it is a big task" | DONE (old v10.26.6 split into v10.26.6 address box, v10.26.7 map, v10.26.8 cosier message; the rest renumbered) | v10.26.6 |
 | 25 | 1 | Add my WhatsApp number (Keanen Russon 081 211 8414) | DONE earlier (same as list 24 item 1) | v10.26.3 |
 | 25 | 2 | A step-by-step guide on how to order with the latest version | DONE (section 5g, updated each version) | v10.26.3 / v10.26.4 |
 | 25 | 3 | In the order summary, after picking Delivery and the area, show an actual map (Google Maps or any free thing) | DONE (split in 2: the delivery address box in v10.26.6; the free map preview in v10.26.7) | v10.26.6 / v10.26.7 |
 | 25 | 4 | After they order, empty their cart | DONE (the cart empties itself 1 second after the order is sent; your name and number stay for next time) | v10.26.4 |
 | 25 | 5 | Remove the whole "order the same again" thing | DONE (removed from the thank-you page and from My account) | v10.26.4 |
-| 25 | 6 | Every order goes to my WhatsApp and my girlfriend's WhatsApp at the same time | PLANNED (needs a decision, see the plan) | v10.26.9 |
-| 25 | 7 | Make the WhatsApp message cosier and friendlier | PLANNED | v10.26.8 |
+| 25 | 6 | Every order goes to my WhatsApp and my girlfriend's WhatsApp at the same time | PLANNED (needs a decision, see the plan) | v10.26.12 |
+| 25 | 7 | Make the WhatsApp message cosier and friendlier | PLANNED | v10.26.11 |
 | 25 | 8 | Later: a full online ordering shop like Takealot | IDEA (the cart, accounts and past orders exist; the missing parts are paying online (v10.29), stock counts and order tracking; listed in 4a) | v10.29 / after launch |
-| 25 | - | Only 2 changes per version, the rest to the backlog | DONE (list 25 was split: v10.26.4; the map + message item was too big for one go, so it became 3 steps v10.26.6 / .7 / .8; both WhatsApps = v10.26.9; dark mode, list 26, took v10.26.5 in between) | v10.26.4 |
+| 25 | - | Only 2 changes per version, the rest to the backlog | DONE (list 25 was split: v10.26.4; the map + message item was too big for one go, so it became 3 steps v10.26.6 / .7 / .8; both WhatsApps = v10.26.12 (renumbered again by list 27); dark mode, list 26, took v10.26.5 in between) | v10.26.4 |
 | 24 | 1 | Add my WhatsApp number (Keanen Russon 081 211 8414) so messages can still reach me if they cannot reach Becca | DONE (Contact page + thank-you page; orders still go to Becca's number) | v10.26.3 |
 | 24 | 2 | After adding it, a step-by-step guide on how to order with the latest version | DONE (section 5g, and in the reply) | v10.26.3 |
 | 23 | 1 | The live check says strangers can look inside the photo storage; I do not want that, fix it | DONE (accurate check with a test picture + an extra database lock; run the newest setup.sql) | v10.26.2 |
@@ -333,6 +340,10 @@ Every version leaves a few "good idea, but not now" notes. They used to be sprea
 - Save the map spot with the order so the admin can open it in one tap (Google Maps / Waze link in the slip)
 - A **delivery-distance fee** worked out from the map instead of picking an area by hand
 
+**From v10.26.8 (automatic map):**
+- A **"Use my current location"** button on the address box (asks the phone for permission, fills the address)
+- Switch the free map for Google Maps places search with suggestions as the customer types (needs a Google key and a cost per search)
+
 ### 4c. "Better than the other bakery sites": the full list (new in v10.21.2)
 You asked for everything we think the website could still add. Nothing here is built yet. **Tell us the numbers you like** (for example "1, 11, 36") and we will slot them in, two per version. ⭐ = our top picks. 📅 = already on the plan above. ⏳ = we need something from you first. **S / M / L** = a small, medium or large amount of work.
 
@@ -499,11 +510,11 @@ Free Supabase projects pause after about 7 days with nobody using them. The proj
 3. After that nothing else is needed. (GitHub switches scheduled jobs off after 60 days with no changes to the project; if that happens, press **Run workflow** again. Using the admin also counts as activity.)
 4. If a run ever shows a red cross, the database is probably paused: open supabase.com and click **Restore**.
 
-### 5g. How to order, step by step (v10.26.7)
+### 5g. How to order, step by step (v10.26.8)
 **A cart order (menu items)**
 1. Open the website and go to **Menu**. Tap **Add** on each item you want. The cart icon at the top shows how many.
 2. Open the **Cart**. Change quantities with the + and - buttons, or remove things.
-3. Fill in your **name** and **WhatsApp number** (the country code is +27 already), then pick **Collection** or **Delivery**. For delivery choose your **area** (the fee is added to the total) and **type your delivery address** (street and suburb); delivery orders cannot be sent without it. Press **Show on map** (or click out of the box) to see the spot on a map; if it looks wrong, add the suburb or a landmark.
+3. Fill in your **name** and **WhatsApp number** (the country code is +27 already), then pick **Collection** or **Delivery**. For delivery choose your **area** (the fee is added to the total) and **type your delivery address** (street and suburb); delivery orders cannot be sent without it. A **map appears by itself** a moment after you stop typing; if the spot looks wrong, add the suburb or a landmark.
 4. Pick the **date** you need it. Dates that are too soon, a day off or already full cannot be chosen, and a message tells you the first free date. Add **notes** (allergies, a message on the cake) if you like.
 5. Press **Send order on WhatsApp**. WhatsApp opens with the whole order typed out. **Press send in WhatsApp**: the order only reaches Becca when you do. (The **cart empties itself** a second after you press the button, so your next order starts clean.)
 6. The website takes you to the **thank-you page**. It shows what you sent, and a **How to pay** box once Becca has typed her payment details in the admin. Nothing is paid yet.
@@ -518,7 +529,7 @@ Free Supabase projects pause after about 7 days with nobody using them. The proj
 
 **What Becca does in the admin:** Orders > the new order is **pending** > **Confirm** > the green **WhatsApp** button (the message is typed for her) > later **Mark ready** and **Mark done**. Both Becca and Keanen can use the admin.
 
-**Today's limits (so nothing surprises you):** payment is by hand (EFT, SnapScan or Capitec Pay), there is no upload-your-proof button yet (planned v10.26.10), and the prices, notice days and delivery fees are samples until Becca replaces them (checklist 2a).
+**Today's limits (so nothing surprises you):** payment is by hand (EFT, SnapScan or Capitec Pay), there is no upload-your-proof button yet (planned v10.26.13), and the prices, notice days and delivery fees are samples until Becca replaces them (checklist 2a).
 
 ---
 

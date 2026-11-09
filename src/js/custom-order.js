@@ -22,7 +22,7 @@ SB.load().then(async ({ biz, settings }) => {
   const areaDraw = () => { const on = areaOn && f.elements.method.value === "Delivery"; areaWrap.hidden = !on; document.getElementById("co-area-note").textContent = on ? "Becca confirms the final delivery fee with your quote." : ""; };
   const addrWrap = document.getElementById("co-addr-wrap"), addrDraw = () => { addrWrap.hidden = f.elements.method.value !== "Delivery"; };   // v10.26.6: any Delivery needs an address
   f.elements.method.addEventListener("change", () => { areaDraw(); addrDraw(); }); areaDraw(); addrDraw();
-  SB.map.mount(addrWrap, () => ({ addr: f.elements.addr.value, area: areaOn && f.elements.method.value === "Delivery" ? f.elements.area.value : "" }));   // v10.26.7: free map check
+  SB.map.mount(addrWrap, () => ({ addr: f.elements.addr.value, area: areaOn && f.elements.method.value === "Delivery" ? f.elements.area.value : "" }), [f.elements.area]);   // v10.26.7: free map check
   // v10.22: cake price guide. Pick a size and flavour, see an estimate, press "Use this in my request" to fill the form. Sample prices show a Draft tag.
   const pg = settings.priceGuide || {}, gBox = document.getElementById("co-guide"); let used = null;
   if (pg.enabled !== false && (pg.sizes || []).length) {

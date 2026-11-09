@@ -464,3 +464,4 @@ button.btn:disabled{opacity:.6;cursor:not-allowed}
 .amap{margin-top:.6rem}.amap .btn--sm{padding:.4rem .9rem;font-size:.85rem}.amap__msg{margin:.5rem 0 0}
 .amap__frame iframe{display:block;width:100%;height:220px;border:1px solid var(--border);border-radius:var(--radius-card);margin-top:.6rem;background:var(--surface-alt)}
 .amap__frame p{margin:.35rem 0 0}.amap__frame[hidden],.amap__msg[hidden]{display:none}
+.amap [hidden]{display:none}

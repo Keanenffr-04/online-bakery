@@ -1,9 +1,10 @@
 # online-bakery 🐇🍰
 Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
 
-**Current version:** v10.26.7. The latest three versions:
-- **v10.26.7:** (your list 25, item 3, step 2 of 3) under the **delivery address** box the customer can press **Show on map** (or just click out of the box) and see the spot on a **free OpenStreetMap map**, so a typo is easy to spot. It is only a check: an order is never blocked by it. Cart and Custom Order. The cosier message (v10.26.8) comes next. Nothing to update in the database.
-- **v10.26.6:** (your list 25, item 3, step 1 of 3) when a customer picks **Delivery** they now **type their delivery address** on the Cart and Custom Order. It goes into the WhatsApp message and the saved order, and shows next to the order in the admin and on the printed slip. The map (v10.26.7, now done) and the cosier message (v10.26.8) come next. Nothing to update in the database.
+**Current version:** v10.26.8. The latest three versions:
+- **v10.26.8:** (your list 27, item 2, step 1 of 3) the **delivery map now shows by itself** under the address box a moment after the customer stops typing. There is no button to press any more (a small **Try again** button only appears if the free map service did not answer). Changing the delivery area refreshes it. The Gauteng areas (v10.26.9 and v10.26.10) come next. Nothing to update in the database.
+- **v10.26.7:** (your list 25, item 3, step 2 of 3) under the **delivery address** box the customer can press **Show on map** (or just click out of the box) and see the spot on a **free OpenStreetMap map**, so a typo is easy to spot. It is only a check: an order is never blocked by it. Cart and Custom Order. The map later became automatic (v10.26.8). Nothing to update in the database.
+- **v10.26.6:** (your list 25, item 3, step 1 of 3) when a customer picks **Delivery** they now **type their delivery address** on the Cart and Custom Order. It goes into the WhatsApp message and the saved order, and shows next to the order in the admin and on the printed slip. The map (v10.26.7) was added next. Nothing to update in the database.
 - **v10.26.5:** (your list 26) a **dark mode for every theme**. It turns on by itself when you open the website on your own computer (double-click `preview.html`), so working late is easier on the eyes. The real website is always light and visitors get no switch. Nothing to update in the database.
 - **v10.26.4:** (your list 25, part 1 of 3) the **cart empties by itself** after an order is sent, and **"Order the same again" is removed** (thank-you page and My account). The thank-you page's **Open WhatsApp** button now carries the order text. Nothing to update in the database.
 - *(older)* **v10.26.3:** a **backup WhatsApp number** (Keanen) on the Contact and thank-you pages, plus a step-by-step **how to order** guide in the roadmap (section 5g). Nothing to update in the database.
@@ -80,7 +81,7 @@ The full checklist is in [`roadmap/ROADMAP.md`, section 2](roadmap/ROADMAP.md#ne
 |---|---|
 | Admin says **"The online database is not answering"** | Open supabase.com and check the project is not paused (click **Restore** if it is). If it was never set up, run `supabase/setup.sql` (roadmap section 2c). |
 | You cannot sign in to the admin, or no email arrives | Emails from the free sender often never arrive. Create the login directly: Supabase > Authentication > Users > **Add user**, tick **Auto Confirm User** (roadmap section 2d). The email must be on the admin list. |
-| The delivery map says "not answering" or "could not find that" | The map is a free service and is only a check. The customer can still send the order and you check the address with them on WhatsApp. |
+| The delivery map says "not answering" or "could not find that" | The map shows by itself after the customer stops typing. It is a free service and only a check; **Try again** appears when it did not answer. The customer can still send the order and you check the address with them on WhatsApp. |
 | A customer cannot reach me on WhatsApp | The Contact page and thank-you page show **"Can't reach Becca? WhatsApp Keanen"**. The number lives in `config/business.json` (`backupWhatsapp`). |
 | A customer says their confirm or reset email never came | Customers need your own email sender first (roadmap guide 5c). **Continue with Google** and WhatsApp still work. |
 | I saved a change but customers do not see it | Make sure you pressed **Save** in that section, then reload the page. |

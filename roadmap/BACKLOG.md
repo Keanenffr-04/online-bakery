@@ -2,7 +2,7 @@
 
 *Written for Becca. This page is the list of **finished** work. What is still to do is in [`ROADMAP.md`](ROADMAP.md). New entries are added at the bottom and nothing is ever deleted.*
 
-**Latest version:** v10.26.7
+**Latest version:** v10.26.8
 
 ## Contents
 1. [What the website can do today](#today)
@@ -98,6 +98,7 @@ Oldest first. Click a version to jump to its detailed record. A version like **v
 | [v10.23](#v10-23) | 2026-11-08 | **Live check** button in the admin (tests the real database), **spam protection** on orders and sign-up, and a **keep-alive** so the free database never pauses. Run the newest `setup.sql` once. |
 | [v10.24](#v10-24) | 2026-11-08 | **Bake sheet** (what to make for a day, added up and printable, allergies in red) and a **new-order alert** (chime + pop-up while the admin is open). Run the newest `setup.sql` once (optional, makes the alert instant). |
 | [v10.25](#v10-25) | 2026-11-09 | **Review link** (a short review page; you approve each review before it shows; the thank-you WhatsApp message carries the link) and **inspiration photo upload** on Custom Orders (stored privately, you open it next to the order). Run the newest `setup.sql` once (section 12). |
+| [v10.26.8](#v10-26-8) | 2026-11-10 | **Map shows by itself** (your list 27, item 2, step 1 of 3). The free delivery map now appears under the address box a moment after the customer stops typing, with no button. Nothing to update in the database. |
 | [v10.26.7](#v10-26-7) | 2026-11-10 | **Delivery map** (your list 25, item 3, step 2 of 3). Under the delivery address box a customer presses **Show on map** (or clicks out of the box) and sees the spot on a free OpenStreetMap map, so a typo is easy to spot. It is only a check; orders are never blocked. Nothing to update in the database. |
 | [v10.26.6](#v10-26-6) | 2026-11-10 | **Delivery address box** (your list 25, item 3, step 1 of 3). When a customer picks Delivery they type their street address on the Cart and Custom Order; it goes into the WhatsApp message, the saved order, the thank-you page, the admin and the printed slip. The old v10.26.6 was split in 3 (address, map, cosier message). Nothing to update in the database. |
 | [v10.26.5](#v10-26-5) | 2026-11-10 | **Dark mode for all 15 themes** (your list 26). It turns on by itself when you open the website on your own computer, so late-night work is easier on the eyes. The real website stays light and has no switch. Nothing to update in the database. |
@@ -596,6 +597,18 @@ Owner list 23 had one change: the Live check said "Strangers CAN look inside the
 Files: `src/js/admin.js`, `supabase/setup.sql`, `README.md`, `roadmap/*`, `docs/AI_HANDOFF.md`, `VERSION`.
 Tests (headless Chromium, mock Supabase + mocked storage answers): locked storage = green and the test file removed; listing leaks = red; the object opens = red; the test upload refused = yellow, nothing removed; no page errors. **The new SQL was NOT run on a real Postgres** (none in the sandbox): the owner's Live check is the real test. Honest note: this is probably a false alarm in the old check, but the extra lock makes the answer safe either way.
 Pushed to the backlog (also in `ROADMAP.md` 4b): a weekly automatic Live check with history; auto-removal of leftover test pictures; the same private-storage tick for proof of payment; deleting customer photos after a set time (with a Privacy page line).
+
+<a id="v10-26-8"></a>
+## v10.26.8: Map shows by itself (done, 2026-11-10)
+Owner sent list 27 (two changes) with "start next v/patch" and the standing note to **split the next task into 3 steps / versions**. The list was split: **v10.26.8** = item 2, the map shows by itself (this entry); **v10.26.9** = item 1, step 1: all the Gauteng areas in the delivery-area list (sample fees, must reach the live site, which keeps its own saved list); **v10.26.10** = item 1, step 2: areas grouped by region and one fee per region in the admin. **Renumbered:** cosier WhatsApp message = v10.26.11, both WhatsApps = v10.26.12, proof of payment = v10.26.13, installable app = v10.26.14. Item 1 was read as "keep the delivery area list, but fill it with real places instead of 'Close to the bakery / Further out'" (the owner's own alternative); nothing is removed.
+1. **No button.** `SB.map.mount(wrap, get, also)` in `store.js` now runs by itself **1.8 s after the customer stops typing** in the address box (and straight away on leaving the box, on changing the delivery area, or on a redraw that already holds an address). It still never searches per keystroke. It skips addresses that are not worth a search (under 8 characters, no letter or no space, quietly: no nagging text while they are still typing) and the "Show on map" button is gone. If the map service does not answer, a small **Try again** button appears with the same friendly message; "not found" has no button (the customer edits the address, which searches again).
+2. **Politeness to the free service.** `SB.map.last` makes sure two searches are at least 1.1 s apart across the whole page (the previous code only spaced the two tries of one lookup). Finds are still cached in memory, errors are not.
+3. **Area changes refresh the map.** Cart and Custom Order pass their delivery-area select as `also`, so picking an area re-runs the search with the area added to the query.
+4. **Privacy page** wording updated: the address is sent to OpenStreetMap's free search a moment after the customer stops typing.
+Files: `src/js/store.js`, `cart-page.js`, `custom-order.js`, `src/css/site.css` (one line so hidden parts of the map box stay hidden), `src/privacy.html`, `README.md`, `roadmap/*`, `docs/AI_HANDOFF.md`, `VERSION`. **No `setup.sql` change** (`SETUP_VERSION` stays `10.26.2`); `offline-data.js` unchanged.
+Tests (headless Chromium, `file://`, **320 px and 1000 px**, OpenStreetMap answers **mocked**): no button and no map before typing; nothing searched while typing; the map appears by itself after a pause with the address + "South Africa" in the query; the bigger-map link carries coordinates; a quantity change keeps the map with no new search; not found and service down show their messages and hide the map; **Try again** appears when the service is down and works once it is back; the WhatsApp link still carries the address; a too-short address does no search and shows nothing; Custom Order shows the map by itself; no sideways scrolling; no page errors on all 17 public pages; `node --check` on every script.
+**Honest limits:** the sandbox has **no internet**, so the real OpenStreetMap search and tiles were **not** reached (same as v10.26.7). Searching after a typing pause is allowed by Nominatim's rules (no per-keystroke lookups, at most one a second) but it is **more searches than the button was**; a busy shop should move to a paid map service (kept in the ideas list).
+Pushed to the backlog (also in `ROADMAP.md` 4b): a "Use my current location" button, Google-style address suggestions while typing (needs a Google key and a cost).
 
 <a id="v10-26-7"></a>
 ## v10.26.7: Delivery map (done, 2026-11-10)

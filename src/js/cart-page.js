@@ -61,7 +61,7 @@ SB.load().then(async ({ biz, settings }) => {
       </div></aside>
     </div>`;
     link();
-    SB.map.mount(document.getElementById("c-addr-wrap"), () => ({ addr: val("c-addr"), area: extras().delivering ? val("c-area") : "" }));   // v10.26.7: free map check
+    SB.map.mount(document.getElementById("c-addr-wrap"), () => ({ addr: val("c-addr"), area: extras().delivering ? val("c-area") : "" }), [document.getElementById("c-area")]);   // v10.26.7: free map check
     if (keepFocus) { const [id, w] = keepFocus.split("|"), r = root.querySelector(`.cart-row[data-id="${CSS.escape(id)}"]`); const t = r && (w === "rm" ? r.querySelector("[data-rm]") : r.querySelector(`[data-q="${w}"]`)); if (t) t.focus(); }
   };
 
