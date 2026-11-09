@@ -52,7 +52,10 @@
         <label for="co-diet">Allergies or dietary needs <span class="muted">(optional)</span></label>
         <input id="co-diet" name="diet" placeholder="e.g. nut-free, vegetarian">
         <label for="co-notes">Design, colours, message and other notes <span class="muted">(optional)</span></label>
-        <textarea id="co-notes" name="notes" rows="4" placeholder="Theme, colours, the message to write on it. You can send photos for inspiration in WhatsApp afterwards."></textarea>
+        <textarea id="co-notes" name="notes" rows="4" placeholder="Theme, colours, the message to write on it."></textarea>
+        <label for="co-photo">Inspiration photo <span class="muted">(optional)</span></label>
+        <input id="co-photo" name="photo" type="file" accept="image/*">
+        <p class="muted small" id="co-photo-note">A picture of a cake you like. It is saved privately with your request so Becca can see it. You can also send more photos in WhatsApp.</p>
         <p class="form__error" id="co-error" role="alert" hidden></p>
         <button class="btn btn--whatsapp btn--block" type="submit" id="co-send">Send on WhatsApp</button>
         <p class="muted small" id="co-note">Fields marked * are needed so Becca can quote properly.</p>

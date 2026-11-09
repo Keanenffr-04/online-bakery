@@ -449,3 +449,11 @@ button.btn:disabled{opacity:.6;cursor:not-allowed}
 
 /* v10.23: spam trap (a box only bots fill in). Off-screen, not display:none, because some bots skip hidden boxes. */
 .hp{position:absolute!important;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+
+/* v10.25: review form stars (radio buttons drawn as stars, lit from the right so "hover/checked and everything after it" glows) */
+.rate{border:0;padding:0;margin:1rem 0 0}.rate legend{padding:0;font-weight:600}
+.rate__row{display:inline-flex;flex-direction:row-reverse;gap:.1rem;margin-top:.3rem}
+.rate__row input{position:absolute;opacity:0;width:1px;height:1px}
+.rate__row label{font-size:2rem;line-height:1;cursor:pointer;color:var(--border);margin:0;padding:.1rem .15rem}
+.rate__row input:checked~label,.rate__row label:hover,.rate__row label:hover~label{color:var(--accent)}
+.rate__row input:focus-visible+label{outline:2px solid var(--link);outline-offset:2px;border-radius:6px}

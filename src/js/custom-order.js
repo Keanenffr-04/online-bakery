@@ -46,7 +46,8 @@ SB.load().then(async ({ biz, settings }) => {
   const show = (msg, el) => { err.textContent = msg; err.hidden = !msg; if (el) el.focus(); };
 
   f.addEventListener("input", () => { if (!err.hidden) show(""); });
-  f.addEventListener("submit", e => {
+  window.addEventListener("pageshow", e => { if (e.persisted) { sendBtn.disabled = false; sendBtn.textContent = "Send on WhatsApp"; } });   // v10.25: back button after sending
+  f.addEventListener("submit", async e => {
     e.preventDefault();
     const v = n => f.elements[n].value.trim();
     const need = [["name", "your name"], ["occasion", "the occasion"], ["date", "the date you need it"], ["servings", "how many servings"]];
@@ -66,14 +67,19 @@ SB.load().then(async ({ biz, settings }) => {
     if (used) L.push(`Price guide estimate: R ${used.price} (${used.size}${used.flavour ? ", " + used.flavour : ""}). This is only a guide, please confirm.`);   // v10.22
     if (v("diet")) L.push(`Allergies or dietary needs: ${v("diet")}`);
     if (v("notes")) L.push(`Notes: ${v("notes")}`);
+    const pf = f.elements.photo && f.elements.photo.files[0]; if (pf) L.push("Inspiration photo: I have one and will send it here too.");   // v10.25
     L.push("", "Please let me know if you can do it and what it would cost. Thank you!");
     show("");
     SB.me.commit("co-remember", { name: v("name"), phone: document.getElementById("co-phone").value.trim(), method: v("method"), diet: v("diet") });
     const fg = f.querySelector("[data-forget]"); if (fg) fg.hidden = !SB.me.has();
     if (!biz.whatsappLink) { location.href = "contact.html"; return; }
-    SB.saveOrder({ source: "custom", name: v("name").slice(0, 120), phone: ph.digits || "", items: ("Custom order: " + v("what") + " (" + v("occasion") + ", " + s + " servings)").slice(0, 3000), date: v("date"), details: { method: v("method"), ...(area ? { delivery: { area, fee: fee ? fee.fee : 0 } } : {}), flavours: v("flavours"), diet: v("diet"), notes: v("notes"), ...(used ? { guide: { size: used.size, flavour: used.flavour, estimate: used.price } } : {}) } });   // v10.17, guide v10.22
-    window.open(biz.whatsappLink + "?text=" + encodeURIComponent(L.join("\n")), "_blank", "noopener");
+    const orderRow = { source: "custom", name: v("name").slice(0, 120), phone: ph.digits || "", items: ("Custom order: " + v("what") + " (" + v("occasion") + ", " + s + " servings)").slice(0, 3000), date: v("date"), details: { method: v("method"), ...(area ? { delivery: { area, fee: fee ? fee.fee : 0 } } : {}), flavours: v("flavours"), diet: v("diet"), notes: v("notes"), ...(used ? { guide: { size: used.size, flavour: used.flavour, estimate: used.price } } : {}) } };   // v10.17, guide v10.22
+    window.open(biz.whatsappLink + "?text=" + encodeURIComponent(L.join("\n")), "_blank", "noopener");   // first, inside the tap, so the browser allows it
+    // v10.25: shrink + upload the photo (if any), then save the order with its file name. Waits at most 9 s; a failed photo never blocks anything.
+    sendBtn.disabled = true; sendBtn.textContent = pf ? "Saving your photo…" : "Sending…";
+    const work = (async () => { let photo = null; if (pf && !SB.spam.bot()) photo = await SB.photo.upload(await SB.photo.shrink(pf)); return SB.saveOrder(photo ? { ...orderRow, details: { ...orderRow.details, photo } } : orderRow); })();
     SB.lastOrder({ source: "custom", name: v("name"), items: [v("what") + " (" + v("occasion") + ", " + s + " servings)", ...(used ? ["Price guide estimate: R " + used.price + " (" + used.size + (used.flavour ? ", " + used.flavour : "") + "), to be confirmed"] : [])], date: v("date"), total: null, method: area ? "Delivery to " + area : v("method") });   // v10.19.1
-    setTimeout(() => { location.href = "thanks.html"; }, 900);
+    await Promise.all([Promise.race([work, new Promise(r => setTimeout(r, 9000))]), new Promise(r => setTimeout(r, 900))]);
+    location.href = "thanks.html";
   });
 });

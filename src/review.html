@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leave a review | The Sweetest Bakery</title>
+<meta name="description" content="Tell us how your order from The Sweetest Bakery was.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@500;600&family=Inter:wght@400;600&family=Montserrat:wght@400;600&family=Playfair+Display:wght@600;700&display=swap">
+<link rel="stylesheet" href="themes/base.css">
+<link rel="stylesheet" href="themes/theme-classic.css">
+<link rel="stylesheet" href="themes/theme-cocoa.css">
+<link rel="stylesheet" href="themes/theme-pastel.css">
+<link rel="stylesheet" href="themes/theme-seasonal.css">
+<link rel="stylesheet" href="css/site.css">
+<script src="js/boot.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div id="site-header"></div>
+
+<main id="main">
+  <section class="section"><div class="container">
+    <div class="section__head">
+      <p class="eyebrow">Your words help other customers</p>
+      <h1>Leave a review</h1>
+      <p>Thank you for ordering! Tell us how it was. Becca reads every review first, and it only appears on the website once she approves it.</p>
+    </div>
+    <form id="rv-form" class="form form--card card" novalidate>
+      <div class="card__body">
+        <div class="hp" aria-hidden="true"><label>Leave this box empty<input type="text" name="hp_extra" tabindex="-1" autocomplete="off"></label></div>
+        <label for="rv-name">Your name <span class="req" aria-hidden="true">*</span></label>
+        <input id="rv-name" name="name" autocomplete="given-name" maxlength="60" required>
+        <p class="muted small">A first name is fine. This is shown next to your review.</p>
+        <fieldset class="rate"><legend>How many stars? <span class="muted">(optional)</span></legend>
+          <div class="rate__row">
+            <input type="radio" name="stars" id="rv-s5" value="5"><label for="rv-s5" title="5 stars"><span class="sr-only">5 stars</span>&#9733;</label>
+            <input type="radio" name="stars" id="rv-s4" value="4"><label for="rv-s4" title="4 stars"><span class="sr-only">4 stars</span>&#9733;</label>
+            <input type="radio" name="stars" id="rv-s3" value="3"><label for="rv-s3" title="3 stars"><span class="sr-only">3 stars</span>&#9733;</label>
+            <input type="radio" name="stars" id="rv-s2" value="2"><label for="rv-s2" title="2 stars"><span class="sr-only">2 stars</span>&#9733;</label>
+            <input type="radio" name="stars" id="rv-s1" value="1"><label for="rv-s1" title="1 star"><span class="sr-only">1 star</span>&#9733;</label>
+          </div>
+        </fieldset>
+        <label for="rv-text">Your review <span class="req" aria-hidden="true">*</span></label>
+        <textarea id="rv-text" name="text" rows="5" maxlength="600" placeholder="What did you order and how was it?" required></textarea>
+        <p class="form__error" id="rv-error" role="alert" hidden></p>
+        <button class="btn btn--block" type="submit" id="rv-send">Send my review</button>
+        <p class="muted small">By sending you agree that Becca may show your name and words on this website. We never show your phone number. See the <a href="privacy.html">Privacy page</a>.</p>
+      </div>
+    </form>
+    <div id="rv-done" class="card" hidden><div class="card__body" role="status"><h2>Thank you! &#127856;</h2><p>Your review has been sent. Becca will read it and it will appear on the website once she approves it.</p><p><a class="btn" href="index.html">Back to Home</a></p></div></div>
+  </div></section>
+</main>
+
+<div id="site-footer"></div>
+<script src="js/store.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/site.js"></script>
+<script src="js/decor.js"></script>
+<script src="js/review.js"></script>
+</body>
+</html>

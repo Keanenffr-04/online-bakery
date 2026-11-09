@@ -79,7 +79,7 @@
       <div><h3 data-biz="name">The Sweetest Bakery</h3><p>Handmade cakes, cupcakes, cookies and bread by <span data-biz="owner">Becca</span>.</p></div>
       <div><h3>Explore</h3><ul>${NAV.slice(1).map(([l, h]) => `<li><a href="${h}">${l.replace("&", "&amp;")}</a></li>`).join("")}</ul></div>
       <div><h3>Order</h3><p>Online orders only.<br>WhatsApp: <span data-biz="phoneDisplay"></span></p></div>
-      <div><h3>Account</h3><ul><li><a href="account.html">My account</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="terms.html">Terms</a></li></ul></div>
+      <div><h3>Account</h3><ul><li><a href="account.html">My account</a></li><li><a href="review.html">Leave a review</a></li><li><a href="privacy.html">Privacy</a></li><li><a href="terms.html">Terms</a></li></ul></div>
       <div class="social" data-social hidden><h3>Follow us</h3><ul class="social__list"></ul></div>
     </div>
     <small>&copy; <span id="year"></span> <span data-biz="name">The Sweetest Bakery</span></small>

@@ -30,7 +30,8 @@
   }
   async function loadAdminData() {
     if (!state.isAdmin) return;
-    const [o, a, pr, lg] = await Promise.all([sb.from("orders").select("*").order("created_at", { ascending: false }).limit(1000), sb.from("admins").select("*").order("added_at"), sb.from("profiles").select("*"), sb.from("order_log").select("*").order("at", { ascending: false }).limit(200)]);
+    const [o, a, pr, lg, rv] = await Promise.all([sb.from("orders").select("*").order("created_at", { ascending: false }).limit(1000), sb.from("admins").select("*").order("added_at"), sb.from("profiles").select("*"), sb.from("order_log").select("*").order("at", { ascending: false }).limit(200), sb.from("review_submissions").select("*").order("created_at", { ascending: false }).limit(100)]);
+    state.reviews = rv.data || []; state.revErr = !!rv.error;   // v10.25: reviews waiting for approval (setup.sql section 12)
     state.log = lg.data || []; state.logErr = !!lg.error;   // v10.19.1: change log (table from setup.sql section 8)
     state.orders = o.data || []; state.admins = a.data || []; state.known = state.known || new Set(); state.orders.forEach(x => state.known.add(x.id));   // v10.24: loaded = seen
     state.profErr = !!pr.error; state.profiles = pr.data || []; state.profile = state.profiles.find(x => x.user_id === state.user.id) || null;   // profErr = profiles table missing: do not block the admin if (o.error || a.error) state.note = "Could not load from the online database: " + ((o.error || a.error).message || "unknown error");
@@ -192,13 +193,25 @@
   const lastChange = id => { const l = (state.log || []).find(x => x.order_id === id); return l ? `<br><span class="muted">Last change: ${esc(l.action)} by ${esc(l.by_name || "?")}, ${esc(when(l.at))}</span>` : ""; };
   const logBox = () => `<details class="adm-sec" data-sec="olog" ${state.open.olog ? "open" : ""}><summary><span class="adm-sec__t">Change log</span><span class="adm-sec__h">${state.logErr ? "needs setup" : (state.log || []).length + " recent"}</span></summary><div class="adm-sec__b">${state.logErr ? `<p class="muted">Run the newest <code>supabase/setup.sql</code> once (section 8) to start the log.</p>` : `<ul class="adm-list">${(state.log || []).slice(0, 50).map(l => `<li><div><strong>${esc(l.order_name || "Order")}</strong>: ${esc(l.action)}<br><span class="muted">${esc(l.by_name || "?")} &middot; ${esc(when(l.at))}</span></div></li>`).join("") || "<li>Nothing yet. Changes are written here from now on.</li>"}</ul>`}</div></details>`;
 
+  // v10.25: reviews customers sent from review.html wait here. Approve = copied into the website's "What people say" (live at once) and removed from this list.
+  function reviewsBox() {
+    const rv = state.reviews || [], url = reviewUrl(), st = n => n ? "\u2605".repeat(n) + "\u2606".repeat(5 - n) + " " : "";
+    return sec("orev", "Reviews to approve", state.revErr ? "needs setup" : rv.length ? rv.length + " waiting" : "none waiting", state.revErr
+      ? `<p class="muted">Run the newest <code>supabase/setup.sql</code> once (section 12) to switch reviews on.</p>`
+      : `<p class="muted">Customers write a review on your review page. It only shows on the website after you press Approve. The thank-you WhatsApp message already carries this link, or copy it here:</p>
+    <p><input readonly value="${esc(url)}" aria-label="Review page link" onclick="this.select()"></p>
+    <ul class="adm-list">${rv.map(r => `<li><div><strong>${esc(r.name)}</strong> <span class="muted">${esc(st(r.stars))}&middot; ${esc(when(r.created_at))}</span><br>${esc(r.text)}</div>
+    <div class="adm-actions"><button class="btn btn--sm" data-act="rv-ok" data-id="${r.id}">Approve and show</button><button class="btn btn--sm btn--ghost" data-act="rv-del" data-id="${r.id}">Delete</button></div></li>`).join("") || "<li>No reviews waiting.</li>"}</ul>`);
+  }
+
   // v10.20: WhatsApp message for the order's status (opens WhatsApp with the words filled in; Becca can change them before sending).
+  const reviewUrl = () => new URL("review.html", location.href).href;   // v10.25: the public review page sits next to admin.html
   const waText = o => {
     const biz = SB._biz || {}, first = String(o.name || "").trim().split(/\s+/)[0] || "there", what = String(o.items || "").slice(0, 300), method = (o.details && o.details.method) || "";
     const dateTxt = o.date ? " for " + o.date : "", tot = +o.total ? " The total is " + money(+o.total) + "." : "", sig = " " + (biz.name || "The Sweetest Bakery");
     if (o.status === "confirmed") return `Hi ${first}, your order is confirmed: ${what}${dateTxt}.${tot} Thank you!${sig}`;
     if (o.status === "ready") return `Hi ${first}, your order is ready${/deliver/i.test(method) ? " and will be delivered as arranged" : " for collection"}: ${what}. Thank you!${sig}`;
-    if (o.status === "completed") return `Hi ${first}, thank you for your order! We hope you enjoy it. If you loved it, we would love to bake for you again.${sig}`;
+    if (o.status === "completed") return `Hi ${first}, thank you for your order! We hope you enjoy it. If you loved it, we would love to bake for you again. If you have a minute, a short review means a lot: ${reviewUrl()}${sig}`;   // v10.25
     if (o.status === "cancelled") return `Hi ${first}, your order (${what}) has been cancelled. Message us any time if you would like to order again.${sig}`;
     return `Hi ${first}, this is ${sig.trim()} about your order: ${what}.`;
   };
@@ -330,7 +343,7 @@
   function orders() {
     const o = state.orders || [], f = state.filter || "pending", list = o.filter(x => f === "all" || x.status === f), nper = state.nper || "week";
     const cnt = s => s === "all" ? o.length : o.filter(x => x.status === s).length;
-    return `${numbers(nper)}${calBox()}${bakeBox()}${alertBox()}<div class="adm-split"><div class="adm-card"><h2>Add an order</h2>
+    return `${numbers(nper)}${calBox()}${bakeBox()}${reviewsBox()}${alertBox()}<div class="adm-split"><div class="adm-card"><h2>Add an order</h2>
     <form data-form="order"><label>Customer</label><input name="name" required>${SB.phoneField("o-phone", { label: "Phone" })}
     <label>What they ordered</label><textarea name="items" required></textarea><div class="adm-row"><div><label>Needed on</label><input name="date" type="date"></div><div><label>Total (R)</label><input name="total" type="number" min="0"></div></div>
     <p><button class="btn btn--sm" type="submit">Save order</button></p></form></div>
@@ -339,6 +352,7 @@
     <ul class="adm-list">${list.map(x => `<li><div><strong>${esc(x.name)}</strong> <span class="tag tag--${x.status}">${x.status}</span><br><span class="muted">${esc(x.items)}${x.date ? " &middot; for " + esc(x.date) : ""}${x.source && x.source !== "admin" ? " &middot; from the website (" + (x.source === "cart" ? "cart" : "custom order") + ")" : ""}${x.details && x.details.delivery && x.details.delivery.area ? " &middot; delivery to " + esc(x.details.delivery.area) + (+x.details.delivery.fee ? " (R " + esc(x.details.delivery.fee) + ")" : "") : ""}${x.total ? " &middot; R " + esc(x.total) : ""}<br>Placed ${esc(placed(x))}</span>${lastChange(x.id)}</div>
     <div class="adm-actions">${NEXT[x.status] ? `<button class="btn btn--sm" data-act="onext" data-id="${x.id}" data-v="${NEXT[x.status][0]}">${NEXT[x.status][1]}</button>` : ""}<select data-act="ostatus" data-id="${x.id}" style="width:auto" aria-label="Change status">${ST.map(s => `<option ${s === x.status ? "selected" : ""}>${s}</option>`).join("")}</select>
     <button class="btn btn--sm btn--ghost" data-act="oslip" data-id="${x.id}">Print slip</button>
+    ${x.details && x.details.photo ? `<button class="btn btn--sm btn--ghost" data-act="ophoto" data-v="${esc(x.details.photo)}" title="Opens the inspiration photo the customer attached">View photo</button>` : ""}
     ${x.phone ? `<a class="btn btn--sm btn--whatsapp" target="_blank" rel="noopener" title="Opens WhatsApp with the message filled in. You can change it before sending." href="${esc(waLink(x))}">${waLabel[x.status] || "WhatsApp"}</a>` : ""}
     <button class="btn btn--sm btn--ghost" data-act="odel" data-id="${x.id}">Delete</button></div></li>`).join("") || "<li>No orders here.</li>"}</ul></div></div>
     <p class="muted">Orders sent from the Cart or the Custom Order form are saved here automatically (the WhatsApp message still goes to you too). You can also add one by hand. They are stored online, so you see the same list on every device.</p>${logBox()}`;
@@ -527,7 +541,7 @@
 
   // v10.23: "Live check" = the real-world test (roadmap idea 46) as a button. It talks to the REAL online database, so it can only run from
   // the live site or from a computer with internet (not from a double-clicked file). Everything it adds is removed again.
-  const SETUP_VERSION = "10.24", TEST_NAME = "TEST ORDER - safe to delete";
+  const SETUP_VERSION = "10.25", TEST_NAME = "TEST ORDER - safe to delete";
   async function liveCheck() {
     const c = (state.data.biz || {}).supabase, R = [], add = (s, t, d) => R.push({ s, t, d: d || "" });
     if (!c || !c.url || !c.key) { add("bad", "The online database is not set up", "config/business.json has no Supabase address."); return R; }
@@ -561,6 +575,15 @@
     await step("Order calendar", async () => {
       const r = await sb.rpc("booked_dates");
       add(r.error ? "warn" : "ok", r.error ? "The order calendar cannot count booked days" : "The order calendar works (" + (r.data || []).length + " busy dates)", r.error ? "Run the newest setup.sql (roadmap 2c)." : "");
+    });
+
+    await step("Reviews and photos", async () => {   // v10.25
+      const r = await sb.from("review_submissions").select("id", { count: "exact", head: true });
+      add(r.error ? "warn" : "ok", r.error ? "Reviews are not switched on yet" : "Reviews can be read (" + (r.count || 0) + " waiting)", r.error ? "Run the newest setup.sql (roadmap 2c)." : "");
+      const b = await sb.storage.from("inspiration").list("", { limit: 1 });
+      add(b.error ? "warn" : "ok", b.error ? "The photo storage is not set up yet" : "Inspiration photos have a private place to live", b.error ? "Run the newest setup.sql (roadmap 2c). Custom orders still work without it, just with no photo." : "");
+      const g = await raw("/storage/v1/object/list/inspiration", "POST", { prefix: "", limit: 1 });
+      add(g.ok ? "bad" : "ok", g.ok ? "Strangers CAN look inside the photo storage" : "Strangers cannot look inside the photo storage", g.ok ? "Run the newest setup.sql now (roadmap 2c) and run this check again." : "");
     });
 
     // The locks, tried the way a stranger would try them (no sign-in).
@@ -756,9 +779,18 @@
     if (a === "onext") { const o0 = state.orders.find(x => x.id === id) || {}, was = o0.status, r = await sb.from("orders").update({ status: v }).eq("id", id); if (!r.error) await logOrder(o0, "status " + was + " to " + v); await loadAdminData(); return go("orders", r.error ? "Could not update: " + r.error.message : "Order moved to " + v + "."); }   // v10.19
     if (a === "bake-print") { const w = window.open("", "_blank"); if (!w) return go("orders", "Your browser blocked the bake sheet window. Allow pop-ups for this page and try again."); w.document.write(bakePage()); w.document.close(); w.focus(); setTimeout(() => w.print(), 300); return; }   // v10.24
     if (a === "al-test") { state.open.oalert = true; return go("orders", chime() ? "Did you hear the chime? Then new orders will sound the same." : "No sound came out. Check the volume and that this device is not on silent, then press the button again."); }
+    if (a === "ophoto") { const w = window.open("about:blank", "_blank"); const r = await sb.storage.from("inspiration").createSignedUrl(v, 300); if (r.error || !r.data) { if (w) w.close(); return go("orders", "Could not open the photo: " + ((r.error && r.error.message) || "it may have been deleted.")); } if (w) w.location.href = r.data.signedUrl; else go("orders", "Your browser blocked the photo window. Allow pop-ups for this page and try again."); return; }   // v10.25
+    if (a === "rv-ok") {   // v10.25
+      const r = (state.reviews || []).find(x => x.id === id); if (!r) return; state.open.orev = true;
+      SB._p = null; const fresh = await SB.load(), sd = JSON.parse(JSON.stringify(fresh.settings)), item = { name: r.name, rating: r.stars || 0, text: r.text, date: new Date().toLocaleDateString("en-ZA", { month: "long", year: "numeric" }) };
+      sd.reviews = [...(sd.reviews || []), item]; if (!await dbSave("settings", sd)) return;
+      if (state.draft) state.draft.reviews = [...(state.draft.reviews || []), item];   // keep an open Theme draft in step so saving it later does not drop the review
+      await sb.from("review_submissions").delete().eq("id", id); SB._p = null; state.data = await SB.load(); await loadAdminData(); return go("orders", "Review approved. It is on the website now.");
+    }
+    if (a === "rv-del") { if (!confirm("Delete this review?")) return; state.open.orev = true; const r = await sb.from("review_submissions").delete().eq("id", id); await loadAdminData(); return go("orders", r.error ? "Could not delete: " + r.error.message : "Review deleted."); }
     if (a === "oslip") { const o = state.orders.find(x => x.id === id); if (!o) return; const w = window.open("", "_blank"); if (!w) return go("orders", "Your browser blocked the slip window. Allow pop-ups for this page and try again."); w.document.write(slip(o)); w.document.close(); w.focus(); setTimeout(() => w.print(), 300); return; }
     if (a === "dl-num") { const k = v || "week"; return csvOrders(state.orders.filter(o => inPeriod(o, k)), "orders-" + k + "-" + SB.today() + ".csv"); }
-    if (a === "odel") { if (!confirm("Delete this order?")) return; const o0 = state.orders.find(x => x.id === id) || {}, r = await sb.from("orders").delete().eq("id", id); if (!r.error) await logOrder(o0, "order deleted"); await loadAdminData(); return go("orders", r.error ? "Could not delete: " + r.error.message : ""); }
+    if (a === "odel") { if (!confirm("Delete this order?")) return; const o0 = state.orders.find(x => x.id === id) || {}, r = await sb.from("orders").delete().eq("id", id); if (!r.error) { await logOrder(o0, "order deleted"); if (o0.details && o0.details.photo) { try { await sb.storage.from("inspiration").remove([o0.details.photo]); } catch (e) { /* photo already gone */ } } } await loadAdminData(); return go("orders", r.error ? "Could not delete: " + r.error.message : ""); }
     if (a === "cup" || a === "cdown") { const L = state.data.categories, i = L.findIndex(c => c.id === id), j = a === "cup" ? i - 1 : i + 1; if (i < 0 || j < 0 || j >= L.length) return go("menu"); [L[i], L[j]] = [L[j], L[i]]; await saveProducts(); return go("menu", L[j].name + " moved " + (a === "cup" ? "up." : "down.")); }
     if (a === "chide") { const c = state.data.categories.find(x => x.id === id); if (c.hidden) delete c.hidden; else c.hidden = true; await saveProducts(); return go("menu", c.name + (c.hidden ? " is hidden from customers." : " is showing again.")); }
     if (a === "cdel") { const c = state.data.categories.find(x => x.id === id); if (state.data.products.some(p => p.category === id)) return go("menu", "Move or delete the items in " + c.name + " first."); if (confirm("Delete the section " + c.name + "?")) { state.data.categories = state.data.categories.filter(x => x.id !== id); await saveProducts(); } return go("menu"); }

@@ -1,6 +1,6 @@
 # 🗺️ Roadmap: what's next and what we need from you
 
-**Where we are:** v10.24 &nbsp;|&nbsp; **Next up:** v10.25 (review link + inspiration photo upload) &nbsp;|&nbsp; **Rule:** 2 things per version.
+**Where we are:** v10.25 &nbsp;|&nbsp; **Next up:** v10.26 (EFT details + proof of payment, install as an app) &nbsp;|&nbsp; **Rule:** 2 things per version.
 
 *This page is written for Becca. No website or coding knowledge needed. Words you might not know are explained in the "Words explained" list in the [README](../README.md). Finished work is in [`BACKLOG.md`](BACKLOG.md).*
 
@@ -8,7 +8,8 @@
 - ✅ **The shop works.** Menu, cart, custom orders, WhatsApp, customer accounts, the admin, themes, order calendar and delivery fees are all built.
 - ✅ **New in v10.23:** a **Live check** button in the admin that tests the real online database for you (it even sends and removes a test order), **spam protection** on orders and sign-up that real customers never notice, and a **keep-alive** so the free database never pauses. You need to run the newest `setup.sql` once (section 2c).
 - ✅ **New in v10.24:** a **bake sheet** in Orders ("what to make for Saturday", added up across every order, allergies in red, printable) and a **new-order alert** (a chime and a pop-up while the admin is open). Updating the database (section 2c) is optional here: it only makes the alert instant instead of within 30 seconds.
-- ⏭️ **Next:** v10.25, a review link and customers attaching an inspiration photo to a custom order. The build order for all 60 ideas is in section 1.
+- ✅ **New in v10.25:** a **review page** (customers write a short review, you press Approve before it shows, and the thank-you WhatsApp message carries the link) and **inspiration photos** on Custom Orders (stored privately, you press View photo next to the order). You need to run the newest `setup.sql` once (section 2c).
+- ⏭️ **Next:** v10.26, your EFT / SnapScan details with "upload proof of payment", and installing the website on a phone like an app. The build order for all 60 ideas is in section 1.
 - ⏳ **Waiting on you:** real prices, FAQ answers, reviews, your story, Instagram / Facebook names and photos. The full checklist is in section 2.
 - 🚀 **Last step:** putting the website online, only when you say "I'm happy with everything".
 
@@ -26,12 +27,11 @@
 
 <a id="plan"></a>
 ## 1. What is still to build (the plan)
-Your change lists always go **first**, so the versions below may slide back by one when you send a list. **The order below is the one you agreed in v10.22:** safe and real first (v10.23), then things that save you time, then trust, then money, then launch. Done: **v10.22** (price guide + Order again), **v10.23** (Live check + spam protection + keep-alive) and **v10.24** (bake sheet + new-order alert). Photos and going online are deliberately **last**. Everything already built is listed in [`BACKLOG.md`](BACKLOG.md) (start with "What the website can do today").
+Your change lists always go **first**, so the versions below may slide back by one when you send a list. **The order below is the one you agreed in v10.22:** safe and real first (v10.23), then things that save you time, then trust, then money, then launch. Done: **v10.22** (price guide + Order again), **v10.23** (Live check + spam protection + keep-alive), **v10.24** (bake sheet + new-order alert) and **v10.25** (review link + inspiration photo upload). Photos and going online are deliberately **last**. Everything already built is listed in [`BACKLOG.md`](BACKLOG.md) (start with "What the website can do today").
 
 | Version | Status | What you will get | What we need from you |
 |---|---|---|---|
-| **v10.25** | ⏭️ Next | **Review link + inspiration photo upload** (1 and 13): a link to a short review form you approve, and customers can attach a photo to a custom order. | Nothing new |
-| v10.26 | 📅 Planned | **EFT / SnapScan / Capitec Pay details with "upload proof of payment"** + **install on the home screen like an app** (27 and 47). | Your payment details (account or QR) |
+| **v10.26** | ⏭️ Next | **EFT / SnapScan / Capitec Pay details with "upload proof of payment"** + **install on the home screen like an app** (27 and 47). | Your payment details (account or QR) |
 | v10.27 | 📅 Planned | **Shop status banner** ("on holiday until 3 Jan", pauses orders) + the **old "Publish" wording fixed** in the admin (4 and 45). | Nothing new |
 | v10.28 | 📅 Planned | **Gift vouchers** (you give a code, the customer types it in the cart, it comes off the total) + a **loyalty reward** (for example every 10th order a free cupcake box). | Your voucher and loyalty rules |
 | v10.29 | 📅 Planned | **Deposits / online payment** (Yoco, PayFast or Ozow). A deposit secures the date. On its own because it handles real money. | A payment account that you open |
@@ -47,7 +47,7 @@ Your change lists always go **first**, so the versions below may slide back by o
 Nothing here can be built or guessed by us. Send things whenever you have them (in your next change list is fine).
 
 ### 2a. Your to-do list
-- [ ] **Update the online database** with the newest `supabase/setup.sql` (steps in 2c). Latest change: **v10.24** (it makes the new-order alert instant; the alert still works without it). If you have not run it since v10.22, run it now too: **v10.23** added the spam guard, which is only half on until you do.
+- [ ] **Update the online database** with the newest `supabase/setup.sql` (steps in 2c). Latest change: **v10.25** (it switches on reviews and the private place for inspiration photos; without it the review page says "not switched on yet" and custom orders send without the photo). **v10.24** only made the new-order alert instant. If you have not run it since v10.22, run it now too: **v10.23** added the spam guard, which is only half on until you do.
 - [ ] **Replace the placeholder numbers** in Admin > Theme & layout > **Order calendar & delivery**: days of notice, orders per day, days off, delivery areas and fees. Today they are samples.
 - [ ] **Real prices and product list.** Today the menu prices are samples (Admin > Menu items).
 - [ ] **Real cake sizes, servings, flavours and prices** for the price guide (Admin > Theme & layout > **Cake price guide**). Until you change them customers see a "Sample prices" tag.
@@ -101,6 +101,7 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 
 | List | # | Request (short) | Status | Where |
 |---|---|---|---|---|
+| - | - | (Owner said "start next v/patch" and asked for the next 5 versions at 2 changes each, so the version marked NEXT was built: review link (idea 1) + inspiration photo upload (idea 13); next five in the plan, section 1) | DONE | v10.25 |
 | - | - | (Owner said "start next v/patch" with no change list, so the version marked NEXT was built: the bake sheet (idea 36) and the new-order alert (idea 35)) | DONE | v10.24 |
 | - | - | (Owner said "start next v/patch" with no change list, so the version marked NEXT was built: a Live check for the real database (idea 46), spam protection and a keep-alive (idea 48). The hand-test with Becca is guide 5e) | DONE | v10.23 |
 | - | - | (Owner said "lets do it your way, start next v/patch": the first version of the agreed order was built, the cake price guide + "Order the same again" on the thank-you page. The new build order for all 60 ideas is in the plan, section 1) | DONE | v10.22 |
@@ -253,6 +254,12 @@ Every version leaves a few "good idea, but not now" notes. They used to be sprea
 - Split the bake sheet into collection and delivery runs; choose which statuses count (v10.24)
 - A shopping list worked out from the bake sheet (idea 37, needs your recipes) (v10.24)
 
+**Reviews and inspiration photos (v10.25)**
+- Several photos per order; show the photo on the printed slip and the bake sheet (v10.25)
+- A "tidy unused photos" job for pictures whose order was never sent (v10.25)
+- A "reply to this review" line under a review; ask for a Google review too (v10.25)
+- A review reminder sent a few days after "Mark done" (needs WhatsApp / email sending first); a QR code for the review page (idea 59) (v10.25)
+
 **Helping Becca (new in v10.21.1)**
 - A one-page printable cheat sheet for the day-to-day admin jobs
 - Screenshots in the README next to each admin job
@@ -262,7 +269,7 @@ Every version leaves a few "good idea, but not now" notes. They used to be sprea
 You asked for everything we think the website could still add. Nothing here is built yet. **Tell us the numbers you like** (for example "1, 11, 36") and we will slot them in, two per version. ⭐ = our top picks. 📅 = already on the plan above. ⏳ = we need something from you first. **S / M / L** = a small, medium or large amount of work.
 
 **A. Get more orders (people find you and trust you)**
-1. ⭐ **Review link.** When an order is done, the "thank you" WhatsApp message carries a link to a short review form. You approve each review before it shows. (Reviews are empty today and would otherwise be typed by hand.) *M*
+1. ✅ *built in v10.25* ⭐ **Review link.** When an order is done, the "thank you" WhatsApp message carries a link to a short review form. You approve each review before it shows. (Reviews are empty today and would otherwise be typed by hand.) *M*
 2. **Real photos on every item and an "Our work" gallery.** 📅 ⏳ waits for your photos. *M*
 3. **A page for each item:** big photo, full description, sizes, "serves 8 to 10", allergens and an Add button. *M*
 4. **Shop status banner:** "Taking orders" or "On holiday until 3 January", with one tick that pauses ordering. *S*
@@ -276,7 +283,7 @@ You asked for everything we think the website could still add. Nothing here is b
 **B. Make ordering easier**
 11. ⭐ **Cake price guide:** size, servings and flavour give an estimated price. ✅ built in v10.22 (sample prices until you set yours). *M*
 12. **Cake builder, step by step:** size, flavour, filling, icing, message, with the price updating as you go. Builds on 11. *L*
-13. ⭐ **Upload an inspiration photo with a custom order.** You see it in the admin next to the order. *M*
+13. ✅ *built in v10.25* ⭐ **Upload an inspiration photo with a custom order.** You see it in the admin next to the order. *M*
 14. **Extras in the cart:** candles, a card, a topper, a message on the cake. *S*
 15. **"This is a gift":** recipient's name, a gift-card message and delivery to a different address. *S*
 16. **Party boxes and bundles** at a bundle price (for example a cake and 12 cupcakes). *M*

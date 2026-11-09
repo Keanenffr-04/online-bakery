@@ -1,4 +1,4 @@
--- The Sweetest Bakery, v10.23: online database setup (sections 1 to 10).
+-- The Sweetest Bakery, v10.25: online database setup (sections 1 to 12).
 -- Run ONCE: Supabase dashboard > SQL Editor > New query > paste this whole file > Run.
 -- Safe to run again (it never deletes your data).
 
@@ -219,8 +219,55 @@ exception when others then
   raise notice 'Realtime could not be switched on here (%). The 30-second check still works.', sqlerrm;
 end $$;
 
+-- 12. (v10.25) Customer reviews (held until an admin approves them) + inspiration photos for custom orders. Re-runnable; nothing is deleted.
+-- Reviews: anyone may ADD one (name, optional stars, a short text); only admins can read, approve (copy into the website) or delete them.
+create table if not exists public.review_submissions (
+  id         uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  name       text not null check (char_length(btrim(name)) between 2 and 60),
+  stars      int  check (stars is null or stars between 1 and 5),
+  text       text not null check (char_length(btrim(text)) between 10 and 600)
+);
+alter table public.review_submissions enable row level security;
+drop policy if exists "anyone adds a review"    on public.review_submissions;
+create policy "anyone adds a review"    on public.review_submissions for insert to anon, authenticated with check (true);
+drop policy if exists "admins manage reviews"   on public.review_submissions;
+create policy "admins manage reviews"   on public.review_submissions for all using (public.is_admin()) with check (public.is_admin());
+
+-- Spam guard for reviews: at most 10 new ones in 10 minutes (everyone together). Admins are skipped.
+create or replace function public.reviews_guard() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if public.is_admin() then return new; end if;
+  if (select count(*) from public.review_submissions where created_at > now() - interval '10 minutes') >= 10 then
+    raise exception 'Too many reviews are arriving at once. Please try again later.';
+  end if;
+  return new;
+end $$;
+revoke all on function public.reviews_guard() from public, anon, authenticated;
+drop trigger if exists reviews_guard_trg on public.review_submissions;
+create trigger reviews_guard_trg before insert on public.review_submissions for each row execute function public.reviews_guard();
+
+-- Photos: a PRIVATE bucket called "inspiration" (max 2 MB each, pictures only). Anyone may ADD a picture with a random file name;
+-- nobody can list or open them except admins (the admin page opens them through a short-lived link).
+do $$
+begin
+  insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+  values ('inspiration', 'inspiration', false, 2097152, array['image/jpeg', 'image/png', 'image/webp'])
+  on conflict (id) do update set public = false, file_size_limit = 2097152, allowed_mime_types = array['image/jpeg', 'image/png', 'image/webp'];
+  drop policy if exists "customers add inspiration photos" on storage.objects;
+  create policy "customers add inspiration photos" on storage.objects for insert to anon, authenticated
+    with check (bucket_id = 'inspiration' and name ~ '^[0-9a-f-]{36}\.jpg$');
+  drop policy if exists "admins read inspiration photos" on storage.objects;
+  create policy "admins read inspiration photos" on storage.objects for select using (bucket_id = 'inspiration' and public.is_admin());
+  drop policy if exists "admins delete inspiration photos" on storage.objects;
+  create policy "admins delete inspiration photos" on storage.objects for delete using (bucket_id = 'inspiration' and public.is_admin());
+exception when others then
+  raise notice 'The photo storage could not be set up here (%). Custom orders still work; they just cannot attach a photo.', sqlerrm;
+end $$;
+
 -- The admin's "Live check" asks this to see whether the database has the newest setup.sql.
 create or replace function public.setup_version() returns text
-language sql immutable as $$ select '10.24'::text $$;
+language sql immutable as $$ select '10.25'::text $$;
 revoke all on function public.setup_version() from public;
 grant execute on function public.setup_version() to anon, authenticated;

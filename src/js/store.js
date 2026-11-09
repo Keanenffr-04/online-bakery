@@ -206,13 +206,38 @@
     },
     // v10.17: save an order online (anyone may add one, only admins can read them). Never blocks or breaks the WhatsApp message.
     saveOrder(o) {
+      // v10.25: returns a promise (true = saved online, false = not) so a slow photo upload can be waited for. It never rejects.
       try {
-        if (SB.spam.bot()) return;   // v10.23
-        const c = (SB._biz || {}).supabase; if (!c || !c.url || !c.key || window.top !== window) return;
+        if (SB.spam.bot()) return Promise.resolve(false);   // v10.23
+        const c = (SB._biz || {}).supabase; if (!c || !c.url || !c.key || window.top !== window) return Promise.resolve(false);
         const t = SB.customer(), live = t && t.expires_at * 1000 > Date.now() + 30000, h = { apikey: c.key, "Content-Type": "application/json", Prefer: "return=minimal" };
         if (live) { h.Authorization = "Bearer " + t.access_token; o = { ...o, user_id: t.user.id }; }   // v10.18: signed in = shows under My account
-        fetch(c.url + "/rest/v1/orders", { method: "POST", keepalive: true, headers: h, body: JSON.stringify(o) }).catch(() => { /* offline: the WhatsApp message still goes */ });
-      } catch (e) { /* ignore */ }
+        return fetch(c.url + "/rest/v1/orders", { method: "POST", keepalive: true, headers: h, body: JSON.stringify(o) }).then(r => r.ok).catch(() => false);   // offline: the WhatsApp message still goes
+      } catch (e) { return Promise.resolve(false); }
+    },
+    // v10.25: inspiration photo for a custom order. shrink() makes a small JPEG in the browser (max 1400 px, under 1.8 MB); upload() puts it in the
+    // private "inspiration" bucket under a random name and returns that name (or null). Neither ever throws, and a failed photo never blocks the order.
+    photo: {
+      async shrink(file) {
+        try {
+          if (!file || !/^image\//.test(file.type)) return null;
+          const url = URL.createObjectURL(file), img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = url; });
+          const k = Math.min(1, 1400 / Math.max(img.naturalWidth, img.naturalHeight)), cv = document.createElement("canvas");
+          cv.width = Math.max(1, Math.round(img.naturalWidth * k)); cv.height = Math.max(1, Math.round(img.naturalHeight * k));
+          const cx = cv.getContext("2d"); cx.fillStyle = "#fff"; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(img, 0, 0, cv.width, cv.height); URL.revokeObjectURL(url);
+          for (const q of [0.82, 0.65, 0.5]) { const b = await new Promise(r => cv.toBlob(r, "image/jpeg", q)); if (b && b.size <= 1.8 * 1024 * 1024) return b; }
+          return null;
+        } catch (e) { return null; }
+      },
+      async upload(blob) {
+        try {
+          const c = (SB._biz || {}).supabase; if (!blob || !c || !c.url || !c.key || window.top !== window || location.protocol === "file:") return null;
+          const name = (crypto.randomUUID ? crypto.randomUUID() : "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, ch => { const r = Math.random() * 16 | 0; return (ch === "x" ? r : (r & 3 | 8)).toString(16); })) + ".jpg";
+          const ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), 15000);
+          const r = await fetch(c.url + "/storage/v1/object/inspiration/" + name, { method: "POST", headers: { apikey: c.key, Authorization: "Bearer " + c.key, "Content-Type": "image/jpeg" }, body: blob, signal: ctl.signal }); clearTimeout(tm);
+          return r.ok ? name : null;
+        } catch (e) { return null; }
+      }
     },
     load() {
       return SB._p || (SB._p = (async () => {
