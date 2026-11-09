@@ -187,6 +187,12 @@
       const price = Math.max(0, Math.round((+z.price || 0) + (f ? +f.extra || 0 : 0)));
       return { size: z.name, serves: Math.max(1, Math.round(+z.serves || 1)), flavour: f ? f.name : "", price };
     },
+    // v10.26.6: delivery address. clean() makes a typed address one tidy line (max 200 chars); ok() = long enough to deliver to.
+    addr: {
+      clean: s => String(s || "").replace(/\s*[\r\n]+\s*/g, ", ").replace(/\s{2,}/g, " ").replace(/(,\s*){2,}/g, ", ").trim().slice(0, 200),
+      ok: s => SB.addr.clean(s).length >= 6,
+      MSG: "Please type your delivery address (street and suburb)."
+    },
     // v10.21: delivery fee for an area (0 when the order is over the free-delivery amount). Returns { fee, free } or null if the area is not on the list.
     deliveryFee(dl, area, total) {
       if (!dl || dl.enabled === false) return null; const a = (dl.areas || []).find(x => x.name === area); if (!a) return null;

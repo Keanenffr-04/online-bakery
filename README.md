@@ -1,7 +1,8 @@
 # online-bakery 🐇🍰
 Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
 
-**Current version:** v10.26.5. The latest three versions:
+**Current version:** v10.26.6. The latest three versions:
+- **v10.26.6:** (your list 25, item 3, step 1 of 3) when a customer picks **Delivery** they now **type their delivery address** on the Cart and Custom Order. It goes into the WhatsApp message and the saved order, and shows next to the order in the admin and on the printed slip. The map (v10.26.7) and the cosier message (v10.26.8) come next. Nothing to update in the database.
 - **v10.26.5:** (your list 26) a **dark mode for every theme**. It turns on by itself when you open the website on your own computer (double-click `preview.html`), so working late is easier on the eyes. The real website is always light and visitors get no switch. Nothing to update in the database.
 - **v10.26.4:** (your list 25, part 1 of 3) the **cart empties by itself** after an order is sent, and **"Order the same again" is removed** (thank-you page and My account). The thank-you page's **Open WhatsApp** button now carries the order text. Nothing to update in the database.
 - *(older)* **v10.26.3:** a **backup WhatsApp number** (Keanen) on the Contact and thank-you pages, plus a step-by-step **how to order** guide in the roadmap (section 5g). Nothing to update in the database.

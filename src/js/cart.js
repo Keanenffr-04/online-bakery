@@ -42,6 +42,7 @@
       if (meta.phone) out.push(`Phone: ${meta.phone}`);
       if (meta.date) out.push(`Date needed: ${meta.date}`);
       if (meta.method && meta.method !== "Not sure yet") out.push(`Collection or delivery: ${meta.method}`);
+      if (meta.addr) out.push(`Delivery address: ${meta.addr}`);   // v10.26.6
       if (meta.notes) out.push(`Notes: ${meta.notes}`);
       out.push("", "Please confirm availability and the final price. Thank you!");
       return out.join("\n");

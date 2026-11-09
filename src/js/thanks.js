@@ -18,7 +18,7 @@ document.addEventListener("click", e => {   // v10.26: Copy buttons in the How t
 });
 /* v10.26.3: "Can't reach Becca?" button: the same order, typed out for the backup WhatsApp number. Only shown when backupWhatsapp is set in config/business.json. */
 function backupBtn(biz, o) {
-  const msg = ["Hi! I sent an order on The Sweetest Bakery website but could not reach " + ((biz.owner || "Becca").split(" ")[0]) + " on WhatsApp.", o.name ? "Name: " + o.name : "", o.date ? "Needed for: " + o.date : "", "", ...(o.items || []).map(i => "- " + i), o.total ? "Total: R " + Math.round(o.total) : "", o.method && o.method !== "Not sure yet" ? o.method : ""].filter((x, i, a) => x !== "" || (a[i - 1] !== "" && i < a.length - 1)).join("\n"), w = SB.backupWa(biz, msg);
+  const msg = ["Hi! I sent an order on The Sweetest Bakery website but could not reach " + ((biz.owner || "Becca").split(" ")[0]) + " on WhatsApp.", o.name ? "Name: " + o.name : "", o.date ? "Needed for: " + o.date : "", "", ...(o.items || []).map(i => "- " + i), o.total ? "Total: R " + Math.round(o.total) : "", o.method && o.method !== "Not sure yet" ? o.method : "", o.address ? "Delivery address: " + o.address : ""].filter((x, i, a) => x !== "" || (a[i - 1] !== "" && i < a.length - 1)).join("\n"), w = SB.backupWa(biz, msg);
   return w ? `<a class="btn btn--ghost" target="_blank" rel="noopener" href="${SB.esc(w.link)}">Can't reach ${SB.esc((biz.owner || "Becca").split(" ")[0])}? WhatsApp ${SB.esc(w.name)}</a>` : "";
 }
 SB.load().then(({ biz, settings }) => {
@@ -27,7 +27,7 @@ SB.load().then(({ biz, settings }) => {
   const when = o.date ? ` for <strong>${esc(o.date)}</strong>` : "";
   root.innerHTML = `<h1>Thank you${o.name ? ", " + esc(o.name.split(" ")[0]) : ""}! &#127856;</h1>
     <p>Your ${o.source === "custom" ? "custom cake request" : "order"} is saved${when}. <strong>It is not confirmed yet:</strong> Becca replies on WhatsApp to confirm it and the price. If WhatsApp did not open, or you did not press send there, use the button below (it brings your order text with it).</p>
-    <div class="thanks__box"><h2>What you sent</h2><ul>${(o.items || []).map(i => `<li>${esc(i)}</li>`).join("")}</ul>${o.total ? `<p><strong>Total: R ${esc(Math.round(o.total))}</strong></p>` : ""}${o.method && o.method !== "Not sure yet" ? `<p class="muted">${esc(o.method)}</p>` : ""}</div>
+    <div class="thanks__box"><h2>What you sent</h2><ul>${(o.items || []).map(i => `<li>${esc(i)}</li>`).join("")}</ul>${o.total ? `<p><strong>Total: R ${esc(Math.round(o.total))}</strong></p>` : ""}${o.method && o.method !== "Not sure yet" ? `<p class="muted">${esc(o.method)}</p>` : ""}${o.address ? `<p class="muted">Deliver to: ${esc(o.address)}</p>` : ""}</div>
     ${payBox(SB.payInfo(settings.payment), o, esc)}
     <p class="thanks__actions">${biz.whatsappLink ? `<a class="btn btn--whatsapp" target="_blank" rel="noopener" href="${esc(biz.whatsappLink + (o.wa ? "?text=" + encodeURIComponent(o.wa) : ""))}">Open WhatsApp</a>` : ""}${backupBtn(biz, o)}<a class="btn btn--ghost" href="menu.html">Back to the menu</a><a class="btn btn--ghost" href="account.html">My account</a></p>
     ${o.source === "custom" ? `<p><a class="btn btn--ghost" href="custom-orders.html">Make another custom request</a></p>` : ""}`;
