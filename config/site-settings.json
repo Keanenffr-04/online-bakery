@@ -236,5 +236,27 @@
         "extra": 30
       }
     ]
+  },
+  "payment": {
+    "enabled": true,
+    "draft": true,
+    "intro": "Please pay only after Becca has confirmed your total on WhatsApp.",
+    "note": "Use the reference below so Becca can find your payment, then send her the proof of payment on WhatsApp.",
+    "bank": {
+      "on": true,
+      "bank": "",
+      "holder": "",
+      "number": "",
+      "type": "",
+      "branch": ""
+    },
+    "snapscan": {
+      "on": false,
+      "link": ""
+    },
+    "capitec": {
+      "on": false,
+      "cell": ""
+    }
   }
 }

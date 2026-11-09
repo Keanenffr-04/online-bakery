@@ -45,6 +45,8 @@
     calendar: { enabled: true, draft: true, cartDays: 3, customDays: 7, dailyLimit: 6, closedDays: [], blocked: [] },
     delivery: { enabled: true, draft: true, areas: [{ name: "Close to the bakery", fee: 50 }, { name: "Further out", fee: 90 }], freeOver: 0, collectionNote: "Collection is free. Becca shares the pick-up details when she confirms." },
     // v10.22: cake price guide. PLACEHOLDER sizes and prices (draft: true) until Becca sets her real ones in Admin > Theme & layout > Cake price guide.
+    // v10.26: how to pay (EFT / SnapScan / Capitec Pay). EMPTY until Becca types her real details (draft: true); the thank-you page shows nothing while draft, so no fake bank details are ever public.
+    payment: { enabled: true, draft: true, intro: "Please pay only after Becca has confirmed your total on WhatsApp.", note: "Use the reference below so Becca can find your payment, then send her the proof of payment on WhatsApp.", bank: { on: true, bank: "", holder: "", number: "", type: "", branch: "" }, snapscan: { on: false, link: "" }, capitec: { on: false, cell: "" } },
     priceGuide: { enabled: true, draft: true, note: "This is a guide only. Becca confirms the final price in her quote (designs, extra decoration and delivery can change it).", sizes: [{ name: "Small (15 cm round)", serves: 10, price: 350 }, { name: "Medium (20 cm round)", serves: 16, price: 550 }, { name: "Large (25 cm round)", serves: 25, price: 800 }], flavours: [{ name: "Vanilla", extra: 0 }, { name: "Chocolate", extra: 0 }, { name: "Red velvet", extra: 40 }, { name: "Carrot", extra: 30 }] } };
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const SB = window.SB = {
@@ -164,6 +166,15 @@
       const n = SB.nextFreeDate(kind, cal, booked);
       return r.reason + (n ? " The first free date is " + new Date(n + "T12:00").toLocaleDateString("en-ZA", { weekday: "long", day: "numeric", month: "long" }) + "." : "");
     },
+    // v10.26: which payment methods are ready to show. Returns null while the details are still the empty placeholder (draft), switched off, or empty.
+    payInfo(pay) {
+      if (!pay || pay.enabled === false || pay.draft) return null;
+      const t = v => String(v || "").trim(), b = pay.bank || {}, sn = pay.snapscan || {}, cp = pay.capitec || {};
+      const bank = b.on !== false && t(b.number) && t(b.holder) ? { bank: t(b.bank), holder: t(b.holder), number: t(b.number), type: t(b.type), branch: t(b.branch) } : null;
+      const snap = sn.on && /^https?:\/\//i.test(t(sn.link)) ? { link: t(sn.link) } : null;
+      const cap = cp.on && t(cp.cell) ? { cell: t(cp.cell) } : null;
+      return bank || snap || cap ? { intro: t(pay.intro), note: t(pay.note), bank, snap, cap } : null;
+    },
     // v10.22: price guide estimate. pg = settings.priceGuide, si / fi = chosen size and flavour (numbers). Returns { size, serves, flavour, price } or null.
     guidePrice(pg, si, fi) {
       const z = ((pg && pg.sizes) || [])[si], f = ((pg && pg.flavours) || [])[fi]; if (!z) return null;
@@ -257,7 +268,8 @@
         const base = { ...D, ...(pubSet || {}) }, own = (pv && pv.settings) || (SB.dbOK ? null : J(localStorage, "sb_settings")) || {};
         const settings = { ...base, ...own, home: { ...D.home, ...(base.home || {}), ...(own.home || {}) }, meet: { ...D.meet, ...(base.meet || {}), ...(own.meet || {}) }, specials: { ...D.specials, ...(base.specials || {}), ...(own.specials || {}) }, orders: { ...D.orders, ...(base.orders || {}), ...(own.orders || {}) }, autoTheme: { ...D.autoTheme, ...(base.autoTheme || {}), ...(own.autoTheme || {}) },
           calendar: { ...D.calendar, ...(base.calendar || {}), ...(own.calendar || {}) }, delivery: { ...D.delivery, ...(base.delivery || {}), ...(own.delivery || {}) },   // v10.21
-          priceGuide: { ...D.priceGuide, ...(base.priceGuide || {}), ...(own.priceGuide || {}) } };   // v10.22
+          priceGuide: { ...D.priceGuide, ...(base.priceGuide || {}), ...(own.priceGuide || {}) },   // v10.22
+          payment: (() => { const b = base.payment || {}, w = own.payment || {}; return { ...D.payment, ...b, ...w, bank: { ...D.payment.bank, ...(b.bank || {}), ...(w.bank || {}) }, snapscan: { ...D.payment.snapscan, ...(b.snapscan || {}), ...(w.snapscan || {}) }, capitec: { ...D.payment.capitec, ...(b.capitec || {}), ...(w.capitec || {}) } }; })() };   // v10.26
         // v10.20: seasons added in later versions reach already-saved settings too (added at the end, nothing Becca chose is changed).
         { const au = settings.autoTheme, have = new Set((au.rules || []).map(r => r.theme)); au.rules = [...(au.rules || []), ...SEASON_RULES.filter(r => !have.has(r.theme)).map(r => ({ ...r }))]; }
         const data = (SB.dbOK ? null : J(localStorage, "sb_products")) || pubProd || { categories: [], products: [] };

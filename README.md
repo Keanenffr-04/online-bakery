@@ -1,10 +1,11 @@
 # online-bakery 🐇🍰
 Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
 
-**Current version:** v10.25. The latest three versions:
+**Current version:** v10.26. The latest three versions:
+- **v10.26:** a **"How to pay" box** on the thank-you page (your bank details, SnapScan and Capitec Pay, with Copy buttons). Type your details in Admin > Theme & layout > **How to pay**; customers see nothing until you do. No database update needed.
 - **v10.25:** a **review page** (customers write a short review; you press **Approve** in the admin before it shows) and **inspiration photos** on Custom Orders (stored privately; **View photo** next to the order). Run the newest `setup.sql` once.
 - **v10.24:** a **bake sheet** in the admin (what to make for a day, added up from every order, printable) and a **new-order alert** (a chime and a pop-up while the admin is open). Run the newest `setup.sql` once (optional, makes the alert instant).
-- **v10.23:** a **Live check** button in the admin that tests the real online database, **spam protection** on orders and sign-up, and a **keep-alive** so the free database never pauses. Run the newest `setup.sql` once.
+- *(older)* **v10.23:** a **Live check** button in the admin that tests the real online database, **spam protection** on orders and sign-up, and a **keep-alive** so the free database never pauses. Run the newest `setup.sql` once.
 
 Every version, in plain English, is in [`roadmap/BACKLOG.md`](roadmap/BACKLOG.md).
 
@@ -45,6 +46,7 @@ When you press **Save**, the change is live for everyone straight away. *(Some w
 | Mark something as sold out for today | Admin > **Menu items** > **Sold out today** (it switches itself back on at midnight) |
 | Add a cake, change a price or hide an item | Admin > **Menu items** (use **Menu sections** to add or reorder the groups) |
 | Close a day, set notice days, a daily limit or delivery fees | Admin > **Theme & layout** > **Order calendar & delivery** |
+| Add my bank / SnapScan / Capitec Pay details for customers | Admin > **Theme & layout** > **How to pay** |
 | Change cake sizes, flavours or prices in the price guide | Admin > **Theme & layout** > **Cake price guide** |
 | Change the look, the season dates or the Home page order | Admin > **Theme & layout** |
 | Change the scrolling words at the top or bottom | Admin > Theme & layout > **Top and bottom strips** |

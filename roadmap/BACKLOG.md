@@ -2,7 +2,7 @@
 
 *Written for Becca. This page is the list of **finished** work. What is still to do is in [`ROADMAP.md`](ROADMAP.md). New entries are added at the bottom and nothing is ever deleted.*
 
-**Latest version:** v10.25
+**Latest version:** v10.26
 
 ## Contents
 1. [What the website can do today](#today)
@@ -97,6 +97,7 @@ Oldest first. Click a version to jump to its detailed record. A version like **v
 | [v10.23](#v10-23) | 2026-11-08 | **Live check** button in the admin (tests the real database), **spam protection** on orders and sign-up, and a **keep-alive** so the free database never pauses. Run the newest `setup.sql` once. |
 | [v10.24](#v10-24) | 2026-11-08 | **Bake sheet** (what to make for a day, added up and printable, allergies in red) and a **new-order alert** (chime + pop-up while the admin is open). Run the newest `setup.sql` once (optional, makes the alert instant). |
 | [v10.25](#v10-25) | 2026-11-09 | **Review link** (a short review page; you approve each review before it shows; the thank-you WhatsApp message carries the link) and **inspiration photo upload** on Custom Orders (stored privately, you open it next to the order). Run the newest `setup.sql` once (section 12). |
+| [v10.26](#v10-26) | 2026-11-09 | **"How to pay" box** on the thank-you page (your EFT bank details, a SnapScan button and a Capitec Pay number, each with a Copy button, shown only after you type your real details). This is part 1 of 3: upload proof of payment is v10.26.1 and install-as-an-app is v10.26.2. No database update needed. |
 
 ---
 
@@ -560,3 +561,12 @@ Files: `src/review.html` (new), `src/js/review.js` (new), `src/js/store.js`, `sr
 Tests (headless Chromium, **mock Supabase** because the sandbox has no internet; the new SQL was NOT run on a real Postgres): review form refuses a 5-letter review, sends a good one as `{name, stars, text}`, a trapped (bot) form shows success but sends nothing; a custom order with a 3000 x 2000 picture uploads an 8 KB `image/jpeg` and the order carries `details.photo`; an order with no photo saves without it; review page has no sideways scroll at 320 px; footer link present; admin shows "1 waiting", **Approve** saves the review into settings and clears the waiting row, **View photo** shows, deleting the order asks storage to remove its photo. No console errors.
 Notes and honest limits: (a) **the real database and storage were not touched**: the owner's next Live check (ROADMAP 5e) is the real test of the new bucket and locks. (b) Photos that a customer uploads but never finishes sending (closed the tab, WhatsApp took over) stay in the bucket with no order pointing at them; they are private and small, and a "tidy unused photos" job is in the pushed list. (c) HEIC pictures only work in browsers that can show them (iPhones usually convert to JPEG by themselves); if a picture cannot be read the order still goes, without it. (d) Reviews can only be sent from the live site (not from `preview.html` over `file://`). (e) The thank-you WhatsApp message is still sent by Becca pressing the button; nothing is sent automatically.
 Pushed to the backlog (not built), also in `ROADMAP.md` section 4b: several photos per order; the photo shown on the printed slip and the bake sheet; a "tidy unused photos" job; a "reply to this review" line; a review reminder sent automatically some days after "Mark done"; a QR code for the review page (idea 59); asking for a Google review as well; a spam "report" on reviews.
+
+<a id="v10-26"></a>
+## v10.26: How to pay box (done, 2026-11-09)
+The owner said "start next v/patch" and asked for the roadmap item v10.26 (ideas 27 + 47) to be **split into 3 smaller versions** because one go was too big for their Claude allowance. The split: **v10.26** = payment details on the thank-you page (this entry), **v10.26.1** = upload proof of payment (private bucket + admin "View proof" + setup.sql section 13), **v10.26.2** = install on the home screen + offline menu (idea 47).
+1. **Setting `payment`** `{enabled, draft, intro, note, bank{on, bank, holder, number, type, branch}, snapscan{on, link}, capitec{on, cell}}`: defaults in `store.js` (`D.payment`, **empty** with `draft: true`; nested merge in `SB.load()`), copy in `config/site-settings.json` + `offline-data.js`. `SB.payInfo(pay)` returns null while draft / off / empty, so **no fake bank details are ever public**; SnapScan link must start with http(s). Any admin edit clears `draft`.
+2. **Thank-you page** (`thanks.js` `payBox()`): "How to pay" box under "What you sent" with the EFT table, a SnapScan button, the Capitec Pay number, Copy buttons (clipboard; says so if copying fails) and the customer's name as the payment reference. Text says pay only after Becca confirms. Styles `.thanks__tbl` in `site.css`.
+3. **Admin** (Theme & layout > "How to pay", `payBox(s)` + `pay-*` handlers in `admin.js`). No database change, so `SETUP_VERSION` stays `10.25`.
+Tests (headless Chromium, file://): box hidden while draft, shown with real details (EFT rows, SnapScan, Capitec, reference), hidden when bank is off and nothing else is on, a `javascript:` SnapScan link is refused; admin / index / cart / custom orders / menu load with no page errors. **Not tested:** the admin box itself (the sandbox has no internet so the admin cannot sign in); the first real check is Becca opening Theme & layout > How to pay.
+Pushed to the backlog: a QR code for SnapScan; a different reference using an order number (idea 31); payment details also on the Cart page; a "paid" tick per order (planned with v10.26.1).

@@ -412,6 +412,23 @@
     <label>Note under the price <span class="muted">(shown to customers)</span></label><input data-act="pg-note" maxlength="200" value="${esc(g.note || "")}">
     <p class="muted">The price shown is the size price plus the flavour extra. It is only a guide: the Custom Order message tells you which size and flavour the customer chose, and you confirm the final price.</p>`;
   }
+  function payBox(s) {   // v10.26: how customers pay (EFT / SnapScan / Capitec Pay). Shown on the thank-you page once real details are saved.
+    const p = s.payment || {}, b = p.bank || {}, sn = p.snapscan || {}, cp = p.capitec || {}, f = (act, label, v, ph, max) => `<label>${label}</label><input data-act="${act}" value="${esc(v || "")}" maxlength="${max || 60}" placeholder="${esc(ph || "")}">`;
+    return `${p.draft ? `<div class="msg msg--warn">Nothing is shown to customers yet. Type your <strong>real</strong> payment details below and press Save, and a \"How to pay\" box appears on the thank-you page. Until then customers see no bank details at all.</div>` : ""}
+    <label class="chk"><input type="checkbox" data-act="pay-on" ${p.enabled !== false ? "checked" : ""}>Show \"How to pay\" on the thank-you page</label>
+    ${f("pay-intro", "Line at the top", p.intro, "", 120)}
+    <p class="adm-sub">EFT (bank transfer)</p>
+    <label class="chk"><input type="checkbox" data-act="pay-b-on" ${b.on !== false ? "checked" : ""}>Show my bank details</label>
+    ${f("pay-b-bank", "Bank", b.bank, "e.g. Capitec", 40)}${f("pay-b-holder", "Account name", b.holder, "e.g. B Smith", 60)}${f("pay-b-num", "Account number", b.number, "", 30)}${f("pay-b-type", "Account type (optional)", b.type, "e.g. Savings", 30)}${f("pay-b-branch", "Branch code (optional)", b.branch, "", 20)}
+    <p class="adm-sub">SnapScan</p>
+    <label class="chk"><input type="checkbox" data-act="pay-s-on" ${sn.on ? "checked" : ""}>Show a SnapScan button</label>
+    ${f("pay-s-link", "Your SnapScan payment link (starts with https://)", sn.link, "https://", 200)}
+    <p class="adm-sub">Capitec Pay</p>
+    <label class="chk"><input type="checkbox" data-act="pay-c-on" ${cp.on ? "checked" : ""}>Show my Capitec Pay cell number</label>
+    ${f("pay-c-cell", "Cell number", cp.cell, "e.g. 082 000 0000", 20)}
+    ${f("pay-note", "Note at the bottom", p.note, "", 200)}
+    <p class="muted">Customers see the box after they send an order, with a Copy button on each number and their name as the payment reference. Proof-of-payment upload comes in the next patch (v10.26.1).</p>`;
+  }
   function rulesBox(s) {
     const c = s.calendar || {}, d = s.delivery || {}, DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], rng = (n, cur, f) => Array.from({ length: n + 1 }, (_, i) => `<option value="${i}" ${i === cur ? "selected" : ""}>${f(i)}</option>`).join("");
     const nice = iso => { try { return new Date(iso + "T12:00").toLocaleDateString("en-ZA", { weekday: "short", day: "numeric", month: "long", year: "numeric" }); } catch (e) { return iso; } };
@@ -459,6 +476,7 @@
     ${sec("home", "Home page", "what shows and how many", homeBox)}
     ${sec("rules", "Order calendar & delivery", (s.calendar || {}).enabled === false ? "calendar off" : ((s.calendar || {}).draft || (s.delivery || {}).draft ? "placeholder numbers" : "notice, limit, areas"), rulesBox(s))}
     ${sec("guide", "Cake price guide", (s.priceGuide || {}).enabled === false ? "off" : ((s.priceGuide || {}).draft ? "sample prices" : ((s.priceGuide || {}).sizes || []).length + " sizes"), guideBox(s))}
+    ${sec("pay", "How to pay (EFT, SnapScan, Capitec Pay)", (s.payment || {}).enabled === false ? "off" : ((s.payment || {}).draft ? "not set up yet" : "shown to customers"), payBox(s))}
     ${sec("strips", "Top and bottom strips", "specials and order messages", stripBox)}
     ${sec("menu", "Menu page", s.menuLayout === "list" ? "list" : "grid", menuBox)}
     <div class="adm-save"><button class="btn btn--sm" data-act="lsave">Save to this device</button> <button class="btn btn--sm btn--ghost" data-act="lreset">Reset</button><span class="muted">Then use Publish to make it live.</span></div></div>
@@ -715,6 +733,14 @@
       g.draft = false;
       if (a === "pg-on") g.enabled = t.checked; else if (a === "pg-sn" && z) z.name = t.value.slice(0, 40); else if (a === "pg-ss" && z) z.serves = num(t.value, 1, 1000); else if (a === "pg-sp" && z) z.price = num(t.value, 0, 100000);
       else if (a === "pg-fn" && fx) fx.name = t.value.slice(0, 40); else if (a === "pg-fx" && fx) fx.extra = num(t.value, 0, 10000); else if (a === "pg-note") g.note = t.value.slice(0, 200); else return;
+      draftKey(); return;
+    }
+    if (a.startsWith("pay-")) {   // v10.26: how-to-pay fields
+      const p = s.payment = s.payment || {}, bk = p.bank = p.bank || {}, sn = p.snapscan = p.snapscan || {}, cp = p.capitec = p.capitec || {}, v = t.value, cut = n => String(v).slice(0, n);
+      p.draft = false;
+      if (a === "pay-on") p.enabled = t.checked; else if (a === "pay-intro") p.intro = cut(120); else if (a === "pay-note") p.note = cut(200);
+      else if (a === "pay-b-on") bk.on = t.checked; else if (a === "pay-b-bank") bk.bank = cut(40); else if (a === "pay-b-holder") bk.holder = cut(60); else if (a === "pay-b-num") bk.number = cut(30); else if (a === "pay-b-type") bk.type = cut(30); else if (a === "pay-b-branch") bk.branch = cut(20);
+      else if (a === "pay-s-on") sn.on = t.checked; else if (a === "pay-s-link") sn.link = cut(200); else if (a === "pay-c-on") cp.on = t.checked; else if (a === "pay-c-cell") cp.cell = cut(20); else return;
       draftKey(); return;
     }
     if (a.startsWith("cal-") || a.startsWith("dl-")) {   // v10.21

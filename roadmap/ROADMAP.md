@@ -1,6 +1,6 @@
 # 🗺️ Roadmap: what's next and what we need from you
 
-**Where we are:** v10.25 &nbsp;|&nbsp; **Next up:** v10.26 (EFT details + proof of payment, install as an app) &nbsp;|&nbsp; **Rule:** 2 things per version.
+**Where we are:** v10.26 &nbsp;|&nbsp; **Next up:** v10.26.1 (upload proof of payment), then v10.26.2 (install as an app) &nbsp;|&nbsp; **Rule:** 2 things per version.
 
 *This page is written for Becca. No website or coding knowledge needed. Words you might not know are explained in the "Words explained" list in the [README](../README.md). Finished work is in [`BACKLOG.md`](BACKLOG.md).*
 
@@ -9,7 +9,8 @@
 - ✅ **New in v10.23:** a **Live check** button in the admin that tests the real online database for you (it even sends and removes a test order), **spam protection** on orders and sign-up that real customers never notice, and a **keep-alive** so the free database never pauses. You need to run the newest `setup.sql` once (section 2c).
 - ✅ **New in v10.24:** a **bake sheet** in Orders ("what to make for Saturday", added up across every order, allergies in red, printable) and a **new-order alert** (a chime and a pop-up while the admin is open). Updating the database (section 2c) is optional here: it only makes the alert instant instead of within 30 seconds.
 - ✅ **New in v10.25:** a **review page** (customers write a short review, you press Approve before it shows, and the thank-you WhatsApp message carries the link) and **inspiration photos** on Custom Orders (stored privately, you press View photo next to the order). You need to run the newest `setup.sql` once (section 2c).
-- ⏭️ **Next:** v10.26, your EFT / SnapScan details with "upload proof of payment", and installing the website on a phone like an app. The build order for all 60 ideas is in section 1.
+- ✅ **New in v10.26:** a **"How to pay" box** on the thank-you page (your EFT details, SnapScan button and Capitec Pay number with Copy buttons). It stays hidden until you type your real details in Admin > Theme & layout > How to pay. No database update needed.
+- ⏭️ **Next:** v10.26.1 (customers upload proof of payment, you see it next to the order), then v10.26.2 (installing the website on a phone like an app). Your original v10.26 was split in three to keep each step small. The build order for all 60 ideas is in section 1.
 - ⏳ **Waiting on you:** real prices, FAQ answers, reviews, your story, Instagram / Facebook names and photos. The full checklist is in section 2.
 - 🚀 **Last step:** putting the website online, only when you say "I'm happy with everything".
 
@@ -31,7 +32,8 @@ Your change lists always go **first**, so the versions below may slide back by o
 
 | Version | Status | What you will get | What we need from you |
 |---|---|---|---|
-| **v10.26** | ⏭️ Next | **EFT / SnapScan / Capitec Pay details with "upload proof of payment"** + **install on the home screen like an app** (27 and 47). | Your payment details (account or QR) |
+| **v10.26.1** | ⏭️ Next | **Upload proof of payment** on the thank-you page (stored privately, you open it next to the order) + a **"paid" tick** per order (idea 27, part 2). Needs the newest `setup.sql`. | Nothing new |
+| v10.26.2 | 📅 Planned | **Install on the home screen like an app**, and the menu and cart keep working when the internet is flaky or during load shedding (idea 47). | Nothing new |
 | v10.27 | 📅 Planned | **Shop status banner** ("on holiday until 3 Jan", pauses orders) + the **old "Publish" wording fixed** in the admin (4 and 45). | Nothing new |
 | v10.28 | 📅 Planned | **Gift vouchers** (you give a code, the customer types it in the cart, it comes off the total) + a **loyalty reward** (for example every 10th order a free cupcake box). | Your voucher and loyalty rules |
 | v10.29 | 📅 Planned | **Deposits / online payment** (Yoco, PayFast or Ozow). A deposit secures the date. On its own because it handles real money. | A payment account that you open |
@@ -57,7 +59,7 @@ Nothing here can be built or guessed by us. Send things whenever you have them (
 - [ ] **Email sender for customers** (guide 5c). Easiest once you own a web address.
 - [ ] **Run the Live check** (Admin > Backup & files) after updating the database, and do the short hand-test in guide 5e (about 20 minutes).
 - [ ] **Switch on the keep-alive** (guide 5f, two minutes) so the free database never pauses.
-- [ ] **A payment account** before v10.26.
+- [ ] **Type your payment details** in Admin > Theme & layout > **How to pay** (bank, account name and number, SnapScan link, Capitec Pay number). Until you do, customers see no payment box.
 - [ ] **Photos** when you have them.
 - [ ] **Tell us when you are happy** and we will put the website online.
 
@@ -101,6 +103,7 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 
 | List | # | Request (short) | Status | Where |
 |---|---|---|---|---|
+| - | - | (Owner said "start next v/patch" and asked to split v10.26 into 2 or 3 smaller versions, so it became v10.26 (How to pay box, built), v10.26.1 (proof of payment) and v10.26.2 (install as an app)) | DONE (part 1) | v10.26 |
 | - | - | (Owner said "start next v/patch" and asked for the next 5 versions at 2 changes each, so the version marked NEXT was built: review link (idea 1) + inspiration photo upload (idea 13); next five in the plan, section 1) | DONE | v10.25 |
 | - | - | (Owner said "start next v/patch" with no change list, so the version marked NEXT was built: the bake sheet (idea 36) and the new-order alert (idea 35)) | DONE | v10.24 |
 | - | - | (Owner said "start next v/patch" with no change list, so the version marked NEXT was built: a Live check for the real database (idea 46), spam protection and a keep-alive (idea 48). The hand-test with Becca is guide 5e) | DONE | v10.23 |
