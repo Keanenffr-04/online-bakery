@@ -1,7 +1,8 @@
 # online-bakery 🐇🍰
 Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
 
-**Current version:** v10.26.9. The latest three versions:
+**Current version:** v10.26.10. The latest three versions:
+- **v10.26.10:** (your list 29) a **"View site as a customer"** tile next to Theme preview on the local preview page: it opens the website exactly as a visitor sees it (light, none of your own unsaved changes), with a small **Customer view / Back to preview** pill. Also the **delivery courier research** for the bakery (which companies, what they charge, which we suggest, and the fee bands we propose: `roadmap/ROADMAP.md` guide **5h**). The fees go on the website in v10.26.11 once you say yes to the bands. Nothing to update in the database.
 - **v10.26.9:** (your list 27, item 1, step 2 of 3) the **delivery-area list now holds all the areas of Gauteng** (118 of them: Johannesburg, Sandton, Centurion, Pretoria, Boksburg, Krugersdorp, Vereeniging and so on) instead of "Close to the bakery / Further out". **The fees are samples** (R 80 Johannesburg and Tshwane, R 90 East Rand, R 110 West Rand, R 130 Vaal) until you set yours in Admin > Ordering & payment > Order calendar & delivery. Nothing to update in the database. Grouping the list by region comes in v10.26.10.
 - **v10.26.8:** (your list 27, item 2, step 1 of 3) the **delivery map now shows by itself** under the address box a moment after the customer stops typing. There is no button to press any more (a small **Try again** button only appears if the free map service did not answer). Changing the delivery area refreshes it. The Gauteng areas (v10.26.9 and v10.26.10) come next. Nothing to update in the database.
 - **v10.26.7:** (your list 25, item 3, step 2 of 3) under the **delivery address** box the customer can press **Show on map** (or just click out of the box) and see the spot on a **free OpenStreetMap map**, so a typo is easy to spot. It is only a check: an order is never blocked by it. Cart and Custom Order. The map later became automatic (v10.26.8). Nothing to update in the database.
@@ -31,7 +32,7 @@ You do not need to know anything about websites or code to use this page. Everyt
 | [`roadmap/BACKLOG.md`](roadmap/BACKLOG.md) | **Everything that is already built**, starting with "What the website can do today" |
 
 ### See the website on your computer
-Open the project folder and **double-click `preview.html`**. It opens in your browser with a link to every page. You do not need to install anything. (Signing in and saving orders need an internet connection.)
+Open the project folder and **double-click `preview.html`**. It opens in your browser with a link to every page. The **View site as a customer** tile (under Behind the scenes) shows the site the way a visitor sees it; press **Back to preview** in the little pill to return. You do not need to install anything. (Signing in and saving orders need an internet connection.)
 
 ### Open the admin
 The admin is where you change things. It is **not linked from the public website on purpose**, so customers never see it.

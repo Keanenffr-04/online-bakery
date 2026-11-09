@@ -335,7 +335,7 @@
         SB.dbOK = db !== null; SB.dbRows = db || {};
         const pubSet = (db && db.settings) || fSet, pubProd = (db && db.products) || fProd;
         const pv = window.top !== window ? J(sessionStorage, "sb_preview") : null;
-        const base = { ...D, ...(pubSet || {}) }, own = (pv && pv.settings) || (SB.dbOK ? null : J(localStorage, "sb_settings")) || {};
+        const base = { ...D, ...(pubSet || {}) }, own = (pv && pv.settings) || (SB.dbOK || window.SB_AS_CUSTOMER ? null : J(localStorage, "sb_settings")) || {};
         const settings = { ...base, ...own, home: { ...D.home, ...(base.home || {}), ...(own.home || {}) }, meet: { ...D.meet, ...(base.meet || {}), ...(own.meet || {}) }, specials: { ...D.specials, ...(base.specials || {}), ...(own.specials || {}) }, orders: { ...D.orders, ...(base.orders || {}), ...(own.orders || {}) }, autoTheme: { ...D.autoTheme, ...(base.autoTheme || {}), ...(own.autoTheme || {}) },
           calendar: { ...D.calendar, ...(base.calendar || {}), ...(own.calendar || {}) }, delivery: { ...D.delivery, ...(base.delivery || {}), ...(own.delivery || {}) },   // v10.21
           priceGuide: { ...D.priceGuide, ...(base.priceGuide || {}), ...(own.priceGuide || {}) },   // v10.22
@@ -344,7 +344,7 @@
         if (settings.delivery.draft !== false) settings.delivery.areas = GAUTENG.map(a => ({ ...a }));
         // v10.20: seasons added in later versions reach already-saved settings too (added at the end, nothing Becca chose is changed).
         { const au = settings.autoTheme, have = new Set((au.rules || []).map(r => r.theme)); au.rules = [...(au.rules || []), ...SEASON_RULES.filter(r => !have.has(r.theme)).map(r => ({ ...r }))]; }
-        const data = (SB.dbOK ? null : J(localStorage, "sb_products")) || pubProd || { categories: [], products: [] };
+        const data = (SB.dbOK || window.SB_AS_CUSTOMER ? null : J(localStorage, "sb_products")) || pubProd || { categories: [], products: [] };
         // v10.9: themeNow = the theme showing right now (a season's theme when one is on, else the owner's everyday theme).
         // settings.theme is NEVER changed by the seasons, so the admin and Publish always keep the owner's own choice.
         // Inside the admin preview (pv) we show exactly the chosen theme, so the owner can look at any theme any time of year.
