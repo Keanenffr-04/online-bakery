@@ -48,7 +48,7 @@ SB.load().then(async ({ biz, settings }) => {
           <label for="c-date">Date you need it <span class="muted">(optional)</span></label><input id="c-date" type="date" min="${minDate}" value="${E(m.dateISO || "")}"><p class="form__error form__error--inline" id="c-date-msg" role="alert" hidden></p>
           <label for="c-method">Collection or delivery</label>
           <select id="c-method">${["Not sure yet", "Collection", "Delivery"].map(o => `<option${(m.method || "Not sure yet") === o ? " selected" : ""}>${o}</option>`).join("")}</select>
-          <div id="c-area-wrap" hidden><label for="c-area">Delivery area</label><select id="c-area"><option value="">Choose your area&hellip;</option>${(dl.areas || []).map(a => `<option value="${E(a.name)}"${m.area === a.name ? " selected" : ""}>${E(a.name)} (${C.money(a.fee)})</option>`).join("")}</select></div>
+          <div id="c-area-wrap" hidden><label for="c-area">Delivery area</label><select id="c-area"><option value="">Choose your area&hellip;</option>${SB.areaOptions(dl.areas, a => ` (${C.money(a.fee)})`, m.area)}</select></div>
           <div id="c-addr-wrap" hidden><label for="c-addr">Delivery address</label><textarea id="c-addr" rows="2" maxlength="200" autocomplete="street-address" placeholder="Street and number, suburb (gate or complex details help too)">${E(m.addr || "")}</textarea></div>
           <p class="muted small" id="c-method-note" hidden></p>
           ${SB.spam.field()}

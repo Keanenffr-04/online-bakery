@@ -2,7 +2,7 @@
 
 *Written for Becca. This page is the list of **finished** work. What is still to do is in [`ROADMAP.md`](ROADMAP.md). New entries are added at the bottom and nothing is ever deleted.*
 
-**Latest version:** v10.26.11
+**Latest version:** v10.26.12
 
 ## Contents
 1. [What the website can do today](#today)
@@ -98,6 +98,7 @@ Oldest first. Click a version to jump to its detailed record. A version like **v
 | [v10.23](#v10-23) | 2026-11-08 | **Live check** button in the admin (tests the real database), **spam protection** on orders and sign-up, and a **keep-alive** so the free database never pauses. Run the newest `setup.sql` once. |
 | [v10.24](#v10-24) | 2026-11-08 | **Bake sheet** (what to make for a day, added up and printable, allergies in red) and a **new-order alert** (chime + pop-up while the admin is open). Run the newest `setup.sql` once (optional, makes the alert instant). |
 | [v10.25](#v10-25) | 2026-11-09 | **Review link** (a short review page; you approve each review before it shows; the thank-you WhatsApp message carries the link) and **inspiration photo upload** on Custom Orders (stored privately, you open it next to the order). Run the newest `setup.sql` once (section 12). |
+| [v10.26.12](#v10-26-12) | 2026-11-10 | **Areas grouped by region** (your list 27, item 1, step 3 of 3): grouped lists for customers and a one-fee-per-region box in the admin. Nothing to update in the database. |
 | [v10.26.11](#v10-26-11) | 2026-11-10 | **Delivery fees from the bakery for all 118 areas** (your list 29, item 2, step 2 of 2), a **root `index.html`**, and a **phone zip + guide 5i** so the website can be shown on a phone. Nothing to update in the database. |
 | [v10.26.10](#v10-26-10) | 2026-11-10 | **"View site as a customer"** tile in the local preview (your list 29, item 1) and the **delivery courier research** for the Centurion bakery with proposed fee bands (item 2, step 1 of 2; the fees go on the site in v10.26.11). Nothing to update in the database. |
 | [v10.26.9](#v10-26-9) | 2026-11-10 | **All the Gauteng delivery areas** (your list 27, item 1, step 2 of 3). The delivery-area list now has 118 areas of Gauteng with sample fees per region, instead of "Close to the bakery / Further out". Nothing to update in the database. |
@@ -600,6 +601,17 @@ Owner list 23 had one change: the Live check said "Strangers CAN look inside the
 Files: `src/js/admin.js`, `supabase/setup.sql`, `README.md`, `roadmap/*`, `docs/AI_HANDOFF.md`, `VERSION`.
 Tests (headless Chromium, mock Supabase + mocked storage answers): locked storage = green and the test file removed; listing leaks = red; the object opens = red; the test upload refused = yellow, nothing removed; no page errors. **The new SQL was NOT run on a real Postgres** (none in the sandbox): the owner's Live check is the real test. Honest note: this is probably a false alarm in the old check, but the extra lock makes the answer safe either way.
 Pushed to the backlog (also in `ROADMAP.md` 4b): a weekly automatic Live check with history; auto-removal of leftover test pictures; the same private-storage tick for proof of payment; deleting customer photos after a set time (with a Privacy page line).
+
+<a id="v10-26-12"></a>
+## v10.26.12: Areas grouped by region (done, 2026-11-10)
+Owner said "start next v/patch" and asked what the next 5 versions will change (answered in the chat reply from the plan table: v10.26.12 to v10.26.16). Built the version marked NEXT: the last step of the list 27 split.
+1. **Customer lists.** `SB.areaOptions(areas, fmt, selected)` in `store.js` builds the delivery-area `<option>`s with an `<optgroup>` per region (order of first appearance; `SB.REGION_LABEL` gives friendly names: "Johannesburg and Sandton", "Tshwane (Pretoria and Centurion)", "Ekurhuleni (East Rand)", "West Rand", "Sedibeng (the Vaal)"; any other region name is shown as typed). Areas without a `region` (ones Becca added by hand) go in an **"Other areas"** group, always last. A saved list where **no** area has a region stays flat (older lists look as before). Names are escaped. Used by `cart-page.js` (the remembered area stays selected) and `custom-order.js`.
+2. **Admin.** `areaRows(d)` / `regionsOf(d)` in `admin.js` draw each region with a heading, the area count and a **"Set all to R"** number box plus a **"Set all <region>"** button (`dl-rfa`): it sets the fee of every area in that region, clears the draft flag, and shows "N areas in X set to R Y. Check them, then press Save." Individual areas keep their own boxes (`data-i` is still the real index in `d.areas`, so editing and removing work as before). A flat list shows no headings. New small style for `.adm-region` in `admin.css`.
+3. Fees are still per area and `SB.deliveryFee()` still looks areas up by name, so nothing about the totals, the WhatsApp message or the saved order changed.
+Files: `src/js/store.js`, `cart-page.js`, `custom-order.js`, `admin.js`, `src/css/admin.css`, `README.md`, `roadmap/*`, `docs/AI_HANDOFF.md`, `VERSION`. **No `setup.sql` change**; `GAUTENG`, `site-settings.json` and `offline-data.js` unchanged (they already carried `region`).
+Tests (headless Chromium, `file://`, **320 px and 1000 px**): the Cart list has 5 groups (44 / 34 / 20 / 10 / 10 areas), the prompt option is still first, a remembered area (Sandton) is still selected and its fee shows, Centurion shows R130, the Custom Order has 5 groups and 118 areas, no sideways scrolling, no page errors; the helper keeps an old region-less list flat with its selection, puts a region-less area in "Other areas" last, and escapes names. The admin could not be opened here (no internet for sign-in), so `areaRows` / `regionsOf` and the region-fee rule were run as extracted code: headings per region, real indexes kept, "Other areas" last, a flat list without headings, and "Set all Tshwane" changing only Tshwane.
+**Honest limits:** the admin screen itself was not looked at (code-level checks only), so please try one "Set all" press and look at the long list once; the list is still 118 rows plus headings.
+Pushed to the backlog (also in `ROADMAP.md` 4b): fold-away or search regions in the admin, different delivery days per region, a fee range next to each region name.
 
 <a id="v10-26-11"></a>
 ## v10.26.11: Delivery fees from the bakery + phone preview (done, 2026-11-10)

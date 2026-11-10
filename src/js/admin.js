@@ -431,6 +431,14 @@
   }
   // v10.26.9: Gauteng areas that are not on Becca's list yet (matched by name, any capitals). Adding them never changes an area she already has.
   const gMissing = d => { const have = new Set((d.areas || []).map(a => String(a.name).trim().toLowerCase())); return SB.GAUTENG.filter(a => !have.has(a.name.toLowerCase())); };
+  // v10.26.12: the area list grouped by region, each region with a "set every area in it to R..." box. Areas keep their own place in d.areas (data-i is the real index).
+  const regionsOf = d => { const out = []; (d.areas || []).forEach(a => { const r = SB.regionOf(a); if (!out.includes(r)) out.push(r); }); return out.sort((x, y) => (x === "Other areas") - (y === "Other areas")); };
+  const areaRow = (a, i) => `<li><div class="csec"><input data-act="dl-an" data-i="${i}" value="${esc(a.name)}" maxlength="40" aria-label="Area name" placeholder="Area name"><input type="number" min="0" max="5000" data-act="dl-af" data-i="${i}" value="${+a.fee || 0}" aria-label="Fee in rand"></div><button class="btn btn--sm btn--ghost" type="button" data-act="dl-rm" data-i="${i}" aria-label="Remove ${esc(a.name)}">Remove</button></li>`;
+  const areaRows = d => {
+    const list = d.areas || [], regions = regionsOf(d); if (!list.some(a => String((a && a.region) || "").trim())) return list.map(areaRow).join("");   // older flat list: no headings
+    return regions.map((r, ri) => { const mine = list.map((a, i) => [a, i]).filter(([a]) => SB.regionOf(a) === r);
+      return `<li class="adm-region"><strong>${esc(SB.REGION_LABEL[r] || r)}</strong> <span class="muted small">${mine.length} area${mine.length === 1 ? "" : "s"}</span><div class="csec"><label class="muted small" for="dl-rf-${ri}">Set all to R</label><input type="number" min="0" max="5000" id="dl-rf-${ri}" value="${mine.length ? +mine[0][0].fee || 0 : 0}" aria-label="Fee for every area in ${esc(r)}"><button class="btn btn--sm btn--ghost" type="button" data-act="dl-rfa" data-ri="${ri}">Set all ${esc(r)}</button></div></li>` + mine.map(([a, i]) => areaRow(a, i)).join(""); }).join("");
+  };
   function rulesBox(s) {
     const c = s.calendar || {}, d = s.delivery || {}, DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], rng = (n, cur, f) => Array.from({ length: n + 1 }, (_, i) => `<option value="${i}" ${i === cur ? "selected" : ""}>${f(i)}</option>`).join("");
     const nice = iso => { try { return new Date(iso + "T12:00").toLocaleDateString("en-ZA", { weekday: "short", day: "numeric", month: "long", year: "numeric" }); } catch (e) { return iso; } };
@@ -445,7 +453,7 @@
     ${(c.blocked || []).length ? `<ul class="adm-list">${(c.blocked || []).map(iso => `<li><span>${esc(nice(iso))}</span><button class="btn btn--sm btn--ghost" type="button" data-act="cal-blk-rm" data-v="${esc(iso)}" aria-label="Unblock ${esc(nice(iso))}">Remove</button></li>`).join("")}</ul>` : `<p class="muted">No blocked dates.</p>`}
     <p class="adm-sub">Delivery or collection</p>
     <label class="chk"><input type="checkbox" data-act="dl-on" ${d.enabled !== false ? "checked" : ""}>Ask delivery customers for their area and add the fee</label>
-    <ul class="adm-list">${(d.areas || []).map((a, i) => `<li><div class="csec"><input data-act="dl-an" data-i="${i}" value="${esc(a.name)}" maxlength="40" aria-label="Area name" placeholder="Area name"><input type="number" min="0" max="5000" data-act="dl-af" data-i="${i}" value="${+a.fee || 0}" aria-label="Fee in rand"></div><button class="btn btn--sm btn--ghost" type="button" data-act="dl-rm" data-i="${i}" aria-label="Remove ${esc(a.name)}">Remove</button></li>`).join("") || "<li>No areas yet. Delivery customers will not be asked for one.</li>"}</ul>
+    <ul class="adm-list">${areaRows(d) || "<li>No areas yet. Delivery customers will not be asked for one.</li>"}</ul>
     <p><button class="btn btn--sm btn--ghost" type="button" data-act="dl-add">Add an area</button>${gMissing(d).length ? ` <button class="btn btn--sm btn--ghost" type="button" data-act="dl-gp">Add the missing Gauteng areas (${gMissing(d).length})</button>` : ""}</p>
     <div class="adm-row"><div><label>Free delivery on orders from R <span class="muted">(0 = never free)</span></label><input type="number" min="0" data-act="dl-free" value="${+d.freeOver || 0}"></div></div>
     <label>Collection message <span class="muted">(shown when a customer picks Collection)</span></label><input data-act="dl-note" maxlength="160" value="${esc(d.collectionNote || "")}">
@@ -852,11 +860,12 @@
       else if (a === "pg-fadd") g.flavours = [...g.flavours, { name: "", extra: 0 }].slice(0, 15); else g.flavours = g.flavours.filter((_, i) => i !== +b.dataset.i);
       draftKey(); go("shop"); return;
     }
-    if (a === "cal-blk-add" || a === "cal-blk-rm" || a === "dl-add" || a === "dl-rm" || a === "dl-gp") {   // v10.21
+    if (a === "cal-blk-add" || a === "cal-blk-rm" || a === "dl-add" || a === "dl-rm" || a === "dl-gp" || a === "dl-rfa") {   // v10.21
       const sd = state.draft; if (!sd) return; const c = sd.calendar = sd.calendar || {}, d = sd.delivery = sd.delivery || {}; state.open.rules = true;
       if (a === "cal-blk-add") { const iso = (document.getElementById("cal-blk") || {}).value; if (!/^\d{4}-\d{2}-\d{2}$/.test(iso || "")) return; c.blocked = [...new Set([...(c.blocked || []), iso])].sort(); c.draft = false; }
       else if (a === "cal-blk-rm") { c.blocked = (c.blocked || []).filter(x => x !== v); c.draft = false; }
       else if (a === "dl-add") { d.areas = [...(d.areas || []), { name: "", fee: 0 }].slice(0, 150); d.draft = false; }
+      else if (a === "dl-rfa") { const r = regionsOf(d)[+b.dataset.ri], inp = document.getElementById("dl-rf-" + b.dataset.ri); if (!r || !inp) return; const fee = Math.min(5000, Math.max(0, Math.floor(+inp.value) || 0)); let n = 0; (d.areas || []).forEach(x => { if (SB.regionOf(x) === r) { x.fee = fee; n++; } }); d.draft = false; draftKey(); return go("shop", n + " areas in " + r + " set to R " + fee + ". Check them, then press Save."); }
       else if (a === "dl-gp") { const add = gMissing(d); d.areas = [...(d.areas || []), ...add.map(x => ({ ...x }))].slice(0, 150); d.draft = false; draftKey(); return go("shop", add.length + " Gauteng areas added with sample fees. Check the fees, then press Save."); }
       else { d.areas = (d.areas || []).filter((_, i) => i !== +b.dataset.i); d.draft = false; }
       draftKey(); go("shop"); return;

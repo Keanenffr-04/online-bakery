@@ -18,7 +18,7 @@ SB.load().then(async ({ biz, settings }) => {
   date.addEventListener("change", dmsg);
   // Delivery area: only shown for Delivery, and only when Becca has set up areas.
   const areaOn = dl.enabled !== false && (dl.areas || []).length > 0, areaSel = f.elements.area, areaWrap = document.getElementById("co-area-wrap");
-  if (areaOn) areaSel.innerHTML = `<option value="">Choose your area&hellip;</option>` + dl.areas.map(a => `<option value="${SB.esc(a.name)}">${SB.esc(a.name)} (from R ${Math.round(+a.fee || 0)})</option>`).join("");
+  if (areaOn) areaSel.innerHTML = `<option value="">Choose your area&hellip;</option>` + SB.areaOptions(dl.areas, a => ` (from R ${Math.round(+a.fee || 0)})`);
   const areaDraw = () => { const on = areaOn && f.elements.method.value === "Delivery"; areaWrap.hidden = !on; document.getElementById("co-area-note").textContent = on ? "Becca confirms the final delivery fee with your quote." : ""; };
   const addrWrap = document.getElementById("co-addr-wrap"), addrDraw = () => { addrWrap.hidden = f.elements.method.value !== "Delivery"; };   // v10.26.6: any Delivery needs an address
   f.elements.method.addEventListener("change", () => { areaDraw(); addrDraw(); }); areaDraw(); addrDraw();
