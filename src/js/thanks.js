@@ -16,10 +16,14 @@ document.addEventListener("click", e => {   // v10.26: Copy buttons in the How t
   const t = b.getAttribute("data-copy"), say = ok => { const m = document.getElementById("copy-msg"); if (m) { m.textContent = ok ? "Copied: " + t : "Could not copy. Please type it in."; m.hidden = false; } };
   if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(() => say(true), () => say(false)); else say(false);
 });
-/* v10.26.3: "Can't reach Becca?" button: the same order, typed out for the backup WhatsApp number. Only shown when backupWhatsapp is set in config/business.json. */
+/* v10.26.3 / v10.26.14: the second WhatsApp number (backupWhatsapp in config/business.json, here Keanen). It started as "Can't reach Becca?"; since v10.26.14 it is a "Send a copy to <name> too" box that carries the WHOLE order message, so both of you have the full order without any paid service.
+   A website cannot message two chats at once, so this is one extra tap by the customer. Orders are also saved online for both admins. Only shown when backupWhatsapp is set. */
 function backupBtn(biz, o) {
-  const msg = ["Hi! I sent an order on The Sweetest Bakery website but could not reach " + ((biz.owner || "Becca").split(" ")[0]) + " on WhatsApp.", o.name ? "Name: " + o.name : "", o.date ? "Needed for: " + o.date : "", "", ...(o.items || []).map(i => "- " + i), o.total ? "Total: R " + Math.round(o.total) : "", o.method && o.method !== "Not sure yet" ? o.method : "", o.address ? "Delivery address: " + o.address : ""].filter((x, i, a) => x !== "" || (a[i - 1] !== "" && i < a.length - 1)).join("\n"), w = SB.backupWa(biz, msg);
-  return w ? `<a class="btn btn--ghost" target="_blank" rel="noopener" href="${SB.esc(w.link)}">Can't reach ${SB.esc((biz.owner || "Becca").split(" ")[0])}? WhatsApp ${SB.esc(w.name)}</a>` : "";
+  const owner = (biz.owner || "Becca").split(" ")[0], b = (biz || {}).backupWhatsapp || {}, who = String(b.name || "").trim() || "us";
+  const msg = o.wa ? `Hi ${who}! \u{1F60A} This is a copy of the order I just sent to ${owner}, so you have it too:\n\n${o.wa}`
+    : ["Hi! I sent an order on The Sweetest Bakery website to " + owner + " and wanted you to have a copy too.", o.name ? "Name: " + o.name : "", o.date ? "Needed for: " + o.date : "", "", ...(o.items || []).map(i => "- " + i), o.total ? "Total: R " + Math.round(o.total) : "", o.method && o.method !== "Not sure yet" ? o.method : "", o.address ? "Delivery address: " + o.address : ""].filter((x, i, a) => x !== "" || (a[i - 1] !== "" && i < a.length - 1)).join("\n");
+  const w = SB.backupWa(biz, msg);
+  return w ? `<div class="thanks__box thanks__copy"><h2>Send a copy to ${SB.esc(w.name)} too</h2><p>${SB.esc(owner)} will reply as soon as she can. If you also send a copy to ${SB.esc(w.name)}, a second person sees your order straight away and nothing gets missed. It is one more tap, and it is optional.</p><p><a class="btn btn--whatsapp" target="_blank" rel="noopener" href="${SB.esc(w.link)}">Send a copy to ${SB.esc(w.name)}</a></p></div>` : "";
 }
 SB.load().then(({ biz, settings }) => {
   const root = document.getElementById("thanks-root"), o = SB.lastOrder(), esc = SB.esc;
@@ -28,7 +32,8 @@ SB.load().then(({ biz, settings }) => {
   root.innerHTML = `<h1>Thank you${o.name ? ", " + esc(o.name.split(" ")[0]) : ""}! &#127856;</h1>
     <p>Your ${o.source === "custom" ? "custom cake request" : "order"} is saved${when}. <strong>It is not confirmed yet:</strong> Becca replies on WhatsApp to confirm it and the price. If WhatsApp did not open, or you did not press send there, use the button below (it brings your order text with it).</p>
     <div class="thanks__box"><h2>What you sent</h2><ul>${(o.items || []).map(i => `<li>${esc(i)}</li>`).join("")}</ul>${o.total ? `<p><strong>Total: R ${esc(Math.round(o.total))}</strong></p>` : ""}${o.method && o.method !== "Not sure yet" ? `<p class="muted">${esc(o.method)}</p>` : ""}${o.address ? `<p class="muted">Deliver to: ${esc(o.address)}</p>` : ""}</div>
+    ${backupBtn(biz, o)}
     ${payBox(SB.payInfo(settings.payment), o, esc)}
-    <p class="thanks__actions">${biz.whatsappLink ? `<a class="btn btn--whatsapp" target="_blank" rel="noopener" href="${esc(biz.whatsappLink + (o.wa ? "?text=" + encodeURIComponent(o.wa) : ""))}">Open WhatsApp</a>` : ""}${backupBtn(biz, o)}<a class="btn btn--ghost" href="menu.html">Back to the menu</a><a class="btn btn--ghost" href="account.html">My account</a></p>
+    <p class="thanks__actions">${biz.whatsappLink ? `<a class="btn btn--whatsapp" target="_blank" rel="noopener" href="${esc(biz.whatsappLink + (o.wa ? "?text=" + encodeURIComponent(o.wa) : ""))}">Open WhatsApp</a>` : ""}<a class="btn btn--ghost" href="menu.html">Back to the menu</a><a class="btn btn--ghost" href="account.html">My account</a></p>
     ${o.source === "custom" ? `<p><a class="btn btn--ghost" href="custom-orders.html">Make another custom request</a></p>` : ""}`;
 });

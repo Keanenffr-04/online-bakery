@@ -1,6 +1,6 @@
 # 🗺️ Roadmap: what's next and what we need from you
 
-**Where we are:** v10.26.13 &nbsp;|&nbsp; **Next up:** v10.26.14 (both WhatsApps), then v10.26.15 (proof of payment) &nbsp;|&nbsp; **Rule:** 2 things per version.
+**Where we are:** v10.26.14 &nbsp;|&nbsp; **Next up:** v10.26.15 (proof of payment), then v10.26.16 (install as an app) &nbsp;|&nbsp; **Rule:** 2 things per version.
 
 *This page is written for Becca. No website or coding knowledge needed. Words you might not know are explained in the "Words explained" list in the [README](../README.md). Finished work is in [`BACKLOG.md`](BACKLOG.md).*
 
@@ -23,7 +23,8 @@
 - ✅ **New in v10.26.11:** (your list 29, item 2, **step 2 of 2**) **delivery fees worked out from the bakery** (Gerhardsville, western Centurion) for all **118 areas**, from the bands in guide 5h: R90 up to 10 km, R130 to 20 km, R180 to 35 km, R240 to 50 km, R310 to 70 km, R420 to 100 km, and beyond 100 km the same R420 plus R6 for every extra km (so Vereeniging is about R550, Vanderbijlpark about R600). Examples: Centurion R130, Pretoria CBD R180, Sandton R240, Johannesburg CBD R310. **These are estimates, not courier quotes**; they still show the draft warning until you check them and Save. They reach the live site by themselves while you have not edited the delivery box. Also a **root `index.html`** so any host opens the site from the web address alone, and a ready **phone zip** with a plain guide to show the site on a phone (**5i**). No database update needed.
 - ✅ **New in v10.26.12:** (your list 27, item 1, **step 3 of 3**) the delivery-area list is now **grouped by region** on the Cart and the Custom Order form (Johannesburg and Sandton, Tshwane (Pretoria and Centurion), Ekurhuleni (East Rand), West Rand, Sedibeng (the Vaal)), so a customer finds their area quickly. In the admin each region has its own heading and a **"Set all to R..."** box that sets the fee of every area in that region in one go (you can still change any single area). No database update needed.
 - ✅ **New in v10.26.13:** (your list 25, item 7) a **cosier, friendlier WhatsApp message** for the Cart and the Custom Order. It now opens with "Hi Becca! 😊 It's Thandi. I'd love to order from The Sweetest Bakery:" and closes with "Thank you so much, I can't wait! 🧁" (🎂 on a custom order). Every line you need is still there (name, phone, date, delivery or collection, area and fee, address, items, totals, notes). No database update needed.
-- ⏭️ **Next:** v10.26.14 (every order reaching **both** your WhatsApps; needs a decision from you, see the plan). Proof of payment and the installable app slid back to v10.26.15 and v10.26.16. *Your list 27 was split in 3 because it was too big to build safely in one go.* *We split the old v10.26.6 in 3 because it was too big to build safely in one go.*
+- ✅ **New in v10.26.14:** (your list 25, item 6, **the free way you chose**) every order can now reach **both** your WhatsApps. After a customer sends an order to Becca, the thank-you page has a green **"Send a copy to Keanen too"** button that opens WhatsApp to the second number with the **whole order message** already typed, so it is one extra tap and costs nothing. It works for the Cart and the Custom Order, and the orders are still saved online for both admins. (The paid Meta WhatsApp Business route is in the ideas list for later, if you ever want it to happen with no tap at all.) No database update needed.
+- ⏭️ **Next:** Proof of payment and the installable app slid back to v10.26.15 and v10.26.16. *Your list 27 was split in 3 because it was too big to build safely in one go.* *We split the old v10.26.6 in 3 because it was too big to build safely in one go.*
 - ⏳ **Waiting on you:** real prices, FAQ answers, reviews, your story, Instagram / Facebook names and photos. The full checklist is in section 2.
 - 🚀 **Last step:** putting the website online, only when you say "I'm happy with everything".
 
@@ -53,8 +54,8 @@ Your change lists always go **first**, so the versions below may slide back by o
 | ~~v10.26.11~~ | ✅ Done | **Delivery fees worked out from the bakery** (list 29, item 2, step 2 of 2): every one of the 118 areas gets a fee from its driving distance to Gerhardsville, using the bands in guide 5h (replacing the sample R80 to R130), still editable in the admin. | Your yes to the bands (or your changes) |
 | ~~v10.26.12~~ | ✅ Done | **Areas grouped by region** (list 27, item 1, step 3 of 3): the area list is grouped (Johannesburg, Tshwane, Ekurhuleni, West Rand, Sedibeng), and in the admin you can set one fee for a whole region at once. | Your fee per region |
 | ~~v10.26.13~~ | ✅ Done | **Cosier, friendlier WhatsApp message** (old step 3 of 3 of list 25): a warmer greeting and sign-off for the Cart and Custom Order messages, keeping every line Becca needs (your list 25, item 7). | Your own words for the message if you want them (otherwise we write it warm and short) |
-| **v10.26.14** | ⏭️ Next | **Every order reaches both of your WhatsApps** (list 25, item 6). A website cannot message two chats by itself: the tap-to-send link opens one chat. Real automatic sending to two numbers needs the **WhatsApp Business Platform** (a Meta business account, a number registered for it, and a small cost per message) plus a small server step in Supabase. We will first set up what is free and close to it, and ask you which way you want to go. | A decision from you: free workaround or Meta WhatsApp Business account |
-| v10.26.15 | 📅 Planned | **Upload proof of payment** on the thank-you page (stored privately, you open it next to the order) + a **"paid" tick** per order (idea 27, part 2). Needs the newest `setup.sql`. | Nothing new |
+| ~~v10.26.14~~ | ✅ Done | **Every order reaches both of your WhatsApps** (list 25, item 6). A website cannot message two chats by itself: the tap-to-send link opens one chat. Real automatic sending to two numbers needs the **WhatsApp Business Platform** (a Meta business account, a number registered for it, and a small cost per message) plus a small server step in Supabase. We will first set up what is free and close to it, and ask you which way you want to go. | A decision from you: free workaround or Meta WhatsApp Business account |
+| **v10.26.15** | ⏭️ Next | **Upload proof of payment** on the thank-you page (stored privately, you open it next to the order) + a **"paid" tick** per order (idea 27, part 2). Needs the newest `setup.sql`. | Nothing new |
 | v10.26.16 | 📅 Planned | **Install on the home screen like an app**, and the menu and cart keep working when the internet is flaky or during load shedding (idea 47). | Nothing new |
 | v10.27 | 📅 Planned | **Shop status banner** ("on holiday until 3 Jan", pauses orders) + the **old "Publish" wording fixed** in the admin (4 and 45). | Nothing new |
 | v10.28 | 📅 Planned | **Gift vouchers** (you give a code, the customer types it in the cart, it comes off the total) + a **loyalty reward** (for example every 10th order a free cupcake box). | Your voucher and loyalty rules |
@@ -140,7 +141,7 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 | 25 | 3 | In the order summary, after picking Delivery and the area, show an actual map (Google Maps or any free thing) | DONE (split in 2: the delivery address box in v10.26.6; the free map preview in v10.26.7) | v10.26.6 / v10.26.7 |
 | 25 | 4 | After they order, empty their cart | DONE (the cart empties itself 1 second after the order is sent; your name and number stay for next time) | v10.26.4 |
 | 25 | 5 | Remove the whole "order the same again" thing | DONE (removed from the thank-you page and from My account) | v10.26.4 |
-| 25 | 6 | Every order goes to my WhatsApp and my girlfriend's WhatsApp at the same time | PLANNED (needs a decision, see the plan) | v10.26.14 |
+| 25 | 6 | Every order goes to my WhatsApp and my girlfriend's WhatsApp at the same time | DONE the free way you chose (a "Send a copy to Keanen too" button with the whole order on the thank-you page; both admins also see every order online) | v10.26.14 |
 | 25 | 7 | Make the WhatsApp message cosier and friendlier | DONE (greeting with the customer's name, a warm sign-off, one or two emoji; no line removed) | v10.26.13 |
 | 25 | 8 | Later: a full online ordering shop like Takealot | IDEA (the cart, accounts and past orders exist; the missing parts are paying online (v10.29), stock counts and order tracking; listed in 4a) | v10.29 / after launch |
 | 25 | - | Only 2 changes per version, the rest to the backlog | DONE (list 25 was split: v10.26.4; the map + message item was too big for one go, so it became 3 steps v10.26.6 / .7 / .8; both WhatsApps = v10.26.12 (renumbered again by list 27); dark mode, list 26, took v10.26.5 in between) | v10.26.4 |
@@ -350,6 +351,11 @@ Every version leaves a few "good idea, but not now" notes. They used to be sprea
 - Let the customer **drop a pin / drag the marker** to fix the spot (needs a map library, so it is bigger than a free picture)
 - Save the map spot with the order so the admin can open it in one tap (Google Maps / Waze link in the slip)
 - A **delivery-distance fee** worked out from the map instead of picking an area by hand
+
+**From v10.26.14 (both WhatsApps):**
+- **Fully automatic** sending to both numbers with the **WhatsApp Business Platform** (a Meta business account, a registered number, a small cost per message and a Supabase Edge Function); only if the one extra tap proves too much
+- An **admin sound / phone notification** the moment a new order is saved, for whoever has the admin open
+- Let the **customer choose** which of the two numbers to message first
 
 **From v10.26.13 (the message):**
 - **Your own words:** tell us how you like to be greeted and we put it in (it is two short sentences in `cart.js` and `custom-order.js`)

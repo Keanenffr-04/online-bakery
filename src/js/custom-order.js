@@ -82,7 +82,7 @@ SB.load().then(async ({ biz, settings }) => {
     // v10.25: shrink + upload the photo (if any), then save the order with its file name. Waits at most 9 s; a failed photo never blocks anything.
     sendBtn.disabled = true; sendBtn.textContent = pf ? "Saving your photo…" : "Sending…";
     const work = (async () => { let photo = null; if (pf && !SB.spam.bot()) photo = await SB.photo.upload(await SB.photo.shrink(pf)); return SB.saveOrder(photo ? { ...orderRow, details: { ...orderRow.details, photo } } : orderRow); })();
-    SB.lastOrder({ source: "custom", name: v("name"), items: [v("what") + " (" + v("occasion") + ", " + s + " servings)", ...(used ? ["Price guide estimate: R " + used.price + " (" + used.size + (used.flavour ? ", " + used.flavour : "") + "), to be confirmed"] : [])], date: v("date"), total: null, method: area ? "Delivery to " + area : v("method"), address: addr });   // v10.19.1, address v10.26.6
+    SB.lastOrder({ source: "custom", wa: L.join("\n"), name: v("name"), items: [v("what") + " (" + v("occasion") + ", " + s + " servings)", ...(used ? ["Price guide estimate: R " + used.price + " (" + used.size + (used.flavour ? ", " + used.flavour : "") + "), to be confirmed"] : [])], date: v("date"), total: null, method: area ? "Delivery to " + area : v("method"), address: addr });   // v10.19.1, address v10.26.6
     await Promise.all([Promise.race([work, new Promise(r => setTimeout(r, 9000))]), new Promise(r => setTimeout(r, 900))]);
     location.href = "thanks.html";
   });

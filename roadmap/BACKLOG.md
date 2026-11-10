@@ -2,7 +2,7 @@
 
 *Written for Becca. This page is the list of **finished** work. What is still to do is in [`ROADMAP.md`](ROADMAP.md). New entries are added at the bottom and nothing is ever deleted.*
 
-**Latest version:** v10.26.13
+**Latest version:** v10.26.14
 
 ## Contents
 1. [What the website can do today](#today)
@@ -98,6 +98,7 @@ Oldest first. Click a version to jump to its detailed record. A version like **v
 | [v10.23](#v10-23) | 2026-11-08 | **Live check** button in the admin (tests the real database), **spam protection** on orders and sign-up, and a **keep-alive** so the free database never pauses. Run the newest `setup.sql` once. |
 | [v10.24](#v10-24) | 2026-11-08 | **Bake sheet** (what to make for a day, added up and printable, allergies in red) and a **new-order alert** (chime + pop-up while the admin is open). Run the newest `setup.sql` once (optional, makes the alert instant). |
 | [v10.25](#v10-25) | 2026-11-09 | **Review link** (a short review page; you approve each review before it shows; the thank-you WhatsApp message carries the link) and **inspiration photo upload** on Custom Orders (stored privately, you open it next to the order). Run the newest `setup.sql` once (section 12). |
+| [v10.26.14](#v10-26-14) | 2026-11-10 | **Both WhatsApps, the free way** (your list 25, item 6): the thank-you page offers "Send a copy to Keanen too" with the whole order message, for the Cart and the Custom Order. Nothing to update in the database. |
 | [v10.26.13](#v10-26-13) | 2026-11-10 | **Cosier WhatsApp message** (your list 25, item 7): a warm greeting with the customer's name and a warm sign-off on the Cart and Custom Order messages, with every needed line kept. Nothing to update in the database. |
 | [v10.26.12](#v10-26-12) | 2026-11-10 | **Areas grouped by region** (your list 27, item 1, step 3 of 3): grouped lists for customers and a one-fee-per-region box in the admin. Nothing to update in the database. |
 | [v10.26.11](#v10-26-11) | 2026-11-10 | **Delivery fees from the bakery for all 118 areas** (your list 29, item 2, step 2 of 2), a **root `index.html`**, and a **phone zip + guide 5i** so the website can be shown on a phone. Nothing to update in the database. |
@@ -602,6 +603,17 @@ Owner list 23 had one change: the Live check said "Strangers CAN look inside the
 Files: `src/js/admin.js`, `supabase/setup.sql`, `README.md`, `roadmap/*`, `docs/AI_HANDOFF.md`, `VERSION`.
 Tests (headless Chromium, mock Supabase + mocked storage answers): locked storage = green and the test file removed; listing leaks = red; the object opens = red; the test upload refused = yellow, nothing removed; no page errors. **The new SQL was NOT run on a real Postgres** (none in the sandbox): the owner's Live check is the real test. Honest note: this is probably a false alarm in the old check, but the extra lock makes the answer safe either way.
 Pushed to the backlog (also in `ROADMAP.md` 4b): a weekly automatic Live check with history; auto-removal of leftover test pictures; the same private-storage tick for proof of payment; deleting customer photos after a set time (with a Privacy page line).
+
+<a id="v10-26-14"></a>
+## v10.26.14: Every order can reach both WhatsApps, the free way (done, 2026-11-10)
+The plan said this version needed a decision (a free workaround or a paid Meta WhatsApp Business account). **The owner chose "free workaround".** A website cannot message two chats by itself (a tap-to-send link opens one chat), so the free way is one extra tap by the customer.
+1. **Thank-you page** (`backupBtn()` in `thanks.js`). Under "What you sent" a box **"Send a copy to <name> too"** explains it in a few plain sentences (the owner replies as soon as she can; a second person sees the order straight away; optional) and has a green button that opens WhatsApp to `backupWhatsapp.number` (Keanen, `27812118414`) with `Hi Keanen! 😊 This is a copy of the order I just sent to Becca, so you have it too:` followed by the **whole** order message the customer sent to Becca. The old "Can't reach Becca? WhatsApp Keanen" button in the action row was **replaced** by this box (it carried only a short summary); the Contact page's own "Can't reach Becca?" line is unchanged. If the saved order has no message (an older browser tab) it falls back to the short summary. Nothing is shown when `backupWhatsapp.number` is empty.
+2. **Custom Order** now keeps its message for the thank-you page too (`wa: L.join("\n")` in `custom-order.js`), so the copy carries the whole custom request (the Cart already did).
+3. Orders are still saved online and visible to **both admins** (v10.26.3); the main "Open WhatsApp" button still goes to Becca. The paid route (automatic, no tap) is in the ideas list.
+Files: `src/js/thanks.js`, `src/js/custom-order.js`, `README.md`, `roadmap/*`, `docs/AI_HANDOFF.md`, `VERSION`. **No `setup.sql` change**, no data file changed.
+Tests (headless Chromium, `file://`, **320 px and 1000 px**, through the **real flows**): a full Cart order and a full Custom Order were sent (WhatsApp itself mocked) and landed on the thank-you page, where the copy box shows, its link goes to the second number, the text holds the greeting and the whole order (items, delivery fee, total with delivery, address, notes; or occasion, area, address for a custom order), the main button still goes to Becca, the button names Keanen, the fallback summary works, nothing shows without a second number, no sideways scrolling, no page errors; all public pages load.
+**Honest limits:** WhatsApp itself was not opened, and the customer must press the second button themselves, so some customers will skip it (it is optional by design). The second admin still sees every order online whether or not the copy is sent.
+Pushed to the backlog (also in `ROADMAP.md` 4b): fully automatic sending through the WhatsApp Business Platform, an admin sound / notification for a new order, letting the customer pick which number to message first.
 
 <a id="v10-26-13"></a>
 ## v10.26.13: Cosier WhatsApp message (done, 2026-11-10)

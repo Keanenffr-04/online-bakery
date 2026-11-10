@@ -1,7 +1,8 @@
 # online-bakery 🐇🍰
 Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
 
-**Current version:** v10.26.13. The latest three versions:
+**Current version:** v10.26.14. The latest three versions:
+- **v10.26.14:** (your list 25, item 6, the free way) **every order can reach both your WhatsApps**: after a customer sends an order to Becca, the thank-you page offers a green **"Send a copy to Keanen too"** button that opens WhatsApp to the second number with the whole order already typed. One extra tap for the customer, no cost. The second number is `backupWhatsapp` in `config/business.json`. Nothing to update in the database.
 - **v10.26.13:** (your list 25, item 7) a **cosier, friendlier WhatsApp message** from the Cart and the Custom Order: a warm hello with the customer's name, a warm thank-you at the end, one or two emoji. Every line you need is still in it. Nothing to update in the database.
 - **v10.26.12:** (your list 27, item 1, step 3 of 3) the **delivery areas are grouped by region** on the Cart and Custom Order lists (Johannesburg and Sandton, Tshwane, Ekurhuleni, West Rand, Sedibeng), and in the admin each region has a **"Set all to R..."** box to change a whole region's fee at once. Nothing to update in the database.
 - **v10.26.11:** (your list 29, item 2, step 2 of 2) the **delivery fees are worked out from the bakery** (Gerhardsville, western Centurion) for all **118 Gauteng areas**: R90 for the nearest, R130 Centurion, R180 Pretoria CBD, R240 Sandton, R310 Johannesburg CBD, up to about R600 for the Vaal. **They are estimates, not courier quotes** (see `roadmap/ROADMAP.md` guide 5h), and stay marked as a draft in the admin until you check them and press Save. A small script, `tools/gauteng-fees.py`, recalculates them whenever you change the bands. Also a plain guide (**5i**) and a ready **phone zip** to show the website on a phone through a free link. Nothing to update in the database.
