@@ -155,6 +155,9 @@
   };
   const inPeriod = (o, k) => { const [f, t] = periodRange(k), c = new Date(o.created_at); return (!f || c >= f) && (!t || c < t); };
   const money = n => "R " + Math.round(n).toLocaleString("en-ZA");
+  // v10.26.16: the "paid" tick. orders.paid comes from setup.sql section 15; until it is run the column is missing, so every paid feature quietly stays hidden.
+  const hasPaid = () => { const l = state.orders || []; return !l.length || l.some(o => "paid" in o); };
+  const owing = o => o.paid !== true && o.status !== "cancelled";   // "not paid" never counts a cancelled order
   const placed = o => { try { return new Date(o.created_at).toLocaleString("en-ZA", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); } catch (e) { return ""; } };
   const linesOf = o => (o.details && Array.isArray(o.details.lines) ? o.details.lines : []).filter(l => l && l.id);
   function numbers(k) {
@@ -163,14 +166,15 @@
     const names = {}; ((state.data && state.data.products) || []).forEach(p => { names[p.id] = p.name; });
     const q = {}; live.forEach(o => linesOf(o).forEach(l => { q[l.id] = (q[l.id] || 0) + (+l.q || 0); }));
     const top = Object.entries(q).sort((x, y) => y[1] - x[1]).slice(0, 5);
+    const unpaid = live.filter(o => o.paid !== true).reduce((t, o) => t + (+o.total || 0), 0);
     const done = list.filter(o => o.status === "completed").length, cancelled = list.filter(o => o.status === "cancelled").length;
     return `<div class="adm-card"><div class="adm-top"><h2>Numbers</h2><select data-act="nper" style="width:auto" aria-label="Period">${PERIODS.map(([v, l]) => `<option value="${v}" ${v === k ? "selected" : ""}>${l}</option>`).join("")}</select></div>
-    <div class="adm-stats"><div><strong>${live.length}</strong><span>order${live.length === 1 ? "" : "s"}</span></div><div><strong>${money(sum)}</strong><span>total value</span></div><div><strong>${priced ? money(sum / priced) : "-"}</strong><span>average order</span></div><div><strong>${done}</strong><span>done</span></div></div>
+    <div class="adm-stats"><div><strong>${live.length}</strong><span>order${live.length === 1 ? "" : "s"}</span></div><div><strong>${money(sum)}</strong><span>total value</span></div><div><strong>${priced ? money(sum / priced) : "-"}</strong><span>average order</span></div><div><strong>${done}</strong><span>done</span></div>${hasPaid() ? `<div><strong>${money(unpaid)}</strong><span>not paid yet</span></div>` : ""}</div>
     <p class="muted">${cancelled ? cancelled + " cancelled (not counted). " : ""}${live.length - priced ? (live.length - priced) + " order" + (live.length - priced === 1 ? " has" : "s have") + " no total yet (custom orders until you quote), so the value is a minimum." : "Cancelled orders are never counted."}</p>
     ${top.length ? `<p><strong>Most ordered:</strong> ${top.map(([id, n]) => esc(names[id] || id) + " (" + n + ")").join(" &middot; ")}</p>` : `<p class="muted">Most-ordered items appear here once website cart orders come in.</p>`}
     <p><button class="btn btn--sm btn--ghost" data-act="dl-num" data-v="${k}">Download these orders (CSV)</button></p></div>`;
   }
-  const csvOrders = (list, name) => { const rows = [["created", "source", "name", "phone", "items", "date", "total", "status"], ...list.map(o => [o.created_at, o.source, o.name, o.phone, o.items, o.date, o.total, o.status])]; return dl(name, rows.map(r => r.map(c => '"' + String(c == null ? "" : c).replace(/"/g, '""') + '"').join(",")).join("\n"), "text/csv"); };
+  const csvOrders = (list, name) => { const rows = [["created", "source", "name", "phone", "items", "date", "total", "status", "paid"], ...list.map(o => [o.created_at, o.source, o.name, o.phone, o.items, o.date, o.total, o.status, o.paid === true ? "yes" : "no"])]; return dl(name, rows.map(r => r.map(c => '"' + String(c == null ? "" : c).replace(/"/g, '""') + '"').join(",")).join("\n"), "text/csv"); };
   // A neat one-page slip for the bench or the box, printed from a small window.
   function slip(o) {
     const biz = SB._biz || {}, det = o.details && typeof o.details === "object" ? o.details : {};
@@ -181,9 +185,9 @@
     .top{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #111;padding-bottom:10px}.ref{font:600 14px ui-monospace,Consolas,monospace}
     table{border-collapse:collapse;width:100%}th{text-align:left;width:34%;color:#555;font-weight:500;padding:3px 8px 3px 0;vertical-align:top;text-transform:capitalize}td{padding:3px 0}
     ul{list-style:none;margin:0;padding:0}li{padding:5px 0;border-bottom:1px dotted #bbb;display:flex;gap:10px;align-items:center}.bx{width:14px;height:14px;border:1.5px solid #111;border-radius:3px;flex:none}
-    .tot{font-size:18px;font-weight:700;margin-top:14px;text-align:right}@media print{body{padding:0}}</style></head><body>
-    <div class="top"><div><h1>${esc(biz.name || "The Sweetest Bakery")}</h1><div>Order slip</div></div><div class="ref">#${esc(String(o.id).slice(0, 8).toUpperCase())}</div></div>
-    <h2>Customer</h2><table><tr><th>Name</th><td>${esc(o.name || "-")}</td></tr><tr><th>Phone</th><td>${esc(o.phone ? "+" + String(o.phone).replace(/\D/g, "") : "-")}</td></tr><tr><th>Needed on</th><td><strong>${esc(o.date || "not given")}</strong></td></tr><tr><th>Placed</th><td>${esc(placed(o))}</td></tr><tr><th>Status</th><td>${esc(o.status)}</td></tr>${det.delivery && (det.delivery.area || det.delivery.address) ? `<tr><th>Delivery</th><td>${[det.delivery.area ? esc(det.delivery.area) + (+det.delivery.fee ? " (fee " + esc(money(+det.delivery.fee)) + ")" : "") : "", det.delivery.address ? esc(det.delivery.address) : ""].filter(Boolean).join("<br>")}</td></tr>` : ""}${extra}</table>
+    .tot{font-size:18px;font-weight:700;margin-top:14px;text-align:right}.paid{display:inline-block;margin-top:8px;border:3px solid #15803d;color:#15803d;font:800 16px system-ui,Arial,sans-serif;letter-spacing:.14em;padding:2px 10px;border-radius:6px;transform:rotate(-6deg)}@media print{body{padding:0}}</style></head><body>
+    <div class="top"><div><h1>${esc(biz.name || "The Sweetest Bakery")}</h1><div>Order slip</div></div><div class="ref">#${esc(String(o.id).slice(0, 8).toUpperCase())}${o.paid === true ? '<div class="paid">PAID</div>' : ""}</div></div>
+    <h2>Customer</h2><table><tr><th>Name</th><td>${esc(o.name || "-")}</td></tr><tr><th>Phone</th><td>${esc(o.phone ? "+" + String(o.phone).replace(/\D/g, "") : "-")}</td></tr><tr><th>Needed on</th><td><strong>${esc(o.date || "not given")}</strong></td></tr><tr><th>Placed</th><td>${esc(placed(o))}</td></tr><tr><th>Status</th><td>${esc(o.status)}</td></tr>${"paid" in o ? `<tr><th>Payment</th><td>${o.paid === true ? "<strong>PAID</strong>" : "Not paid yet"}</td></tr>` : ""}${det.delivery && (det.delivery.area || det.delivery.address) ? `<tr><th>Delivery</th><td>${[det.delivery.area ? esc(det.delivery.area) + (+det.delivery.fee ? " (fee " + esc(money(+det.delivery.fee)) + ")" : "") : "", det.delivery.address ? esc(det.delivery.address) : ""].filter(Boolean).join("<br>")}</td></tr>` : ""}${extra}</table>
     <h2>What to make</h2><ul>${items || "<li>-</li>"}</ul>${+o.total ? `<div class="tot">Total: ${esc(money(+o.total))}</div>` : ""}</body></html>`;
   }
 
@@ -342,16 +346,18 @@
     <p class="muted">This is per device, so tick it on your phone and your computer separately. It cannot wake a phone where the page is closed: that comes with the install-as-an-app step (v10.26). Orders you add by hand never ring.</p>`);
   }
   function orders() {
-    const o = state.orders || [], f = state.filter || "pending", list = o.filter(x => f === "all" || x.status === f), nper = state.nper || "week";
+    const o = state.orders || [], f = state.filter || "pending", pf = hasPaid() ? (state.pay || "all") : "all", list = o.filter(x => (f === "all" || x.status === f) && (pf === "all" || (pf === "paid" ? x.paid === true : owing(x)))), nper = state.nper || "week";
     const cnt = s => s === "all" ? o.length : o.filter(x => x.status === s).length;
     return `${numbers(nper)}${calBox()}${bakeBox()}${reviewsBox()}${alertBox()}<div class="adm-split"><div class="adm-card"><h2>Add an order</h2>
     <form data-form="order"><label>Customer</label><input name="name" required>${SB.phoneField("o-phone", { label: "Phone" })}
     <label>What they ordered</label><textarea name="items" required></textarea><div class="adm-row"><div><label>Needed on</label><input name="date" type="date"></div><div><label>Total (R)</label><input name="total" type="number" min="0"></div></div>
     <p><button class="btn btn--sm" type="submit">Save order</button></p></form></div>
-    <div class="adm-card"><div class="adm-top"><h2>${list.length} ${f === "all" ? "" : f} order${list.length === 1 ? "" : "s"}</h2>
-    <select data-act="filter" style="width:auto" aria-label="Show orders">${["all", ...ST].map(s => `<option value="${s}" ${s === f ? "selected" : ""}>${s} (${cnt(s)})</option>`).join("")}</select></div>
-    <ul class="adm-list">${list.map(x => `<li><div><strong>${esc(x.name)}</strong> <span class="tag tag--${x.status}">${x.status}</span>${state.proofs && state.proofs.has(x.id) ? ' <span class="tag tag--ready" title="The customer sent a proof of payment">proof sent</span>' : ""}<br><span class="muted">${esc(x.items)}${x.date ? " &middot; for " + esc(x.date) : ""}${x.source && x.source !== "admin" ? " &middot; from the website (" + (x.source === "cart" ? "cart" : "custom order") + ")" : ""}${x.details && x.details.delivery && x.details.delivery.area ? " &middot; delivery to " + esc(x.details.delivery.area) + (+x.details.delivery.fee ? " (R " + esc(x.details.delivery.fee) + ")" : "") : ""}${x.details && x.details.delivery && x.details.delivery.address ? " &middot; address: " + esc(x.details.delivery.address) : ""}${x.total ? " &middot; R " + esc(x.total) : ""}<br>Placed ${esc(placed(x))}</span>${lastChange(x.id)}</div>
+    <div class="adm-card"><div class="adm-top"><h2>${list.length} ${f === "all" ? "" : f} ${pf === "paid" ? "paid " : pf === "unpaid" ? "not paid " : ""}order${list.length === 1 ? "" : "s"}</h2>
+    <div class="adm-actions"><select data-act="filter" style="width:auto" aria-label="Show orders">${["all", ...ST].map(s => `<option value="${s}" ${s === f ? "selected" : ""}>${s} (${cnt(s)})</option>`).join("")}</select>
+    ${hasPaid() ? `<select data-act="payfilter" style="width:auto" aria-label="Show paid or not paid orders"><option value="all" ${pf === "all" ? "selected" : ""}>paid or not</option><option value="paid" ${pf === "paid" ? "selected" : ""}>paid (${o.filter(x => x.paid === true).length})</option><option value="unpaid" ${pf === "unpaid" ? "selected" : ""}>not paid (${o.filter(owing).length})</option></select>` : ""}</div></div>
+    <ul class="adm-list">${list.map(x => `<li><div><strong>${esc(x.name)}</strong> <span class="tag tag--${x.status}">${x.status}</span>${x.paid === true ? ' <span class="tag tag--paid" title="Marked as paid">paid</span>' : ""}${state.proofs && state.proofs.has(x.id) ? ' <span class="tag tag--ready" title="The customer sent a proof of payment">proof sent</span>' : ""}<br><span class="muted">${esc(x.items)}${x.date ? " &middot; for " + esc(x.date) : ""}${x.source && x.source !== "admin" ? " &middot; from the website (" + (x.source === "cart" ? "cart" : "custom order") + ")" : ""}${x.details && x.details.delivery && x.details.delivery.area ? " &middot; delivery to " + esc(x.details.delivery.area) + (+x.details.delivery.fee ? " (R " + esc(x.details.delivery.fee) + ")" : "") : ""}${x.details && x.details.delivery && x.details.delivery.address ? " &middot; address: " + esc(x.details.delivery.address) : ""}${x.total ? " &middot; R " + esc(x.total) : ""}<br>Placed ${esc(placed(x))}</span>${lastChange(x.id)}</div>
     <div class="adm-actions">${NEXT[x.status] ? `<button class="btn btn--sm" data-act="onext" data-id="${x.id}" data-v="${NEXT[x.status][0]}">${NEXT[x.status][1]}</button>` : ""}<select data-act="ostatus" data-id="${x.id}" style="width:auto" aria-label="Change status">${ST.map(s => `<option ${s === x.status ? "selected" : ""}>${s}</option>`).join("")}</select>
+    ${hasPaid() && x.status !== "cancelled" ? (x.paid === true ? `<button class="btn btn--sm btn--ghost" data-act="opaid" data-id="${x.id}" data-v="0" title="Takes the paid tick off again">Undo paid</button>` : `<button class="btn btn--sm" data-act="opaid" data-id="${x.id}" data-v="1" title="Ticks this order as paid">Mark paid</button>`) : ""}
     <button class="btn btn--sm btn--ghost" data-act="oslip" data-id="${x.id}">Print slip</button>
     ${x.details && x.details.photo ? `<button class="btn btn--sm btn--ghost" data-act="ophoto" data-v="${esc(x.details.photo)}" title="Opens the inspiration photo the customer attached">View photo</button>` : ""}
     ${state.proofs && state.proofs.has(x.id) ? `<button class="btn btn--sm btn--ghost" data-act="oproof" data-id="${x.id}" title="Opens the proof of payment the customer uploaded">View proof</button>` : ""}
@@ -578,7 +584,7 @@
 
   // v10.23: "Live check" = the real-world test (roadmap idea 46) as a button. It talks to the REAL online database, so it can only run from
   // the live site or from a computer with internet (not from a double-clicked file). Everything it adds is removed again.
-  const SETUP_VERSION = "10.26.15", TEST_NAME = "TEST ORDER - safe to delete";
+  const SETUP_VERSION = "10.26.16", TEST_NAME = "TEST ORDER - safe to delete";
   async function liveCheck() {
     const c = (state.data.biz || {}).supabase, R = [], add = (s, t, d) => R.push({ s, t, d: d || "" });
     if (!c || !c.url || !c.key) { add("bad", "The online database is not set up", "config/business.json has no Supabase address."); return R; }
@@ -660,6 +666,10 @@
       add(Array.isArray(rows) && rows.length === 0 ? "ok" : "bad", Array.isArray(rows) && rows.length === 0 ? "Strangers cannot read orders" : "Strangers CAN read orders", Array.isArray(rows) && rows.length === 0 ? "" : "Run the newest setup.sql now (roadmap 2c) and run this check again.");
       const f = await raw("/rest/v1/orders", "POST", { source: "cart", status: "confirmed", name: TEST_NAME, items: "1 x Lock test" });
       add(f.ok ? "bad" : "ok", f.ok ? "A stranger could add an order that is already confirmed" : "Strangers cannot confirm their own orders", f.ok ? "Run the newest setup.sql now (roadmap 2c) and run this check again." : "");
+      if (current) {   // v10.26.16: nobody but an admin may tick an order as paid
+        const pd = await raw("/rest/v1/orders", "POST", { source: "cart", status: "pending", name: TEST_NAME, items: "1 x Lock test", paid: true });
+        add(pd.ok ? "bad" : "ok", pd.ok ? "A stranger could add an order that is already ticked as paid" : "Strangers cannot tick their own orders as paid", pd.ok ? "Run the newest setup.sql now (roadmap 2c) and run this check again." : "");
+      }
     });
     // A real customer order, then the spam guard.
     await step("Test order", async () => {
@@ -818,6 +828,7 @@
     const t = e.target, a = t.dataset.act;
     if (a === "filter") { state.filter = t.value; go("orders"); }
     if (a === "nper") { state.nper = t.value; go("orders"); }   // v10.19
+    if (a === "payfilter") { state.pay = t.value; go("orders"); }   // v10.26.16
     if (a === "bake") { state.bake = t.value; state.open.obake = true; go("orders"); }   // v10.24
     if (a === "al-sound") { S("sb_alert", { ...AL(), sound: t.checked }); state.open.oalert = true; if (t.checked) chime(); go("orders"); }
     if (a === "al-notify") {
@@ -852,6 +863,12 @@
     if (a === "psold") { const p = state.data.products.find(x => x.id === id); if (SB.isSoldOut(p)) delete p.soldOut; else p.soldOut = SB.today(); await saveProducts(); return go("menu", p.name + (p.soldOut ? " is marked sold out for today." : " is back in stock.")); }
     if (a === "tab") { const was = state.tab, DT = k => k === "look" || k === "shop"; state.tab = v; if (DT(v) && !DT(was)) await prepLook(); if (v === "menu") state.edit = null; state.picTmp = null; if (v === "orders" || v === "admins") await loadAdminData(); if (v !== "look") sessionStorage.removeItem("sb_preview"); else draftKey(); return go(v); }
     if (a === "onext") { const o0 = state.orders.find(x => x.id === id) || {}, was = o0.status, r = await sb.from("orders").update({ status: v }).eq("id", id); if (!r.error) await logOrder(o0, "status " + was + " to " + v); await loadAdminData(); return go("orders", r.error ? "Could not update: " + r.error.message : "Order moved to " + v + "."); }   // v10.19
+    if (a === "opaid") {   // v10.26.16: the paid tick (orders.paid, setup.sql section 15)
+      const o0 = state.orders.find(x => x.id === id) || {}, on = v === "1", r = await sb.from("orders").update({ paid: on }).eq("id", id);
+      if (!r.error) await logOrder(o0, on ? "marked paid" : "paid tick removed");
+      await loadAdminData();
+      return go("orders", r.error ? (/paid/i.test(r.error.message || "") ? "The paid tick needs a one-off database update: run the newest supabase/setup.sql (roadmap 2c), then try again." : "Could not update: " + r.error.message) : (on ? "Marked as paid." : "Paid tick removed."));
+    }
     if (a === "bake-print") { const w = window.open("", "_blank"); if (!w) return go("orders", "Your browser blocked the bake sheet window. Allow pop-ups for this page and try again."); w.document.write(bakePage()); w.document.close(); w.focus(); setTimeout(() => w.print(), 300); return; }   // v10.24
     if (a === "al-test") { state.open.oalert = true; return go("orders", chime() ? "Did you hear the chime? Then new orders will sound the same." : "No sound came out. Check the volume and that this device is not on silent, then press the button again."); }
     if (a === "ophoto") { const w = window.open("about:blank", "_blank"); const r = await sb.storage.from("inspiration").createSignedUrl(v, 300); if (r.error || !r.data) { if (w) w.close(); return go("orders", "Could not open the photo: " + ((r.error && r.error.message) || "it may have been deleted.")); } if (w) w.location.href = r.data.signedUrl; else go("orders", "Your browser blocked the photo window. Allow pop-ups for this page and try again."); return; }   // v10.25

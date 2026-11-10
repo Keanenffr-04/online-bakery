@@ -301,8 +301,15 @@ exception when others then
   raise notice 'The proof-of-payment storage could not be set up here (%). Orders still work; customers just cannot upload proof.', sqlerrm;
 end $$;
 
+-- 15. (v10.26.16) The "paid" tick. One yes / no per order, set by an admin only. Admins already have full rights on orders; customers can add an order but
+-- the new rule below makes sure nobody can add one that is already ticked as paid. Re-runnable; nothing is deleted and existing orders start as not paid.
+alter table public.orders add column if not exists paid boolean not null default false;
+drop policy if exists "customers add orders" on public.orders;
+create policy "customers add orders" on public.orders for insert to anon, authenticated
+  with check (source in ('cart', 'custom') and status = 'pending' and paid = false and (user_id is null or user_id = auth.uid()));
+
 -- The admin's "Live check" asks this to see whether the database has the newest setup.sql.
 create or replace function public.setup_version() returns text
-language sql immutable as $$ select '10.26.15'::text $$;
+language sql immutable as $$ select '10.26.16'::text $$;
 revoke all on function public.setup_version() from public;
 grant execute on function public.setup_version() to anon, authenticated;

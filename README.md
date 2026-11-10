@@ -1,8 +1,9 @@
 # online-bakery 🐇🍰
 Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
 
-**Current version:** v10.26.15. The latest three versions:
-- **v10.26.15:** (the first half of "proof of payment + paid tick", split in 2) customers can **upload a proof of payment** on the thank-you page (screenshot, photo or PDF up to 2 MB, under the How to pay box). It is stored privately (`proofs` bucket, `supabase/setup.sql` section 14); the admin shows a **proof sent** tag and a **View proof** button on the order, and the proof is deleted with the order. The Live check tests the new storage. **Run the newest `setup.sql` once.** The **paid** tick comes next (v10.26.16).
+**Current version:** v10.26.16. The latest three versions:
+- **v10.26.16:** (the second half of "proof of payment + paid tick") a **paid tick** on every order. In Admin > Orders press **Mark paid** (or **Undo paid**) and a green **paid** tag shows; a filter lists **paid** or **not paid** orders; the printed slip gets a **PAID** stamp; and **Numbers** shows **not paid yet**, the money still owed. Customers cannot tick it themselves. **Run the newest `setup.sql` once** (until then the paid buttons stay hidden). The installable app comes next (v10.26.17).
+- **v10.26.15:** (the first half of "proof of payment + paid tick", split in 2) customers can **upload a proof of payment** on the thank-you page (screenshot, photo or PDF up to 2 MB, under the How to pay box). It is stored privately (`proofs` bucket, `supabase/setup.sql` section 14); the admin shows a **proof sent** tag and a **View proof** button on the order, and the proof is deleted with the order. The Live check tests the new storage. **Run the newest `setup.sql` once.** The **paid** tick came next (v10.26.16).
 - **v10.26.14:** (your list 25, item 6, the free way) **every order can reach both your WhatsApps**: after a customer sends an order to Becca, the thank-you page offers a green **"Send a copy to Keanen too"** button that opens WhatsApp to the second number with the whole order already typed. One extra tap for the customer, no cost. The second number is `backupWhatsapp` in `config/business.json`. Nothing to update in the database.
 - **v10.26.13:** (your list 25, item 7) a **cosier, friendlier WhatsApp message** from the Cart and the Custom Order: a warm hello with the customer's name, a warm thank-you at the end, one or two emoji. Every line you need is still in it. Nothing to update in the database.
 - **v10.26.12:** (your list 27, item 1, step 3 of 3) the **delivery areas are grouped by region** on the Cart and Custom Order lists (Johannesburg and Sandton, Tshwane, Ekurhuleni, West Rand, Sedibeng), and in the admin each region has a **"Set all to R..."** box to change a whole region's fee at once. Nothing to update in the database.
@@ -53,7 +54,8 @@ When you press **Save**, the change is live for everyone straight away. *(Some w
 | See new orders | Admin > **Orders**. New ones are marked **pending** |
 | Confirm an order and tell the customer | Orders > press **Confirm**, then the green **WhatsApp** button. The message is typed for you and you can change it before sending |
 | Say an order is ready or finished | Press **Mark ready**, later **Mark done** (each has its own WhatsApp message) |
-| Print a slip for the bench or the box | Orders > **Print slip** |
+| Say an order has been paid | Orders > **Mark paid** (a green **paid** tag shows; **Undo paid** takes it off). Use the **paid or not** filter to see who still owes you, and **not paid yet** in the Numbers box for the total |
+| Print a slip for the bench or the box | Orders > **Print slip** (it shows **PAID** once the order is ticked) |
 | See how busy the next two weeks are | Orders > **Upcoming dates** |
 | See what to bake for a day, and print it | Orders > **Bake sheet** > pick the day > **Print bake sheet** (allergies show in red) |
 | Hear about new orders | Keep the admin open. A chime and a pop-up arrive with each website order. Switch it on or off in Orders > **New-order alert** (per device) |
@@ -89,6 +91,7 @@ The full checklist is in [`roadmap/ROADMAP.md`, section 2](roadmap/ROADMAP.md#ne
 | Admin says **"The online database is not answering"** | Open supabase.com and check the project is not paused (click **Restore** if it is). If it was never set up, run `supabase/setup.sql` (roadmap section 2c). |
 | You cannot sign in to the admin, or no email arrives | Emails from the free sender often never arrive. Create the login directly: Supabase > Authentication > Users > **Add user**, tick **Auto Confirm User** (roadmap section 2d). The email must be on the admin list. |
 | The delivery map says "not answering" or "could not find that" | The map shows by itself after the customer stops typing. It is a free service and only a check; **Try again** appears when it did not answer. The customer can still send the order and you check the address with them on WhatsApp. |
+| There is no **Mark paid** button, or it says "needs a one-off database update" | Run the newest `setup.sql` (roadmap section 2c), then reload the admin. |
 | A customer cannot reach me on WhatsApp | The Contact page and thank-you page show **"Can't reach Becca? WhatsApp Keanen"**. The number lives in `config/business.json` (`backupWhatsapp`). |
 | A customer says their confirm or reset email never came | Customers need your own email sender first (roadmap guide 5c). **Continue with Google** and WhatsApp still work. |
 | I saved a change but customers do not see it | Make sure you pressed **Save** in that section, then reload the page. |

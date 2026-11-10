@@ -1,6 +1,6 @@
 # 🗺️ Roadmap: what's next and what we need from you
 
-**Where we are:** v10.26.15 &nbsp;|&nbsp; **Next up:** v10.26.16 (the "paid" tick), then v10.26.17 (install as an app) &nbsp;|&nbsp; **Rule:** 2 things per version.
+**Where we are:** v10.26.16 &nbsp;|&nbsp; **Next up:** v10.26.17 (install as an app), then v10.27 (shop status banner) &nbsp;|&nbsp; **Rule:** 2 things per version.
 
 *This page is written for Becca. No website or coding knowledge needed. Words you might not know are explained in the "Words explained" list in the [README](../README.md). Finished work is in [`BACKLOG.md`](BACKLOG.md).*
 
@@ -25,7 +25,8 @@
 - ✅ **New in v10.26.13:** (your list 25, item 7) a **cosier, friendlier WhatsApp message** for the Cart and the Custom Order. It now opens with "Hi Becca! 😊 It's Thandi. I'd love to order from The Sweetest Bakery:" and closes with "Thank you so much, I can't wait! 🧁" (🎂 on a custom order). Every line you need is still there (name, phone, date, delivery or collection, area and fee, address, items, totals, notes). No database update needed.
 - ✅ **New in v10.26.14:** (your list 25, item 6, **the free way you chose**) every order can now reach **both** your WhatsApps. After a customer sends an order to Becca, the thank-you page has a green **"Send a copy to Keanen too"** button that opens WhatsApp to the second number with the **whole order message** already typed, so it is one extra tap and costs nothing. It works for the Cart and the Custom Order, and the orders are still saved online for both admins. (The paid Meta WhatsApp Business route is in the ideas list for later, if you ever want it to happen with no tap at all.) No database update needed.
 - ✅ **New in v10.26.15:** (the first half of your "proof of payment + paid tick" version, **split in 2 as you asked**) customers can now **upload their proof of payment** on the thank-you page, under the How to pay box: a screenshot, a photo or a PDF (up to 2 MB). It goes to a **private place that only you and Keanen can open**; in the admin the order shows a green **proof sent** tag and a **View proof** button. Deleting an order deletes its proof too. The box only shows once your real payment details are in (the draft flag is off) and only on the live website, never in the local preview. The Live check also tests the new storage the way a stranger would. The Privacy page has a line about it. **Run the newest `setup.sql` once** (section 2c), then run the Live check.
-- ⏭️ **Next:** the **"paid" tick** (v10.26.16) and then the installable app (v10.26.17). *The proof-of-payment version was split in 2 because it was too big to build safely in one go.* *Earlier: Your list 27 was split in 3 for the same reason.*
+- ✅ **New in v10.26.16:** (the second half of your "proof of payment + paid tick" version) a **paid tick** on every order. In Admin > Orders each order has a **Mark paid** button (and **Undo paid** if you slip); a green **paid** tag shows next to it. A new filter shows **paid** or **not paid** orders, the printed slip gets a green **PAID** stamp, and the **Numbers** box shows **not paid yet**, the money still owed. Customers cannot tick it themselves. **Run the newest `setup.sql` once** (section 2c); until then the paid buttons stay hidden.
+- ⏭️ **Next:** the **installable app** (v10.26.17), then the shop status banner (v10.27). *The proof-of-payment version was split in 2 because it was too big to build safely in one go.* *Earlier: Your list 27 was split in 3 for the same reason.*
 - *(older)* Proof of payment and the installable app slid back to v10.26.15 and v10.26.16. *Your list 27 was split in 3 because it was too big to build safely in one go.* *We split the old v10.26.6 in 3 because it was too big to build safely in one go.*
 - ⏳ **Waiting on you:** real prices, FAQ answers, reviews, your story, Instagram / Facebook names and photos. The full checklist is in section 2.
 - 🚀 **Last step:** putting the website online, only when you say "I'm happy with everything".
@@ -58,8 +59,8 @@ Your change lists always go **first**, so the versions below may slide back by o
 | ~~v10.26.13~~ | ✅ Done | **Cosier, friendlier WhatsApp message** (old step 3 of 3 of list 25): a warmer greeting and sign-off for the Cart and Custom Order messages, keeping every line Becca needs (your list 25, item 7). | Your own words for the message if you want them (otherwise we write it warm and short) |
 | ~~v10.26.14~~ | ✅ Done | **Every order reaches both of your WhatsApps** (list 25, item 6). A website cannot message two chats by itself: the tap-to-send link opens one chat. Real automatic sending to two numbers needs the **WhatsApp Business Platform** (a Meta business account, a number registered for it, and a small cost per message) plus a small server step in Supabase. We will first set up what is free and close to it, and ask you which way you want to go. | A decision from you: free workaround or Meta WhatsApp Business account |
 | ~~v10.26.15~~ | ✅ Done | **Upload proof of payment** (idea 27, part 2, step 1 of 2): an upload box on the thank-you page (picture or PDF, up to 2 MB), stored privately; a **proof sent** tag and a **View proof** button next to the order in the admin; proof is deleted with the order. Needs the newest `setup.sql`. | Run the newest `setup.sql` once |
-| **v10.26.16** | ⏭️ Next | **A "paid" tick per order** (idea 27, part 2, step 2 of 2): a **Mark paid** button and a green **paid** tag on each order, a paid / not paid filter, **PAID** printed on the slip, and unpaid money shown in Numbers. Needs the newest `setup.sql`. | Nothing new |
-| v10.26.17 | 📅 Planned | **Install on the home screen like an app**, and the menu and cart keep working when the internet is flaky or during load shedding (idea 47). | Nothing new |
+| ~~v10.26.16~~ | ✅ Done | **A "paid" tick per order** (idea 27, part 2, step 2 of 2): a **Mark paid** button and a green **paid** tag on each order, a paid / not paid filter, **PAID** printed on the slip, and unpaid money shown in Numbers. Needs the newest `setup.sql`. | Nothing new |
+| **v10.26.17** | ⏭️ Next | **Install on the home screen like an app**, and the menu and cart keep working when the internet is flaky or during load shedding (idea 47). | Nothing new |
 | v10.27 | 📅 Planned | **Shop status banner** ("on holiday until 3 Jan", pauses orders) + the **old "Publish" wording fixed** in the admin (4 and 45). | Nothing new |
 | v10.28 | 📅 Planned | **Gift vouchers** (you give a code, the customer types it in the cart, it comes off the total) + a **loyalty reward** (for example every 10th order a free cupcake box). | Your voucher and loyalty rules |
 | v10.29 | 📅 Planned | **Deposits / online payment** (Yoco, PayFast or Ozow). A deposit secures the date. On its own because it handles real money. | A payment account that you open |
@@ -75,7 +76,7 @@ Your change lists always go **first**, so the versions below may slide back by o
 Nothing here can be built or guessed by us. Send things whenever you have them (in your next change list is fine).
 
 ### 2a. Your to-do list
-- [ ] **Update the online database** with the newest `supabase/setup.sql` (steps in 2c). Latest change: **v10.26.15** (it adds the private place for proof-of-payment files; run it, then run the Live check again; the proof-upload box shows on the thank-you page whether or not you have run it, but the upload only works after). Before that, **v10.26.2** (an extra lock on the photo storage). Before that, **v10.25** (it switched on reviews and the private place for inspiration photos; without it the review page says "not switched on yet" and custom orders send without the photo). **v10.24** only made the new-order alert instant. If you have not run it since v10.22, run it now too: **v10.23** added the spam guard, which is only half on until you do.
+- [ ] **Update the online database** with the newest `supabase/setup.sql` (steps in 2c). Latest change: **v10.26.16** (it adds the paid tick: without it the Mark paid buttons stay hidden). Before that, **v10.26.15** (it adds the private place for proof-of-payment files; run it, then run the Live check again; the proof-upload box shows on the thank-you page whether or not you have run it, but the upload only works after). Before that, **v10.26.2** (an extra lock on the photo storage). Before that, **v10.25** (it switched on reviews and the private place for inspiration photos; without it the review page says "not switched on yet" and custom orders send without the photo). **v10.24** only made the new-order alert instant. If you have not run it since v10.22, run it now too: **v10.23** added the spam guard, which is only half on until you do.
 - [ ] **Replace the placeholder numbers** in Admin > Ordering & payment > **Order calendar & delivery**: days of notice, orders per day, days off, delivery areas and fees. Today they are samples.
 - [ ] **Real prices and product list.** Today the menu prices are samples (Admin > Menu items).
 - [ ] **Real cake sizes, servings, flavours and prices** for the price guide (Admin > Ordering & payment > **Cake price guide**). Until you change them customers see a "Sample prices" tag.
@@ -155,6 +156,7 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 | 22 | 1 | In the admin, put everything under the right header (no cake stuff under Themes, and so on). Add to the roadmap | DONE (new Ordering & payment tab; the rest of the sorting is in 4b) | v10.26.1 |
 | 22 | 2 | Only 2 changes per version, the rest to the backlog | DONE (only 1 change came; ideas in 4b) | v10.26.1 |
 | - | - | (Owner said "start next v/patch" and "split the next task into 2 steps or 2 versions", so the version marked NEXT (proof of payment + paid tick) was split: v10.26.15 = upload proof of payment (built), v10.26.16 = the paid tick; install-as-app moved to v10.26.17) | DONE (part 1) | v10.26.15 |
+| - | - | (Owner said "start next v/patch" and "split it into 2 versions if it's too big"; the version marked NEXT was the single item "paid tick", so it was built whole as v10.26.16; install-as-app stays v10.26.17) | DONE | v10.26.16 |
 | - | - | (Owner said "start next v/patch" and asked to split v10.26 into 2 or 3 smaller versions, so it became v10.26 (How to pay box, built), v10.26.1 (proof of payment) and v10.26.2 (install as an app)) | DONE (part 1) | v10.26 |
 | - | - | (Owner said "start next v/patch" and asked for the next 5 versions at 2 changes each, so the version marked NEXT was built: review link (idea 1) + inspiration photo upload (idea 13); next five in the plan, section 1) | DONE | v10.25 |
 | - | - | (Owner said "start next v/patch" with no change list, so the version marked NEXT was built: the bake sheet (idea 36) and the new-order alert (idea 35)) | DONE | v10.24 |
@@ -355,6 +357,12 @@ Every version leaves a few "good idea, but not now" notes. They used to be sprea
 - Let the customer **drop a pin / drag the marker** to fix the spot (needs a map library, so it is bigger than a free picture)
 - Save the map spot with the order so the admin can open it in one tap (Google Maps / Waze link in the slip)
 - A **delivery-distance fee** worked out from the map instead of picking an area by hand
+
+**From v10.26.16 (paid tick):**
+- **Tick paid by itself** when a proof is uploaded, and ask Becca to confirm it
+- A **deposit** amount and a "balance still to pay" per order (fits the deposits version v10.29)
+- Show **paid** to a signed-in customer under My account
+- A **who owes me money** list with a one-tap WhatsApp reminder
 
 **From v10.26.15 (proof of payment):**
 - A **new-proof alert** in the admin (like the new-order chime) when a customer uploads proof for an order you already have open
@@ -585,7 +593,7 @@ Free Supabase projects pause after about 7 days with nobody using them. The proj
 
 **What Becca does in the admin:** Orders > the new order is **pending** > **Confirm** > the green **WhatsApp** button (the message is typed for her) > later **Mark ready** and **Mark done**. Both Becca and Keanen can use the admin.
 
-**Today's limits (so nothing surprises you):** payment is by hand (EFT, SnapScan or Capitec Pay), customers can upload a proof of payment on the thank-you page (v10.26.15; you open it with **View proof** in the admin) but there is no **paid** tick yet (planned v10.26.16), and the prices, notice days and delivery fees are samples until Becca replaces them (checklist 2a).
+**Today's limits (so nothing surprises you):** payment is by hand (EFT, SnapScan or Capitec Pay), customers can upload a proof of payment on the thank-you page (v10.26.15; you open it with **View proof** in the admin) and you tick an order as paid yourself with **Mark paid** (v10.26.16; nothing is checked against your bank automatically), and the prices, notice days and delivery fees are samples until Becca replaces them (checklist 2a).
 
 ### 5h. Delivery couriers and fees: what we found (v10.26.10, November 2026)
 *You asked us to work out delivery fees from the bakery (Gerhardsville, western side of Centurion) and to suggest the best delivery company. This is the research. **The fees themselves go on the website in v10.26.11.** Your street address is deliberately not written in these files; it only stays in your head and ours.*
