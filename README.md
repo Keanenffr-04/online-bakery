@@ -1,7 +1,8 @@
 # online-bakery 🐇🍰
 Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
 
-**Current version:** v10.26.14. The latest three versions:
+**Current version:** v10.26.15. The latest three versions:
+- **v10.26.15:** (the first half of "proof of payment + paid tick", split in 2) customers can **upload a proof of payment** on the thank-you page (screenshot, photo or PDF up to 2 MB, under the How to pay box). It is stored privately (`proofs` bucket, `supabase/setup.sql` section 14); the admin shows a **proof sent** tag and a **View proof** button on the order, and the proof is deleted with the order. The Live check tests the new storage. **Run the newest `setup.sql` once.** The **paid** tick comes next (v10.26.16).
 - **v10.26.14:** (your list 25, item 6, the free way) **every order can reach both your WhatsApps**: after a customer sends an order to Becca, the thank-you page offers a green **"Send a copy to Keanen too"** button that opens WhatsApp to the second number with the whole order already typed. One extra tap for the customer, no cost. The second number is `backupWhatsapp` in `config/business.json`. Nothing to update in the database.
 - **v10.26.13:** (your list 25, item 7) a **cosier, friendlier WhatsApp message** from the Cart and the Custom Order: a warm hello with the customer's name, a warm thank-you at the end, one or two emoji. Every line you need is still in it. Nothing to update in the database.
 - **v10.26.12:** (your list 27, item 1, step 3 of 3) the **delivery areas are grouped by region** on the Cart and Custom Order lists (Johannesburg and Sandton, Tshwane, Ekurhuleni, West Rand, Sedibeng), and in the admin each region has a **"Set all to R..."** box to change a whole region's fee at once. Nothing to update in the database.
@@ -95,6 +96,7 @@ The full checklist is in [`roadmap/ROADMAP.md`, section 2](roadmap/ROADMAP.md#ne
 | WhatsApp did not open after an order | Your browser may have blocked the pop-up. The thank-you page has an **Open WhatsApp** button. The order is saved either way. |
 | An item I marked "Sold out today" is back | That is on purpose: it switches itself off at midnight. |
 | The moving decorations are too much | Admin > Theme & layout > Theme: untick **Moving decorations**. Customers can also press the Pause button. |
+| The live check says **"Strangers CAN look inside or open files in the proof-of-payment storage"** | Run the newest `setup.sql` (roadmap section 2c), then run the live check again. |
 | The live check says **"Strangers CAN look inside the photo storage"** | Run the newest `setup.sql` (roadmap section 2c), then run the live check again. If it still says so, send us a screenshot and switch the photo upload off by not using it until we fix it. |
 | The live check shows a yellow or red line | The line says what to do. Most often it is "run the newest `setup.sql`" (roadmap section 2c). Red means stop and send us a screenshot. |
 | I did not hear the new-order chime | Browsers only allow sound after you have touched the page once, so tap anywhere after reloading. Then press Orders > New-order alert > **Test the chime** and check the volume. The pop-up always shows. The alert cannot reach a closed phone yet (that comes with the install-as-an-app step). |

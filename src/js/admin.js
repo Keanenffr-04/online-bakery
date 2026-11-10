@@ -34,6 +34,7 @@
     state.reviews = rv.data || []; state.revErr = !!rv.error;   // v10.25: reviews waiting for approval (setup.sql section 12)
     state.log = lg.data || []; state.logErr = !!lg.error;   // v10.19.1: change log (table from setup.sql section 8)
     state.orders = o.data || []; state.admins = a.data || []; state.known = state.known || new Set(); state.orders.forEach(x => state.known.add(x.id));   // v10.24: loaded = seen
+    try { const pf = await sb.storage.from("proofs").list("", { limit: 1000 }); state.proofs = new Set((pf.data || []).map(x => x.name)); } catch (e) { state.proofs = new Set(); }   // v10.26.15: one folder per order that has a proof of payment
     state.profErr = !!pr.error; state.profiles = pr.data || []; state.profile = state.profiles.find(x => x.user_id === state.user.id) || null;   // profErr = profiles table missing: do not block the admin if (o.error || a.error) state.note = "Could not load from the online database: " + ((o.error || a.error).message || "unknown error");
   }
   // First time ever: copy the menu and settings from the project files into the database so nothing is lost.
@@ -349,10 +350,11 @@
     <p><button class="btn btn--sm" type="submit">Save order</button></p></form></div>
     <div class="adm-card"><div class="adm-top"><h2>${list.length} ${f === "all" ? "" : f} order${list.length === 1 ? "" : "s"}</h2>
     <select data-act="filter" style="width:auto" aria-label="Show orders">${["all", ...ST].map(s => `<option value="${s}" ${s === f ? "selected" : ""}>${s} (${cnt(s)})</option>`).join("")}</select></div>
-    <ul class="adm-list">${list.map(x => `<li><div><strong>${esc(x.name)}</strong> <span class="tag tag--${x.status}">${x.status}</span><br><span class="muted">${esc(x.items)}${x.date ? " &middot; for " + esc(x.date) : ""}${x.source && x.source !== "admin" ? " &middot; from the website (" + (x.source === "cart" ? "cart" : "custom order") + ")" : ""}${x.details && x.details.delivery && x.details.delivery.area ? " &middot; delivery to " + esc(x.details.delivery.area) + (+x.details.delivery.fee ? " (R " + esc(x.details.delivery.fee) + ")" : "") : ""}${x.details && x.details.delivery && x.details.delivery.address ? " &middot; address: " + esc(x.details.delivery.address) : ""}${x.total ? " &middot; R " + esc(x.total) : ""}<br>Placed ${esc(placed(x))}</span>${lastChange(x.id)}</div>
+    <ul class="adm-list">${list.map(x => `<li><div><strong>${esc(x.name)}</strong> <span class="tag tag--${x.status}">${x.status}</span>${state.proofs && state.proofs.has(x.id) ? ' <span class="tag tag--ready" title="The customer sent a proof of payment">proof sent</span>' : ""}<br><span class="muted">${esc(x.items)}${x.date ? " &middot; for " + esc(x.date) : ""}${x.source && x.source !== "admin" ? " &middot; from the website (" + (x.source === "cart" ? "cart" : "custom order") + ")" : ""}${x.details && x.details.delivery && x.details.delivery.area ? " &middot; delivery to " + esc(x.details.delivery.area) + (+x.details.delivery.fee ? " (R " + esc(x.details.delivery.fee) + ")" : "") : ""}${x.details && x.details.delivery && x.details.delivery.address ? " &middot; address: " + esc(x.details.delivery.address) : ""}${x.total ? " &middot; R " + esc(x.total) : ""}<br>Placed ${esc(placed(x))}</span>${lastChange(x.id)}</div>
     <div class="adm-actions">${NEXT[x.status] ? `<button class="btn btn--sm" data-act="onext" data-id="${x.id}" data-v="${NEXT[x.status][0]}">${NEXT[x.status][1]}</button>` : ""}<select data-act="ostatus" data-id="${x.id}" style="width:auto" aria-label="Change status">${ST.map(s => `<option ${s === x.status ? "selected" : ""}>${s}</option>`).join("")}</select>
     <button class="btn btn--sm btn--ghost" data-act="oslip" data-id="${x.id}">Print slip</button>
     ${x.details && x.details.photo ? `<button class="btn btn--sm btn--ghost" data-act="ophoto" data-v="${esc(x.details.photo)}" title="Opens the inspiration photo the customer attached">View photo</button>` : ""}
+    ${state.proofs && state.proofs.has(x.id) ? `<button class="btn btn--sm btn--ghost" data-act="oproof" data-id="${x.id}" title="Opens the proof of payment the customer uploaded">View proof</button>` : ""}
     ${x.phone ? `<a class="btn btn--sm btn--whatsapp" target="_blank" rel="noopener" title="Opens WhatsApp with the message filled in. You can change it before sending." href="${esc(waLink(x))}">${waLabel[x.status] || "WhatsApp"}</a>` : ""}
     <button class="btn btn--sm btn--ghost" data-act="odel" data-id="${x.id}">Delete</button></div></li>`).join("") || "<li>No orders here.</li>"}</ul></div></div>
     <p class="muted">Orders sent from the Cart or the Custom Order form are saved here automatically (the WhatsApp message still goes to you too). You can also add one by hand. They are stored online, so you see the same list on every device.</p>${logBox()}`;
@@ -576,7 +578,7 @@
 
   // v10.23: "Live check" = the real-world test (roadmap idea 46) as a button. It talks to the REAL online database, so it can only run from
   // the live site or from a computer with internet (not from a double-clicked file). Everything it adds is removed again.
-  const SETUP_VERSION = "10.26.2", TEST_NAME = "TEST ORDER - safe to delete";
+  const SETUP_VERSION = "10.26.15", TEST_NAME = "TEST ORDER - safe to delete";
   async function liveCheck() {
     const c = (state.data.biz || {}).supabase, R = [], add = (s, t, d) => R.push({ s, t, d: d || "" });
     if (!c || !c.url || !c.key) { add("bad", "The online database is not set up", "config/business.json has no Supabase address."); return R; }
@@ -632,6 +634,22 @@
         add(seen || opened ? "bad" : "ok", seen || opened ? "Strangers CAN " + (seen ? "look inside" : "open pictures in") + " the photo storage" : "Strangers cannot look inside or open the photo storage", seen || opened ? "Run the newest setup.sql now (roadmap 2c) and run this check again." : "Tried with a test picture, which is removed again straight away.");
         const rm = await sb.storage.from("inspiration").remove([nm]);
         if (rm.error) add("warn", "A tiny test picture was left in the photo storage", "Open supabase.com > Storage > inspiration and delete the file called " + nm + ".");
+      }
+      // v10.26.15: the proof-of-payment storage gets the same stranger test (a payment slip holds bank details, so it matters most).
+      const pb = await sb.storage.from("proofs").list("", { limit: 1 });
+      if (pb.error) add("warn", "The proof-of-payment storage is not set up yet", "Run the newest setup.sql (roadmap 2c). Orders still work; customers just cannot upload proof.");
+      else {
+        const pn = nm.replace(".jpg", ""), pp = pn + "/" + pn + ".jpg";
+        const pu = await fetch(c.url + "/storage/v1/object/proofs/" + pp, { method: "POST", headers: { ...H, "Content-Type": "image/jpeg" }, body: new Blob([pic], { type: "image/jpeg" }) }).catch(() => ({ ok: false }));
+        if (!pu.ok) add("warn", "The proof-of-payment lock could not be tried", "A test file could not be added. Run the newest setup.sql (roadmap 2c) and run this check again.");
+        else {
+          let seen = false, opened = false;
+          try { const g = await raw("/storage/v1/object/list/proofs", "POST", { prefix: pn, limit: 100 }); if (g.ok) { const j = await g.json(); seen = Array.isArray(j) && j.length > 0; } } catch (e) { /* counts as not seen */ }
+          for (const path of ["/storage/v1/object/proofs/", "/storage/v1/object/public/proofs/"]) { try { const o = await fetch(c.url + path + pp, { headers: H }); if (o.ok) opened = true; } catch (e) { /* counts as not opened */ } }
+          add(seen || opened ? "bad" : "ok", seen || opened ? "Strangers CAN " + (seen ? "look inside" : "open files in") + " the proof-of-payment storage" : "Strangers cannot look inside or open the proof-of-payment storage", seen || opened ? "Run the newest setup.sql now (roadmap 2c) and run this check again." : "Tried with a test file, which is removed again straight away.");
+          const rm = await sb.storage.from("proofs").remove([pp]);
+          if (rm.error) add("warn", "A tiny test file was left in the proof storage", "Open supabase.com > Storage > proofs and delete the folder called " + pn + ".");
+        }
       }
     });
 
@@ -847,7 +865,16 @@
     if (a === "rv-del") { if (!confirm("Delete this review?")) return; state.open.orev = true; const r = await sb.from("review_submissions").delete().eq("id", id); await loadAdminData(); return go("orders", r.error ? "Could not delete: " + r.error.message : "Review deleted."); }
     if (a === "oslip") { const o = state.orders.find(x => x.id === id); if (!o) return; const w = window.open("", "_blank"); if (!w) return go("orders", "Your browser blocked the slip window. Allow pop-ups for this page and try again."); w.document.write(slip(o)); w.document.close(); w.focus(); setTimeout(() => w.print(), 300); return; }
     if (a === "dl-num") { const k = v || "week"; return csvOrders(state.orders.filter(o => inPeriod(o, k)), "orders-" + k + "-" + SB.today() + ".csv"); }
-    if (a === "odel") { if (!confirm("Delete this order?")) return; const o0 = state.orders.find(x => x.id === id) || {}, r = await sb.from("orders").delete().eq("id", id); if (!r.error) { await logOrder(o0, "order deleted"); if (o0.details && o0.details.photo) { try { await sb.storage.from("inspiration").remove([o0.details.photo]); } catch (e) { /* photo already gone */ } } } await loadAdminData(); return go("orders", r.error ? "Could not delete: " + r.error.message : ""); }
+    if (a === "oproof") {   // v10.26.15
+      const w = window.open("about:blank", "_blank"), st = sb.storage.from("proofs"), l = await st.list(id, { limit: 20, sortBy: { column: "created_at", order: "desc" } });
+      const names = ((l.data || []).map(x => x.name).filter(n => /\.(jpg|pdf)$/.test(n))).map(n => id + "/" + n), r = names.length ? await st.createSignedUrls(names, 300) : null;
+      if (l.error || !r || r.error || !r.data || !r.data.length) { if (w) w.close(); return go("orders", "Could not open the proof: " + ((l.error && l.error.message) || (r && r.error && r.error.message) || "it may have been deleted.")); }
+      const o1 = state.orders.find(x => x.id === id) || {};
+      if (!w) return go("orders", "Your browser blocked the proof window. Allow pop-ups for this page and try again.");
+      w.document.write(`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Proof of payment</title><body style="font-family:system-ui,sans-serif;margin:1rem;max-width:720px"><h1 style="font-size:1.1rem">Proof of payment: ${esc(o1.name || "order")}</h1><p style="color:#555">Newest first. These links stop working after 5 minutes; press View proof again for fresh ones.</p>` + r.data.filter(x => x.signedUrl).map(x => /\.pdf/.test(x.path || "") ? `<p><a href="${esc(x.signedUrl)}" target="_blank" rel="noopener">Open the PDF</a></p>` : `<img src="${esc(x.signedUrl)}" alt="Proof of payment" style="max-width:100%;display:block;margin:0 0 1rem;border:1px solid #ccc">`).join("")); w.document.close(); return;
+    }
+    if (a === "odel") { if (!confirm("Delete this order?")) return; const o0 = state.orders.find(x => x.id === id) || {}, r = await sb.from("orders").delete().eq("id", id); if (!r.error) { await logOrder(o0, "order deleted"); if (o0.details && o0.details.photo) { try { await sb.storage.from("inspiration").remove([o0.details.photo]); } catch (e) { /* photo already gone */ } }
+      try { const pl = await sb.storage.from("proofs").list(id, { limit: 100 }); const pn = (pl.data || []).map(x => id + "/" + x.name); if (pn.length) await sb.storage.from("proofs").remove(pn); } catch (e) { /* no proof, or already gone (v10.26.15) */ } } await loadAdminData(); return go("orders", r.error ? "Could not delete: " + r.error.message : ""); }
     if (a === "cup" || a === "cdown") { const L = state.data.categories, i = L.findIndex(c => c.id === id), j = a === "cup" ? i - 1 : i + 1; if (i < 0 || j < 0 || j >= L.length) return go("menu"); [L[i], L[j]] = [L[j], L[i]]; await saveProducts(); return go("menu", L[j].name + " moved " + (a === "cup" ? "up." : "down.")); }
     if (a === "chide") { const c = state.data.categories.find(x => x.id === id); if (c.hidden) delete c.hidden; else c.hidden = true; await saveProducts(); return go("menu", c.name + (c.hidden ? " is hidden from customers." : " is showing again.")); }
     if (a === "cdel") { const c = state.data.categories.find(x => x.id === id); if (state.data.products.some(p => p.category === id)) return go("menu", "Move or delete the items in " + c.name + " first."); if (confirm("Delete the section " + c.name + "?")) { state.data.categories = state.data.categories.filter(x => x.id !== id); await saveProducts(); } return go("menu"); }

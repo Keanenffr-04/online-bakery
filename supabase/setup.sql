@@ -279,8 +279,30 @@ exception when others then
   raise notice 'The extra photo lock could not be added here (%). Run this script again, or tell the person who builds the site.', sqlerrm;
 end $$;
 
+-- 14. (v10.26.15) Proof of payment. A PRIVATE bucket called "proofs" (max 2 MB each, a picture or a PDF). A customer can ADD a file only inside a folder named
+-- after their own order's id (a random code only they know), with a random file name. Nobody can list or open them except admins; the same restrictive
+-- lock as the photos (section 13) sits on top, so a leftover "anyone can read" rule cannot show a payment slip (it holds bank details). Re-runnable; nothing is deleted.
+do $$
+begin
+  insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+  values ('proofs', 'proofs', false, 2097152, array['image/jpeg', 'application/pdf'])
+  on conflict (id) do update set public = false, file_size_limit = 2097152, allowed_mime_types = array['image/jpeg', 'application/pdf'];
+  drop policy if exists "customers add proofs" on storage.objects;
+  create policy "customers add proofs" on storage.objects for insert to anon, authenticated
+    with check (bucket_id = 'proofs' and name ~ '^[0-9a-f-]{36}/[0-9a-f-]{36}\.(jpg|pdf)$');
+  drop policy if exists "admins read proofs" on storage.objects;
+  create policy "admins read proofs" on storage.objects for select using (bucket_id = 'proofs' and public.is_admin());
+  drop policy if exists "admins delete proofs" on storage.objects;
+  create policy "admins delete proofs" on storage.objects for delete using (bucket_id = 'proofs' and public.is_admin());
+  drop policy if exists "proofs are admin only to read" on storage.objects;
+  create policy "proofs are admin only to read" on storage.objects as restrictive for select
+    using (bucket_id <> 'proofs' or public.is_admin());
+exception when others then
+  raise notice 'The proof-of-payment storage could not be set up here (%). Orders still work; customers just cannot upload proof.', sqlerrm;
+end $$;
+
 -- The admin's "Live check" asks this to see whether the database has the newest setup.sql.
 create or replace function public.setup_version() returns text
-language sql immutable as $$ select '10.26.2'::text $$;
+language sql immutable as $$ select '10.26.15'::text $$;
 revoke all on function public.setup_version() from public;
 grant execute on function public.setup_version() to anon, authenticated;

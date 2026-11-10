@@ -331,6 +331,25 @@
         } catch (e) { return null; }
       }
     },
+    // v10.26.15: a random id (the order's id is made in the browser so the thank-you page can tie a proof of payment to it).
+    uuid() { return crypto.randomUUID ? crypto.randomUUID() : "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, ch => { const r = Math.random() * 16 | 0; return (ch === "x" ? r : (r & 3 | 8)).toString(16); }); },
+    // v10.26.15: proof of payment. A picture is made smaller first (like the inspiration photo); a PDF goes up as it is (max 2 MB). It lands in the private "proofs" bucket
+    // inside a folder named after the order's id. Returns { ok: true } or { ok: false, why } with a plain-language reason. Never throws.
+    proof: {
+      async upload(file, orderId) {
+        try {
+          const c = (SB._biz || {}).supabase; if (!c || !c.url || !c.key || window.top !== window || location.protocol === "file:") return { ok: false, why: "Uploading only works on the live website." };
+          if (!file || !/^[0-9a-f-]{36}$/.test(orderId || "")) return { ok: false, why: "Please choose a file first." };
+          if (SB.spam.bot()) return { ok: false, why: "Please try again in a moment." };
+          const pdf = file.type === "application/pdf" || /\.pdf$/i.test(file.name || "");
+          let blob = file; if (!pdf) { blob = await SB.photo.shrink(file); if (!blob) return { ok: false, why: "That file is not a picture or a PDF. Please choose a screenshot, photo or PDF." }; }
+          else if (file.size > 2 * 1024 * 1024) return { ok: false, why: "That PDF is bigger than 2 MB. Please send a screenshot or a photo instead." };
+          const ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), 20000);
+          const r = await fetch(c.url + "/storage/v1/object/proofs/" + orderId + "/" + SB.uuid() + (pdf ? ".pdf" : ".jpg"), { method: "POST", headers: { apikey: c.key, Authorization: "Bearer " + c.key, "Content-Type": pdf ? "application/pdf" : "image/jpeg" }, body: blob, signal: ctl.signal }); clearTimeout(tm);
+          return r.ok ? { ok: true } : { ok: false, why: "It could not be sent just now. Please try again, or send the proof to Becca on WhatsApp." };
+        } catch (e) { return { ok: false, why: "It could not be sent just now. Please try again, or send the proof to Becca on WhatsApp." }; }
+      }
+    },
     load() {
       return SB._p || (SB._p = (async () => {
         // Opened from disk (file://)? Browsers block fetch() there, so read the copy in js/offline-data.js instead.
