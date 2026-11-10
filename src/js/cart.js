@@ -33,7 +33,7 @@
     // The one WhatsApp message. Plain text so it reads well in the chat.
     message(lines, total, biz, meta) {
       const owner = (biz.owner || "").split(" ")[0] || "there", out = [];
-      out.push(`Hi ${owner}! I'd like to order from ${biz.name || "The Sweetest Bakery"}:`, "");
+      out.push(`Hi ${owner}! \u{1F60A} ${meta.name ? "It's " + meta.name + ". " : ""}I'd love to order from ${biz.name || "The Sweetest Bakery"}:`, "");   // v10.26.13: warmer
       lines.forEach(l => out.push(`${l.q} x ${l.p.name} (${money(price(l.p))} each) = ${money(l.sub)}${l.soldOut ? " [marked sold out today, please confirm]" : ""}`));
       out.push("", `Total: ${money(total)}`);
       if (meta.area) out.push(`Delivery to ${meta.area}: ${meta.fee ? money(meta.fee) : "free"}`, `Total with delivery: ${money(total + (meta.fee || 0))}`);   // v10.21
@@ -44,7 +44,7 @@
       if (meta.method && meta.method !== "Not sure yet") out.push(`Collection or delivery: ${meta.method}`);
       if (meta.addr) out.push(`Delivery address: ${meta.addr}`);   // v10.26.6
       if (meta.notes) out.push(`Notes: ${meta.notes}`);
-      out.push("", "Please confirm availability and the final price. Thank you!");
+      out.push("", "Please let me know if all of this is available and what the final price will be. Thank you so much, I can't wait! \u{1F9C1}");   // v10.26.13
       return out.join("\n");
     },
     // Keeps the header badge in step with the cart (also when it changes in another tab).

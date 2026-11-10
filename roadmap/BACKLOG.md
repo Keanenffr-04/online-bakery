@@ -2,7 +2,7 @@
 
 *Written for Becca. This page is the list of **finished** work. What is still to do is in [`ROADMAP.md`](ROADMAP.md). New entries are added at the bottom and nothing is ever deleted.*
 
-**Latest version:** v10.26.12
+**Latest version:** v10.26.13
 
 ## Contents
 1. [What the website can do today](#today)
@@ -98,6 +98,7 @@ Oldest first. Click a version to jump to its detailed record. A version like **v
 | [v10.23](#v10-23) | 2026-11-08 | **Live check** button in the admin (tests the real database), **spam protection** on orders and sign-up, and a **keep-alive** so the free database never pauses. Run the newest `setup.sql` once. |
 | [v10.24](#v10-24) | 2026-11-08 | **Bake sheet** (what to make for a day, added up and printable, allergies in red) and a **new-order alert** (chime + pop-up while the admin is open). Run the newest `setup.sql` once (optional, makes the alert instant). |
 | [v10.25](#v10-25) | 2026-11-09 | **Review link** (a short review page; you approve each review before it shows; the thank-you WhatsApp message carries the link) and **inspiration photo upload** on Custom Orders (stored privately, you open it next to the order). Run the newest `setup.sql` once (section 12). |
+| [v10.26.13](#v10-26-13) | 2026-11-10 | **Cosier WhatsApp message** (your list 25, item 7): a warm greeting with the customer's name and a warm sign-off on the Cart and Custom Order messages, with every needed line kept. Nothing to update in the database. |
 | [v10.26.12](#v10-26-12) | 2026-11-10 | **Areas grouped by region** (your list 27, item 1, step 3 of 3): grouped lists for customers and a one-fee-per-region box in the admin. Nothing to update in the database. |
 | [v10.26.11](#v10-26-11) | 2026-11-10 | **Delivery fees from the bakery for all 118 areas** (your list 29, item 2, step 2 of 2), a **root `index.html`**, and a **phone zip + guide 5i** so the website can be shown on a phone. Nothing to update in the database. |
 | [v10.26.10](#v10-26-10) | 2026-11-10 | **"View site as a customer"** tile in the local preview (your list 29, item 1) and the **delivery courier research** for the Centurion bakery with proposed fee bands (item 2, step 1 of 2; the fees go on the site in v10.26.11). Nothing to update in the database. |
@@ -601,6 +602,17 @@ Owner list 23 had one change: the Live check said "Strangers CAN look inside the
 Files: `src/js/admin.js`, `supabase/setup.sql`, `README.md`, `roadmap/*`, `docs/AI_HANDOFF.md`, `VERSION`.
 Tests (headless Chromium, mock Supabase + mocked storage answers): locked storage = green and the test file removed; listing leaks = red; the object opens = red; the test upload refused = yellow, nothing removed; no page errors. **The new SQL was NOT run on a real Postgres** (none in the sandbox): the owner's Live check is the real test. Honest note: this is probably a false alarm in the old check, but the extra lock makes the answer safe either way.
 Pushed to the backlog (also in `ROADMAP.md` 4b): a weekly automatic Live check with history; auto-removal of leftover test pictures; the same private-storage tick for proof of payment; deleting customer photos after a set time (with a Privacy page line).
+
+<a id="v10-26-13"></a>
+## v10.26.13: Cosier WhatsApp message (done, 2026-11-10)
+Owner said "start next v/patch". The version marked NEXT was built. The owner had not sent their own wording, so it was written warm and short, as the plan said.
+1. **Cart message** (`SBCart.message()` in `cart.js`). Opening: `Hi Becca! 😊 It's <name>. I'd love to order from The Sweetest Bakery:` (the "It's <name>." part is left out when the name box is empty). Closing: `Please let me know if all of this is available and what the final price will be. Thank you so much, I can't wait! 🧁`. Everything between is unchanged: item lines, `Total`, the delivery line and `Total with delivery`, then Name, Phone, Date needed, Collection or delivery, Delivery address, Notes.
+2. **Custom Order message** (the `L` list in `custom-order.js`). Opening: `Hi Becca! 😊 It's <name>. I'd love to ask about a custom order from The Sweetest Bakery:` (the name is required on that form). Closing: `Please let me know if you can make it and what it would cost. Thank you so much, I'm so excited! 🎂`. All the detail lines (Name, Phone, Occasion, Date, What, Servings, method, area with "fee from R", address, flavours, price guide, allergies, notes, photo line) are unchanged.
+3. The emoji are written as `\u{1F60A}`, `\u{1F9C1}` and `\u{1F382}` escapes in the scripts (safe in any editor) and go through `encodeURIComponent` like the rest. Becca's own reply from the admin (`waText` in `admin.js`) was **not** changed.
+Files: `src/js/cart.js`, `src/js/custom-order.js`, `README.md`, `roadmap/*`, `docs/AI_HANDOFF.md`, `VERSION`. **No `setup.sql` change**; no data files changed.
+Tests (headless Chromium, `file://`, **320 px**): the Cart link was decoded and read: warm greeting with the name, every line present (items, total, delivery fee, total with delivery, name, phone, date, method, address, notes), warm sign-off, the emoji encoded correctly in the link (`%F0%9F%98%8A`, `%F0%9F%A7%81`), and with no name the greeting has no stray "It's"; the Custom Order was filled in and sent with the browser's new-tab call captured: warm greeting with the name, every line present, warm sign-off; no page errors; all pages load.
+**Honest limits:** WhatsApp itself was not opened (no WhatsApp in the sandbox), so how the emoji look on the owner's phone is not seen here; they are standard emoji that WhatsApp shows everywhere. The wording is ours, not the owner's.
+Pushed to the backlog (also in `ROADMAP.md` 4b): the owner's own wording, an Afrikaans / Zulu message, a warmer reply message from the admin.
 
 <a id="v10-26-12"></a>
 ## v10.26.12: Areas grouped by region (done, 2026-11-10)

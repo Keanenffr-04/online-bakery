@@ -62,7 +62,7 @@ SB.load().then(async ({ biz, settings }) => {
 
     const ph = SB.phoneRead("co-phone"); if (ph.error) return show(ph.error, document.getElementById("co-phone"));
     const owner = (biz.owner || "").split(" ")[0] || "there", L = [];
-    L.push(`Hi ${owner}! I'd like to ask about a custom order from ${biz.name || "The Sweetest Bakery"}:`, "");
+    L.push(`Hi ${owner}! \u{1F60A} It's ${v("name")}. I'd love to ask about a custom order from ${biz.name || "The Sweetest Bakery"}:`, "");   // v10.26.13: warmer
     L.push(`Name: ${v("name")}`, ...(ph.display ? [`Phone: ${ph.display}`] : []), `Occasion: ${v("occasion")}`, `Date needed: ${nice(v("date"))}`, `What: ${v("what")}`, `Servings: ${s}`);
     if (v("method") !== "Not sure yet") L.push(`Collection or delivery: ${v("method")}`);
     const fee = area ? SB.deliveryFee(dl, area, 0) : null; if (area) L.push(`Delivery area: ${area}${fee ? " (fee from R " + Math.round(fee.fee) + ")" : ""}`);
@@ -72,7 +72,7 @@ SB.load().then(async ({ biz, settings }) => {
     if (v("diet")) L.push(`Allergies or dietary needs: ${v("diet")}`);
     if (v("notes")) L.push(`Notes: ${v("notes")}`);
     const pf = f.elements.photo && f.elements.photo.files[0]; if (pf) L.push("Inspiration photo: I have one and will send it here too.");   // v10.25
-    L.push("", "Please let me know if you can do it and what it would cost. Thank you!");
+    L.push("", "Please let me know if you can make it and what it would cost. Thank you so much, I'm so excited! \u{1F382}");   // v10.26.13
     show("");
     SB.me.commit("co-remember", { name: v("name"), phone: document.getElementById("co-phone").value.trim(), method: v("method"), diet: v("diet") });
     const fg = f.querySelector("[data-forget]"); if (fg) fg.hidden = !SB.me.has();
