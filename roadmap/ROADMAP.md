@@ -1,6 +1,6 @@
 # 🗺️ Roadmap: what's next and what we need from you
 
-**Where we are:** v10.26.10 &nbsp;|&nbsp; **Next up:** v10.26.11 (delivery fees worked out from the bakery), then v10.26.12 (areas grouped by region) &nbsp;|&nbsp; **Rule:** 2 things per version.
+**Where we are:** v10.26.11 &nbsp;|&nbsp; **Next up:** v10.26.12 (areas grouped by region), then v10.26.13 (cosier WhatsApp message) &nbsp;|&nbsp; **Rule:** 2 things per version.
 
 *This page is written for Becca. No website or coding knowledge needed. Words you might not know are explained in the "Words explained" list in the [README](../README.md). Finished work is in [`BACKLOG.md`](BACKLOG.md).*
 
@@ -20,7 +20,8 @@
 - ✅ **New in v10.26.8:** (your list 27, item 2, **step 1 of 3**) the delivery **map now shows by itself** under the address box a moment after the customer stops typing, with no button. A small **Try again** button only appears if the free map service did not answer. No database update needed.
 - ✅ **New in v10.26.9:** (your list 27, item 1, **step 2 of 3**) the delivery-area list now holds **118 areas of Gauteng** (Johannesburg, Sandton, Centurion, Pretoria, Boksburg, Krugersdorp, Vereeniging and so on) instead of "Close to the bakery / Further out". **The fees are samples** (R 80 Johannesburg and Tshwane, R 90 East Rand, R 110 West Rand, R 130 Vaal) until you set yours. It reaches the live website by itself while you have not edited the delivery numbers; if you already did, the admin has an **Add the missing Gauteng areas** button. No database update needed.
 - ✅ **New in v10.26.10:** (your list 29) a **"View site as a customer"** tile next to Theme preview in the local preview: it opens the site exactly as a visitor sees it (light, none of your own unsaved changes) with a small **Customer view / Back to preview** pill. And the **delivery courier research** for the bakery in Centurion: what each company charges, which we suggest, and the fee bands we propose (guide **5h**). No database update needed.
-- ⏭️ **Next:** v10.26.11 (the **delivery fees worked out from the bakery** for all 118 areas, once you say yes to the bands in guide 5h), then v10.26.12 (the areas **grouped by region** with one fee per region), then v10.26.13 (a **cosier WhatsApp message**), then v10.26.14 (every order reaching **both** your WhatsApps; needs a decision from you, see the plan). Proof of payment and the installable app slid back to v10.26.15 and v10.26.16. *Your list 27 was split in 3 because it was too big to build safely in one go.* *We split the old v10.26.6 in 3 because it was too big to build safely in one go.*
+- ✅ **New in v10.26.11:** (your list 29, item 2, **step 2 of 2**) **delivery fees worked out from the bakery** (Gerhardsville, western Centurion) for all **118 areas**, from the bands in guide 5h: R90 up to 10 km, R130 to 20 km, R180 to 35 km, R240 to 50 km, R310 to 70 km, R420 to 100 km, and beyond 100 km the same R420 plus R6 for every extra km (so Vereeniging is about R550, Vanderbijlpark about R600). Examples: Centurion R130, Pretoria CBD R180, Sandton R240, Johannesburg CBD R310. **These are estimates, not courier quotes**; they still show the draft warning until you check them and Save. They reach the live site by themselves while you have not edited the delivery box. Also a **root `index.html`** so any host opens the site from the web address alone, and a ready **phone zip** with a plain guide to show the site on a phone (**5i**). No database update needed.
+- ⏭️ **Next:** v10.26.12 (the areas **grouped by region** with one fee per region), then v10.26.13 (a **cosier WhatsApp message**), then v10.26.14 (every order reaching **both** your WhatsApps; needs a decision from you, see the plan). Proof of payment and the installable app slid back to v10.26.15 and v10.26.16. *Your list 27 was split in 3 because it was too big to build safely in one go.* *We split the old v10.26.6 in 3 because it was too big to build safely in one go.*
 - ⏳ **Waiting on you:** real prices, FAQ answers, reviews, your story, Instagram / Facebook names and photos. The full checklist is in section 2.
 - 🚀 **Last step:** putting the website online, only when you say "I'm happy with everything".
 
@@ -47,8 +48,8 @@ Your change lists always go **first**, so the versions below may slide back by o
 | ~~v10.26.8~~ | ✅ Done | **Map shows by itself** (list 27, item 2, step 1 of 3): no button; the free map appears under the address box a moment after the customer stops typing. | Nothing |
 | ~~v10.26.9~~ | ✅ Done | **All the Gauteng delivery areas** (list 27, item 1, step 2 of 3): the delivery-area list holds the areas of Gauteng (Johannesburg, Sandton, Centurion, Pretoria and so on) with sample fees, instead of "Close to the bakery / Further out". Reaches the live site too, and you edit the fees in the admin. | Your real fee per area (samples until you set them) |
 | ~~v10.26.10~~ | ✅ Done | **"View site as a customer" tile** in the local preview (list 29, item 1) + **delivery courier research and proposed fee bands** (list 29, item 2, step 1 of 2: guide 5h). | A yes or a change to the fee bands in 5h; two or three real quotes from Picup or Uber Connect when you can |
-| **v10.26.11** | ⏭️ Next | **Delivery fees worked out from the bakery** (list 29, item 2, step 2 of 2): every one of the 118 areas gets a fee from its driving distance to Gerhardsville, using the bands in guide 5h (replacing the sample R80 to R130), still editable in the admin. | Your yes to the bands (or your changes) |
-| v10.26.12 | 📅 Planned | **Areas grouped by region** (list 27, item 1, step 3 of 3): the area list is grouped (Johannesburg, Tshwane, Ekurhuleni, West Rand, Sedibeng), and in the admin you can set one fee for a whole region at once. | Your fee per region |
+| ~~v10.26.11~~ | ✅ Done | **Delivery fees worked out from the bakery** (list 29, item 2, step 2 of 2): every one of the 118 areas gets a fee from its driving distance to Gerhardsville, using the bands in guide 5h (replacing the sample R80 to R130), still editable in the admin. | Your yes to the bands (or your changes) |
+| **v10.26.12** | ⏭️ Next | **Areas grouped by region** (list 27, item 1, step 3 of 3): the area list is grouped (Johannesburg, Tshwane, Ekurhuleni, West Rand, Sedibeng), and in the admin you can set one fee for a whole region at once. | Your fee per region |
 | v10.26.13 | 📅 Planned | **Cosier, friendlier WhatsApp message** (old step 3 of 3 of list 25): a warmer greeting and sign-off for the Cart and Custom Order messages, keeping every line Becca needs (your list 25, item 7). | Your own words for the message if you want them (otherwise we write it warm and short) |
 | v10.26.14 | 📅 Planned | **Every order reaches both of your WhatsApps** (list 25, item 6). A website cannot message two chats by itself: the tap-to-send link opens one chat. Real automatic sending to two numbers needs the **WhatsApp Business Platform** (a Meta business account, a number registered for it, and a small cost per message) plus a small server step in Supabase. We will first set up what is free and close to it, and ask you which way you want to go. | A decision from you: free workaround or Meta WhatsApp Business account |
 | v10.26.15 | 📅 Planned | **Upload proof of payment** on the thank-you page (stored privately, you open it next to the order) + a **"paid" tick** per order (idea 27, part 2). Needs the newest `setup.sql`. | Nothing new |
@@ -126,7 +127,8 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 | 26 | 2 | Only 2 changes per version, the rest to the backlog | DONE (only 1 change came; ideas in 4b) | v10.26.5 |
 | 28 | 1 | Delivery areas: do not remove the "Choose your area" list; instead of "near the bakery" add all the areas in Gauteng (Centurion, Johannesburg and so on) | IN PROGRESS (split: the 118 Gauteng areas with sample fees are DONE in v10.26.9; grouped by region with one fee per region is next in v10.26.12) | v10.26.9 / v10.26.12 |
 | 29 | 1 | In the local preview, next to Theme preview, add a block "View site as a customer" | DONE (tile in preview.html; shows the site as a visitor sees it, with a pill to go back) | v10.26.10 |
-| 29 | 2 | The bakery is in Gerhardsville, Centurion: work out all the delivery fees for the different options, suggest the best delivery company nearby and add the prices to the website (permission given to use the companies' info and websites) | IN PROGRESS (split in 2: research, recommendation and proposed bands DONE in v10.26.10, guide 5h; the fees on the website are next in v10.26.11) | v10.26.10 / v10.26.11 |
+| 29 | 2 | The bakery is in Gerhardsville, Centurion: work out all the delivery fees for the different options, suggest the best delivery company nearby and add the prices to the website (permission given to use the companies' info and websites) | DONE (split in 2: research, recommendation and bands in v10.26.10, guide 5h; the fees for all 118 areas on the website in v10.26.11, as estimates until you have real quotes) | v10.26.10 / v10.26.11 |
+| 30 | 1 | "Tell me how to see the website from my phone, my girlfriend wants to see how it looks so far" | DONE (guide 5i + a ready phone zip you drag onto Netlify Drop for a link; the website is not online yet, that is v11) | v10.26.11 |
 | 29 | - | Only 2 changes per version, the rest to the backlog | DONE (2 changes came; nothing extra to add) | v10.26.10 |
 | 28 | 2 | The map shows up by itself under the address box, no button to click | DONE (after a short pause in typing; Try again button only if the map service did not answer) | v10.26.8 |
 | 28 | - | Split the next task in 3 steps (standing request) and only 2 changes per version, the rest to the backlog | DONE (2 changes came, split into v10.26.8 / .9 / .10; nothing extra to add) | v10.26.8 |
@@ -346,6 +348,13 @@ Every version leaves a few "good idea, but not now" notes. They used to be sprea
 - Let the customer **drop a pin / drag the marker** to fix the spot (needs a map library, so it is bigger than a free picture)
 - Save the map spot with the order so the admin can open it in one tap (Google Maps / Waze link in the slip)
 - A **delivery-distance fee** worked out from the map instead of picking an area by hand
+
+**From v10.26.11 (fees and phone preview):**
+- **Recalibrate the fees from two or three real Picup / Uber Connect quotes** from the bakery (edit the bands in `tools/gauteng-fees.py` and run it with `--write`)
+- **Check the 118 area centres on a map** (they are good to about 2 to 4 km; a wrong one can put an area in the wrong band)
+- A **free-delivery threshold** (for example free delivery on orders over a set amount in the nearest bands) and a **small fee discount for collection-point pick-ups**
+- A **cheaper "bakkie / bike" option for cupcakes** and a dearer one for tiered cakes
+- **Put the website online properly** (v11): your own address, browser icon, Google Business Profile
 
 **From v10.26.10 (couriers and customer view):**
 - **Book the courier from the admin**: a button on a delivery order that opens the courier's booking page with the pickup and drop-off already filled in
@@ -579,13 +588,30 @@ Free Supabase projects pause after about 7 days with nobody using them. The proj
 | 35 to 50 km | R240 |
 | 50 to 70 km | R310 |
 | 70 to 100 km | R420 |
-| over 100 km | not offered online (ask Becca for a quote) |
+| over 100 km | R420 plus R6 for every extra km (about R550 to Vereeniging, R600 to Vanderbijlpark). *Changed in v10.26.11 from "ask Becca": you asked for all of Gauteng, and a flat fee would lose you money.* |
 
 *Distances will be worked out from each area's centre (the map's coordinates) times a road factor, so they can be a few kilometres out; the bands are wide on purpose. You can always change any area's fee in the admin. Free delivery above a certain order total can be switched on in the same box ("Free delivery on orders from R").*
 
 **What we need from you:** a yes or a change to the bands above, and (when you can) two or three real quotes from Picup or Uber Connect from your address, so the numbers come from a live price.
 
 **Sources:** [UrgentGo courier prices](https://urgentgocourier.co.za/courier-prices) and [Centurion page](https://urgentgocourier.co.za/courier-centurion); [IOL on Uber Connect pricing](https://www.iol.co.za/business-report/companies/ubers-new-package-delivery-service-costs-a-minimum-of-r25-d2a10b13-fdef-4467-8cb8-e2748c3353e5); [Uber Direct Moto post (2020 rates)](https://www.uber.com/en-ZA/blog/uber-direct-moto-in-south-africa/); [TechCentral on Bolt Send (29 Jan 2024)](https://techcentral.co.za/bolt-same-day-parcel-deliveries-joburg/238687); [MyProperty on Gerhardsville](https://www.myproperty.co.za/en-za/property/gauteng/centurion/gerhardsville).
+
+### 5i. See the website on your phone, before it is online (v10.26.11)
+*Your website is not on the internet yet (that is the "put it online" version, v11), so a phone cannot just open it. The easy way to show it to your girlfriend today is a free "drop" host: you drag one file onto a web page and it gives you a link.*
+
+**What you need:** a computer, and the file **`online-bakery-phone-preview.zip`** that came with this version (it holds only the website, not the admin or the notes). About 5 minutes.
+1. On your computer open **app.netlify.com/drop** (search "Netlify Drop" if you prefer).
+2. **Drag the zip file onto the page.** No account is needed to start. Wait about half a minute.
+3. It shows a link that ends in **`.netlify.app`**. Open it on your computer to check, then **send the link to your phone** (WhatsApp it to yourself) and to your girlfriend. It looks the way customers will see it: light colours, no dark mode.
+4. **Keep it from disappearing:** a site you have not "claimed" is deleted after a while (Netlify does not say how long). When it offers **Claim this site**, sign up free with your email. You can then drag a **newer zip onto the same site** later and the link stays the same.
+5. Another free host that works the same way is **cloudflare.com/drop**.
+
+**Good to know**
+- The link is long and random, but anyone who has it can open it. Send it only to people you trust.
+- Browsing, the menu, the map and the delivery fees all work. **Do not press "Send order to Becca on WhatsApp"** unless you mean it: that message goes to the real number.
+- The admin is not in this zip on purpose; you still use it on your own computer.
+- When we change the website, ask for a new phone zip (every version can come with one) and drag it onto the same site.
+- Your own web address (`yourbakery.co.za`), the browser icon and the search-engine setup come with the launch version (v11).
 
 ---
 
