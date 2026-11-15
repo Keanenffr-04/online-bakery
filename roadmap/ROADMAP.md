@@ -1,6 +1,6 @@
 # 🗺️ Roadmap: what's next and what we need from you
 
-**Where we are:** v10.27 &nbsp;|&nbsp; **Next up:** v10.28 (vouchers + loyalty), then v10.29 (deposits by hand) &nbsp;|&nbsp; **Rule:** 2 things per version.
+**Where we are:** v10.27.1 &nbsp;|&nbsp; **Next up:** v10.28 (deposits tracked by hand), then v10.29 (online payment link) &nbsp;|&nbsp; **Rule:** 2 things per version.
 
 *This page is written for Becca. No website or coding knowledge needed. Words you might not know are explained in the "Words explained" list in the [README](../README.md). Finished work is in [`BACKLOG.md`](BACKLOG.md).*
 
@@ -28,7 +28,8 @@
 - ✅ **New in v10.26.16:** (the second half of your "proof of payment + paid tick" version) a **paid tick** on every order. In Admin > Orders each order has a **Mark paid** button (and **Undo paid** if you slip); a green **paid** tag shows next to it. A new filter shows **paid** or **not paid** orders, the printed slip gets a green **PAID** stamp, and the **Numbers** box shows **not paid yet**, the money still owed. Customers cannot tick it themselves. **Run the newest `setup.sql` once** (section 2c); until then the paid buttons stay hidden.
 - ✅ **New in v10.26.17:** (idea 47) the website can be **installed on a phone like an app**: an **Install the app** button in the footer on Android (iPhone shows the two Safari taps: Share, then Add to Home Screen), with its own icon and a full-screen look. The **menu, the cart and pages already visited still open when the signal is weak or during load shedding**; the last menu from the database is kept on the phone. Orders, sign-in and the admin are never saved offline, and a new website version replaces the saved one as soon as there is signal. It only works on the real https website (not in your local preview). The Privacy page has a line about it. No database update needed.
 - ✅ **New in v10.27:** a **shop status banner**. In Admin > Ordering & payment > **Shop status banner** you type a message ("We are closed for the holidays"), tick **Show the banner** and press Save: a note appears under the header on every page. You can also tick **Also pause new orders** (the Cart and the Custom Order then show your message instead of sending, but the WhatsApp chat button still works) and set a **Back on** date, so it switches itself off that day. The last two bits of old **"Publish"** wording in the admin (Menu sections and Menu items) now say Save. No database update needed.
-- ⏭️ **Next:** **gift vouchers + a loyalty reward** (v10.28), then **deposits tracked by hand** (v10.29). *The proof-of-payment version was split in 2 because it was too big to build safely in one go.* *Earlier: Your list 27 was split in 3 for the same reason.*
+- ✅ **New in v10.27.1:** (your list 31) the little **Pause button for the moving decorations is gone** from every page (it only showed while an occasion theme such as Christmas was on). The decorations themselves stay; you can still switch them off for everyone in Admin > Theme & layout > Theme. **Gift vouchers are postponed** (and the loyalty reward with them) because the bakery is too small for discounts right now: they are on the ideas list (4b) for another time. No database update needed.
+- ⏭️ **Next:** **deposits tracked by hand** (v10.28), then the **online payment link** (v10.29). *The proof-of-payment version was split in 2 because it was too big to build safely in one go.* *Earlier: Your list 27 was split in 3 for the same reason.*
 - *(older)* Proof of payment and the installable app slid back to v10.26.15 and v10.26.16. *Your list 27 was split in 3 because it was too big to build safely in one go.* *We split the old v10.26.6 in 3 because it was too big to build safely in one go.*
 - ⏳ **Waiting on you:** real prices, FAQ answers, reviews, your story, Instagram / Facebook names and photos. The full checklist is in section 2.
 - 🚀 **Last step:** putting the website online, only when you say "I'm happy with everything".
@@ -64,10 +65,11 @@ Your change lists always go **first**, so the versions below may slide back by o
 | ~~v10.26.16~~ | ✅ Done | **A "paid" tick per order** (idea 27, part 2, step 2 of 2): a **Mark paid** button and a green **paid** tag on each order, a paid / not paid filter, **PAID** printed on the slip, and unpaid money shown in Numbers. Needs the newest `setup.sql`. | Nothing new |
 | ~~v10.26.17~~ | ✅ Done | **Install on the home screen like an app** (idea 47): install button, app icon, full-screen look; the menu, cart and visited pages still open when the signal is weak. Never saves orders, sign-in or the admin. | Nothing new |
 | ~~v10.27~~ | ✅ Done | **Shop status banner** (pauses orders if you want, switches itself off on a "back on" date) + the **old "Publish" wording fixed** in the admin (4 and 45). | Nothing new |
-| **v10.28** | ⏭️ Next | **Gift vouchers** (you give a code, the customer types it in the cart, it comes off the total) + a **loyalty reward** (for example every 10th order a free cupcake box). | Your voucher and loyalty rules |
-| v10.29 | 📅 Planned | **Deposits, tracked by hand** (split of the old v10.29, because it handles money): a **deposit amount** and a **balance still to pay** on each order (grows the paid tick into an amount), shown on the slip, in Numbers and in the WhatsApp message. No payment company yet. | Your deposit rule (for example 50% for cakes over R...) |
-| v10.30 | 📅 Planned | **Online payment link** (Yoco, PayFast or Ozow), step 2 of the old v10.29: a customer can pay the deposit online and the order ticks itself. Needs a small server step in Supabase. | A payment account that you open |
-| v10.31 | 📅 Planned | **Specials list:** customers who tick "yes, send me specials" (POPIA-friendly, with an easy unsubscribe) + **Home page, round 3**. | Nothing new |
+| ~~v10.27.1~~ | ✅ Done | **Pause button removed** (list 31, item 1) + **gift vouchers and loyalty postponed** (list 31, item 2: moved to the ideas list, plan renumbered). | Nothing |
+| **v10.28** | ⏭️ Next | **Deposits, tracked by hand** (it handles money, so it is built on its own): a **deposit amount** and a **balance still to pay** on each order (grows the paid tick into an amount), shown on the slip, in Numbers and in the WhatsApp message. No payment company yet. | Your deposit rule (for example 50% for cakes over R...) |
+| v10.29 | 📅 Planned | **Online payment link** (Yoco, PayFast or Ozow): a customer can pay the deposit online and the order ticks itself. Needs a small server step in Supabase. (Was v10.30.) | A payment account that you open |
+| v10.30 | 📅 Planned | **Specials list:** customers who tick "yes, send me specials" (POPIA-friendly, with an easy unsubscribe) + **Home page, round 3**. (Was v10.31.) | Nothing new |
+| ⏸️ Later | Postponed | **Gift vouchers + a loyalty reward** (list 31: "we would end up losing money"). Back on the plan whenever you say so. | Your voucher and loyalty rules |
 | When photos exist | ⏳ Waiting | **Real product photos** instead of emoji + an **"Our work" gallery** | Your photos (tip: same light and background for every photo) |
 | After launch | 📅 Planned | **The rest of your 60 ideas** (section 4c), two at a time, in the order you choose. Ideas will also be added as real customers show us what they need. | Your numbers |
 | Last (v11) | ⏳ Waiting | **Put the website online:** hosting, small browser icon, search-engine tidy-up, Google Business Profile, share picture for WhatsApp / Facebook, your own web address, launch checklist | You saying "I'm happy with everything" |
@@ -106,7 +108,7 @@ Nothing here can be built or guessed by us. Send things whenever you have them (
 | Real cake sizes, servings, flavours and extra costs | Cake price guide on Custom Orders | Admin > Ordering & payment > Cake price guide |
 | Real notice days, daily limit, delivery areas and fees | Order calendar and delivery | Admin > Ordering & payment > Order calendar & delivery |
 | Product photos | Replace the emoji | When you are ready |
-| Voucher and loyalty rules, payment provider | v10.28 and v10.29 | When we reach those versions |
+| Deposit rule, payment provider (voucher and loyalty rules only if you bring them back) | v10.28 and v10.29 | When we reach those versions |
 | *Decided:* Sign in with Apple is **skipped for now** (it costs about US$99 a year). Google and email sign-in are free and built. | | |
 
 ### 2c. Update the online database (do this when a version says so)
@@ -133,6 +135,9 @@ Newest list first. (Version numbers of the BACKEND items have moved later severa
 
 | List | # | Request (short) | Status | Where |
 |---|---|---|---|---|
+| 31 | 1 | Remove the little pause button on the home page (the one for the moving things on the screen) | DONE (button gone from every page; any pause a visitor had saved is cleared; you still switch the moving decorations off for everyone in Admin > Theme & layout) | v10.27.1 |
+| 31 | 2 | No gift vouchers for now: the business is so small we would end up losing money. Leave it for another time | DONE (vouchers and the loyalty reward are postponed to the ideas list, 4b; the plan moved up by one version) | v10.27.1 |
+| 31 | - | Only 2 changes per version, the rest to the backlog | DONE (2 changes came; nothing extra to add) | v10.27.1 |
 | 26 | 1 | Add a dark mode for all the themes (I work late at night and it is too bright). Make the local preview dark by default; I do not want to be able to change it on the website | DONE (all 15 themes have a dark set; dark switches on by itself when the site is opened from your own computer; the real website stays light and has no switch) | v10.26.5 |
 | 26 | 2 | Only 2 changes per version, the rest to the backlog | DONE (only 1 change came; ideas in 4b) | v10.26.5 |
 | 28 | 1 | Delivery areas: do not remove the "Choose your area" list; instead of "near the bakery" add all the areas in Gauteng (Centurion, Johannesburg and so on) | DONE (split in 3: the 118 Gauteng areas in v10.26.9, their fees from the bakery in v10.26.11, grouped by region with a one-fee-per-region box in v10.26.12) | v10.26.9 / v10.26.11 / v10.26.12 |
@@ -252,6 +257,11 @@ Not scheduled. Tell us which to pull into a version. The ranked **top 10** is in
 - **A full online shop like Takealot (list 25, item 8).** Today customers fill a cart and send it on WhatsApp, Becca confirms and they pay by hand. A Takealot-style flow adds: paying on the website (v10.29), live stock counts, an order-tracking page for the customer ("baking", "ready"), and email receipts (needs the email sender, 2a). We will do it in small steps after v10.29, only when you say so.
 
 ### 4b. Collected from finished versions (gathered here in v10.21.1)
+
+**From v10.27.1 (list 31)**
+- ⏸️ **Gift vouchers** and a **loyalty reward** (for example every 10th order a free cupcake box): postponed by the owner because discounts could lose money for such a small business. If they come back: a fixed rand value or a percent, an expiry date, one use per code, a cap on how many, and a rule that a voucher can never take an order below cost.
+- A **"Pause decorations" switch only for people who ask for it**, for example from the Contact page or a note in the footer, if a visitor ever says the movement bothers them (the visitor button was removed because it looked cluttered)
+- Let the decorations stop by themselves after about 20 seconds so they are calm but still festive
 
 **From v10.27 (shop status banner)**
 - Different banner colours (for example a Christmas red) and a **link button** in the banner
@@ -376,7 +386,7 @@ Every version leaves a few "good idea, but not now" notes. They used to be sprea
 
 **From v10.26.16 (paid tick):**
 - **Tick paid by itself** when a proof is uploaded, and ask Becca to confirm it
-- A **deposit** amount and a "balance still to pay" per order (fits the deposits version v10.29)
+- A **deposit** amount and a "balance still to pay" per order (fits the deposits version v10.28)
 - Show **paid** to a signed-in customer under My account
 - A **who owes me money** list with a one-tap WhatsApp reminder
 
@@ -457,10 +467,10 @@ You asked for everything we think the website could still add. Nothing here is b
 25. **Birthday and occasion reminders:** a customer saves a date, you get a list, and they can opt in to a nudge (POPIA-friendly). *M*
 
 **C. Payments**
-26. **Deposits and card payments** (Yoco, PayFast or Ozow). 📅 v10.29 ⏳ needs a payment account. *L*
+26. **Deposits and card payments** (Yoco, PayFast or Ozow). 📅 v10.28 (by hand) and v10.29 (online) ⏳ needs a payment account. *L*
 27. ⭐ **EFT, SnapScan or Capitec Pay details on the thank-you page,** plus "upload your proof of payment", so you stop chasing people. *M*
 28. **Quote link:** you send a custom-cake quote, the customer taps Accept and pays the deposit. Needs 26. *L*
-29. **Gift vouchers and a loyalty reward.** 📅 v10.28. *M*
+29. ⏸️ *postponed in v10.27.1 (owner: too small a business, would lose money)* **Gift vouchers and a loyalty reward.** *M*
 30. **Refer-a-friend reward.** Needs 29. *M*
 
 **D. Keep customers informed**

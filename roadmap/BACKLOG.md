@@ -2,7 +2,7 @@
 
 *Written for Becca. This page is the list of **finished** work. What is still to do is in [`ROADMAP.md`](ROADMAP.md). New entries are added at the bottom and nothing is ever deleted.*
 
-**Latest version:** v10.27
+**Latest version:** v10.27.1
 
 ## Contents
 1. [What the website can do today](#today)
@@ -104,6 +104,7 @@ Oldest first. Click a version to jump to its detailed record. A version like **v
 | [v10.26.16](#v10-26-16) | 2026-11-10 | **The "paid" tick** (second half of idea 27 part 2, split in 2): **Mark paid** / **Undo paid** on each order, a green **paid** tag, a paid / not paid filter, **PAID** on the printed slip, **not paid yet** in Numbers, a "paid" column in the spreadsheet download, and a Live check test that strangers cannot tick their own order as paid. Run the newest `setup.sql`. |
 | [v10.26.17](#v10-26-17) | 2026-11-15 | **Install as an app + works when the signal is weak** (idea 47): an **Install the app** button in the footer (Android; iPhone shows the Safari steps), an app icon and full-screen look, and a small background helper that keeps the pages, menu and cart working during load shedding. Orders, sign-in and the admin are never saved offline. No database update. |
 | [v10.27](#v10-27) | 2026-11-15 | **Shop status banner** (a note on every page; optionally pauses new orders from the Cart and Custom Order; a "back on" date switches it off by itself) and the **old "Publish" wording fixed** in the admin. No database update. |
+| [v10.27.1](#v10-27-1) | 2026-11-15 | **Pause button removed** (the little button for the moving decorations is gone from every page) and **gift vouchers + loyalty postponed** to the ideas list; the plan moved up by one version. No database update. |
 | [v10.26.15](#v10-26-15) | 2026-11-10 | **Upload proof of payment** (first half of idea 27 part 2, split in 2): an upload box on the thank-you page (picture or PDF, up to 2 MB) into a private storage place; a **proof sent** tag and **View proof** button in the admin; deleted with the order; Live check tests the new storage; Privacy line. Run the newest `setup.sql`. |
 | [v10.26.14](#v10-26-14) | 2026-11-10 | **Both WhatsApps, the free way** (your list 25, item 6): the thank-you page offers "Send a copy to Keanen too" with the whole order message, for the Cart and the Custom Order. Nothing to update in the database. |
 | [v10.26.13](#v10-26-13) | 2026-11-10 | **Cosier WhatsApp message** (your list 25, item 7): a warm greeting with the customer's name and a warm sign-off on the Cart and Custom Order messages, with every needed line kept. Nothing to update in the database. |
@@ -610,6 +611,17 @@ Owner list 23 had one change: the Live check said "Strangers CAN look inside the
 Files: `src/js/admin.js`, `supabase/setup.sql`, `README.md`, `roadmap/*`, `docs/AI_HANDOFF.md`, `VERSION`.
 Tests (headless Chromium, mock Supabase + mocked storage answers): locked storage = green and the test file removed; listing leaks = red; the object opens = red; the test upload refused = yellow, nothing removed; no page errors. **The new SQL was NOT run on a real Postgres** (none in the sandbox): the owner's Live check is the real test. Honest note: this is probably a false alarm in the old check, but the extra lock makes the answer safe either way.
 Pushed to the backlog (also in `ROADMAP.md` 4b): a weekly automatic Live check with history; auto-removal of leftover test pictures; the same private-storage tick for proof of payment; deleting customer photos after a set time (with a Privacy page line).
+
+<a id="v10-27-1"></a>
+## v10.27.1: Pause button removed + vouchers postponed (done, 2026-11-15)
+Owner sent list 31 (two changes) with "start next v/patch", "if it's something big split it into 2 or 3" and "explain how I can use the website on my phone with the app". The list was two small items (one code change, one plan change), so nothing was split. A patch number was used because it is small and the plan's next version (vouchers) was the item the owner postponed.
+1. **Pause / Play button removed** (`decor.js`, `site.css`). The `.deco-toggle` button and its styles are gone from every page; `.deco--paused` is gone too. A visitor who had paused the decorations with the old button still has `sb_deco_paused` saved on their phone and would now have no way to un-pause, so `decor.js` removes that key on every load. The decorations are unchanged and the owner's switch (Admin > Theme & layout > Theme > Moving decorations, `settings.decorations`) is the only control now. README troubleshooting line updated.
+2. **Vouchers postponed.** Gift vouchers and the loyalty reward (plan item 29) moved from the plan table to a "Later / Postponed" row and to ROADMAP 4b with a note of what to think about if they return (value or percent, expiry, one use, a cap, never below cost). **The plan moved up:** v10.28 = deposits tracked by hand, v10.29 = online payment link, v10.30 = specials list + Home round 3. Tracker rows added for list 31.
+3. `sw.js` cache version is `sb-v10.27.1`.
+Files: `src/js/decor.js`, `src/css/site.css`, `src/sw.js`, `README.md`, `roadmap/*`, `docs/AI_HANDOFF.md`, `VERSION`. No data file, no `setup.sql` change.
+Tests (headless Chromium over a local web server, Christmas theme forced through `localStorage`): the decorations layer is drawn and animates, no `.deco-toggle` exists on the Home, Menu, Cart or Custom Order pages, a saved `sb_deco_paused = "1"` is cleared and the decorations are not frozen, the Classic theme still draws none, no console errors.
+**Accessibility note:** the removed button was the only way for a visitor to stop the motion (the decorations deliberately ignore the phone's "reduce motion" setting since v10.8). Idea pushed to the backlog (ROADMAP 4b): a quieter option for people who ask.
+Pushed to the backlog (also in `ROADMAP.md` 4b): the postponed vouchers / loyalty notes; a "pause decorations" option only for people who ask; decorations that calm down by themselves after a while.
 
 <a id="v10-27"></a>
 ## v10.27: Shop status banner + the old "Publish" wording (done, 2026-11-15)

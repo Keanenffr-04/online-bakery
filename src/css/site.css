@@ -314,7 +314,7 @@ button.btn:disabled{opacity:.6;cursor:not-allowed}
 
 /* v10.7/v10.8: moving decorations for special-occasion themes (js/decor.js). One fixed layer, click-through, under the header and strips.
    Only transform + opacity are animated. Positions are numbers times --uw / --uh (1% of the screen, or of the admin preview box).
-   They always move; the Pause button (.deco-toggle) stops them. */
+   They always move (no visitor pause button since v10.27.1; the owner can switch them off in the admin). */
 .deco{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:45;--uw:1vw;--uh:1vh}
 .deco--demo{position:absolute;z-index:1;--uw:1cqw;--uh:1cqh}
 .deco__i{position:absolute;left:calc(var(--x) * 1%);top:0;font-size:var(--s);line-height:1;opacity:var(--o);user-select:none;will-change:transform;
@@ -323,7 +323,6 @@ button.btn:disabled{opacity:.6;cursor:not-allowed}
 .deco__i--fall{animation-name:deco-fall}
 .deco__i--rise{animation-name:deco-rise}
 .deco__i--wander{animation-name:deco-wander;animation-timing-function:ease-in-out}
-.deco--paused .deco__i{animation-play-state:paused}
 @keyframes deco-fall{0%{transform:translate3d(0,calc(-14 * var(--uh)),0) rotate(0);opacity:0}8%{opacity:var(--o)}
   50%{transform:translate3d(calc(var(--sw) * var(--uw)),calc(48 * var(--uh)),0) rotate(calc(var(--rot) / 2))}
   92%{opacity:var(--o)}100%{transform:translate3d(calc(var(--sw) * -1 * var(--uw)),calc(112 * var(--uh)),0) rotate(var(--rot));opacity:0}}
@@ -334,13 +333,7 @@ button.btn:disabled{opacity:.6;cursor:not-allowed}
   25%{transform:translate3d(calc(var(--dx1) * var(--uw)),calc((var(--y) + var(--dy1)) * var(--uh)),0) rotate(8deg)}
   50%{transform:translate3d(calc(var(--dx2) * var(--uw)),calc((var(--y) + var(--dy2)) * var(--uh)),0) rotate(-8deg)}
   75%{transform:translate3d(calc(var(--dx3) * var(--uw)),calc((var(--y) + var(--dy3)) * var(--uh)),0) rotate(6deg)}}
-/* Pause / Play button, bottom-left (the WhatsApp button is bottom-right) */
-.deco-toggle{position:fixed;z-index:70;left:max(1rem,env(safe-area-inset-left));bottom:calc(max(var(--orders-h,0px),env(safe-area-inset-bottom,0px)) + 1rem);
-  display:grid;place-items:center;width:44px;height:44px;padding:0;border-radius:50%;cursor:pointer;color:var(--heading);
-  background:color-mix(in srgb,var(--surface) 90%,transparent);border:1.5px solid var(--border);box-shadow:var(--shadow);transition:background-color .15s ease,color .15s ease}
-.deco-toggle:hover,.deco-toggle:focus-visible{background:var(--btn-bg);border-color:var(--btn-bg);color:var(--btn-text)}
-.deco-toggle:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
-@media print{.deco,.deco-toggle{display:none}}
+@media print{.deco{display:none}}
 
 /* v10.9: "New and popular" section on Home. Same glass cards as Our best sellers; the blobs are mirrored so it doesn't look like a copy. */
 .row-title{font-size:1.05rem;margin:1.25rem 0 .75rem;letter-spacing:.04em}

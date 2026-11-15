@@ -3,7 +3,7 @@
    One fixed, click-through layer covers the whole screen: a few big faint shapes (the "background") plus smaller, clearer ones
    that fall, rise or wander around. Only CSS transforms are animated, so it is light.
    v10.8: they ALWAYS move (they used to freeze when the visitor's device had "reduce motion" on, which looked like a bug).
-   Instead a small Pause/Play button (bottom-left) lets any visitor stop them; the choice is remembered on that device.
+   v10.27.1: the small Pause/Play button that v10.8 added was removed (owner's request); only the owner can switch them off, for everyone.
    The owner switches them off for everyone in Admin > Theme & layout (settings.decorations). The admin also uses SBDecor to
    draw its little live preview box.
    To change a theme's decorations edit SETS: [emoji, how it moves, how many].  Moves: fall | rise | wander. */
@@ -41,10 +41,9 @@
   };
   window.SBDecor = { SETS, has: t => !!SETS[t], html };
 
-  // Pause / Play button: anyone can stop the movement (kinder for people who find motion distracting). Remembered on this device.
-  const PAUSE_KEY = "sb_deco_paused";
-  const getPaused = () => { try { return localStorage.getItem(PAUSE_KEY) === "1"; } catch (e) { return false; } };
-  const ICON = { pause: '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="currentColor" d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>', play: '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8 5.5v13l11-6.5z"/></svg>' };
+  // v10.27.1: the Pause / Play button was REMOVED at the owner's request (the owner switches the decorations off for everyone in Admin > Theme & layout).
+  // A visitor who paused them with the old button has "sb_deco_paused" saved on their phone and now has no way to undo it, so clear it once.
+  try { localStorage.removeItem("sb_deco_paused"); } catch (e) { /* ignore */ }
 
   if (document.body && document.body.hasAttribute("data-no-deco")) return;   // admin page: it only uses SBDecor.html for its preview box
   window.SB && SB.load().then(({ settings: s, themeNow }) => {
@@ -54,15 +53,5 @@
     layer.className = "deco"; layer.setAttribute("aria-hidden", "true");
     layer.innerHTML = html(theme, { phone: matchMedia("(max-width:859px)").matches });
     document.body.append(layer);
-    const btn = document.createElement("button");
-    btn.type = "button"; btn.className = "deco-toggle";
-    const apply = paused => {
-      layer.classList.toggle("deco--paused", paused);
-      btn.setAttribute("aria-pressed", String(!paused)); btn.setAttribute("aria-label", paused ? "Play the moving decorations" : "Pause the moving decorations");
-      btn.title = paused ? "Play decorations" : "Pause decorations"; btn.innerHTML = paused ? ICON.play : ICON.pause;
-    };
-    apply(getPaused());
-    btn.addEventListener("click", () => { const now = !layer.classList.contains("deco--paused"); try { localStorage.setItem(PAUSE_KEY, now ? "1" : "0"); } catch (e) { /* ignore */ } apply(now); });
-    document.body.append(btn);
   });
 })();
