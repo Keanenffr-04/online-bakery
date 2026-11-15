@@ -1,8 +1,9 @@
 # online-bakery 🐇🍰
 Website for **The Sweetest Bakery** (Becca Smith). Sleek, modern, easy to use.
 
-**Current version:** v10.26.17. The latest three versions:
-- **v10.26.17:** (your list: idea 47) the website can be **installed on a phone like an app** (a small **Install the app** button in the footer on Android; on iPhone the footer shows the two Safari taps), with its own icon and full screen. The **menu, cart and pages you have already visited still open when the signal is weak or during load shedding** (the last menu from the database is kept on the phone). Orders, sign-in and the admin are never saved offline. Only works on the real (https) website, not in your local preview. Nothing to update in the database.
+**Current version:** v10.27. The latest three versions:
+- **v10.27:** (plan items 4 and 45) a **shop status banner**: in Admin > Ordering & payment > **Shop status banner** type a message (for example "We are closed for the holidays"), tick **Show the banner** and Save. A note appears under the header on every page. Optionally tick **Also pause new orders** (the Cart and Custom Order then say so instead of sending; the WhatsApp chat button keeps working) and set a **Back on** date, and it switches itself off that day. Also the last old **"Publish"** wording in the admin is fixed. Nothing to update in the database.
+- *(older)* **v10.26.17:** (your list: idea 47) the website can be **installed on a phone like an app** (a small **Install the app** button in the footer on Android; on iPhone the footer shows the two Safari taps), with its own icon and full screen. The **menu, cart and pages you have already visited still open when the signal is weak or during load shedding** (the last menu from the database is kept on the phone). Orders, sign-in and the admin are never saved offline. Only works on the real (https) website, not in your local preview. Nothing to update in the database.
 - **v10.26.16:** (the second half of "proof of payment + paid tick") a **paid tick** on every order. In Admin > Orders press **Mark paid** (or **Undo paid**) and a green **paid** tag shows; a filter lists **paid** or **not paid** orders; the printed slip gets a **PAID** stamp; and **Numbers** shows **not paid yet**, the money still owed. Customers cannot tick it themselves. **Run the newest `setup.sql` once** (until then the paid buttons stay hidden). The installable app came next (v10.26.17).
 - **v10.26.15:** (the first half of "proof of payment + paid tick", split in 2) customers can **upload a proof of payment** on the thank-you page (screenshot, photo or PDF up to 2 MB, under the How to pay box). It is stored privately (`proofs` bucket, `supabase/setup.sql` section 14); the admin shows a **proof sent** tag and a **View proof** button on the order, and the proof is deleted with the order. The Live check tests the new storage. **Run the newest `setup.sql` once.** The **paid** tick came next (v10.26.16).
 - *(older)* **v10.26.14:** (your list 25, item 6, the free way) **every order can reach both your WhatsApps**: after a customer sends an order to Becca, the thank-you page offers a green **"Send a copy to Keanen too"** button that opens WhatsApp to the second number with the whole order already typed. One extra tap for the customer, no cost. The second number is `backupWhatsapp` in `config/business.json`. Nothing to update in the database.
@@ -47,7 +48,7 @@ The admin is where you change things. It is **not linked from the public website
 2. Sign in with your email and password. Only the emails on the admin list can get in.
 3. Pick a tab: **Orders**, **Menu items**, **Ordering & payment**, **Theme & layout**, **Admins**, **My account**, **Backup & files**.
 
-When you press **Save**, the change is live for everyone straight away. *(Some words on the admin screens still mention "Publish" or "save to this device". Ignore them; it is already live. This is on the to-fix list.)*
+When you press **Save**, the change is live for everyone straight away. *(Everything you Save is live straight away; the old "Publish" wording is gone since v10.27.)*
 
 ### Your day-to-day jobs
 | I want to... | Go to... |
@@ -63,6 +64,7 @@ When you press **Save**, the change is live for everyone straight away. *(Some w
 | See how many orders this week or month | The **Numbers** box at the top of Orders (it can download a spreadsheet) |
 | Mark something as sold out for today | Admin > **Menu items** > **Sold out today** (it switches itself back on at midnight) |
 | Add a cake, change a price or hide an item | Admin > **Menu items** (use **Menu sections** to add or reorder the groups) |
+| Close the shop for a holiday (banner on every page, optionally stop new orders) | Admin > **Ordering & payment** > **Shop status banner** |
 | Close a day, set notice days, a daily limit or delivery fees (one per area; **Add the missing Gauteng areas** adds any you removed) | Admin > **Ordering & payment** > **Order calendar & delivery** |
 | Add my bank / SnapScan / Capitec Pay details for customers | Admin > **Ordering & payment** > **How to pay** |
 | Change cake sizes, flavours or prices in the price guide | Admin > **Ordering & payment** > **Cake price guide** |
@@ -97,6 +99,7 @@ The full checklist is in [`roadmap/ROADMAP.md`, section 2](roadmap/ROADMAP.md#ne
 | A customer cannot reach me on WhatsApp | The Contact page and thank-you page show **"Can't reach Becca? WhatsApp Keanen"**. The number lives in `config/business.json` (`backupWhatsapp`). |
 | A customer says their confirm or reset email never came | Customers need your own email sender first (roadmap guide 5c). **Continue with Google** and WhatsApp still work. |
 | I saved a change but customers do not see it | Make sure you pressed **Save** in that section, then reload the page. |
+| A banner is showing that I do not want, or customers cannot send orders | Admin > Ordering & payment > **Shop status banner**: untick **Show the banner** (or untick **Also pause new orders**) and press Save. A banner with a **Back on** date switches itself off on that day. |
 | A customer cannot pick the date they want | That is the **order calendar**: not enough notice, a day off, a blocked date or a full day. Change the rules in Ordering & payment > Order calendar & delivery. |
 | WhatsApp did not open after an order | Your browser may have blocked the pop-up. The thank-you page has an **Open WhatsApp** button. The order is saved either way. |
 | An item I marked "Sold out today" is back | That is on purpose: it switches itself off at midnight. |

@@ -56,6 +56,13 @@
     const publish = () => document.documentElement.style.setProperty(cssVar, bar.offsetHeight + "px");
     publish(); if (window.ResizeObserver) new ResizeObserver(publish).observe(bar);
   };
+  window.SB && SB.load().then(({ settings }) => {   // v10.27: shop status banner (not on the admin; one per page)
+    const st = SB.shop; const main = document.getElementById("main");
+    if (!st || !st.on || !main || document.querySelector(".shop-status")) return;
+    const bar = document.createElement("div"); bar.className = "shop-status"; bar.setAttribute("role", "status");
+    bar.innerHTML = `<div class="container"><strong>${st.paused ? "Orders paused" : "Please note"}</strong> <span>${SB.esc(st.text)}</span></div>`;
+    main.before(bar);
+  });
   window.SB && SB.load().then(({ settings, season }) => {
     // v10.13: while a season is on, its line goes first in the top strip (only if Becca has the top strip switched on).
     const sw = season && SB.seasonWords(settings, season), sp = settings.specials || {};

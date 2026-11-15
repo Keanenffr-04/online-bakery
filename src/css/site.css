@@ -469,3 +469,7 @@ button.btn:disabled{opacity:.6;cursor:not-allowed}
 /* v10.26.17: "Install the app" button in the footer (only appears when the browser can install the site) */
 .sb-install{display:inline-flex;align-items:center;gap:.4rem;margin:0 0 .9rem;padding:.55rem 1rem;border:1px solid var(--border,#ddd);border-radius:999px;background:var(--surface,#fff);color:var(--accent,#4A3626);font:600 .9rem/1 inherit;font-family:inherit;cursor:pointer}
 .sb-install:hover,.sb-install:focus-visible{border-color:var(--accent,#4A3626)}
+
+/* v10.27: shop status banner (under the header, on every page, in the theme's own colours) */
+.shop-status{background:var(--surface-alt,#F3F1EE);color:var(--text,#2A2A2A);border-bottom:1px solid var(--border,#E4E0DA);padding:.7rem 0;font:600 .95rem/1.4 var(--font-body,inherit);text-align:center}
+.shop-status strong{color:var(--accent,#4A3626);margin-right:.35rem}

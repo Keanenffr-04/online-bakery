@@ -53,6 +53,7 @@ SB.load().then(async ({ biz, settings }) => {
     e.preventDefault();
     const v = n => f.elements[n].value.trim();
     const need = [["name", "your name"], ["occasion", "the occasion"], ["date", "the date you need it"], ["servings", "how many servings"]];
+    if (SB.shop && SB.shop.paused) return show(SB.shop.text);   // v10.27: orders paused by the shop status banner
     for (const [n, label] of need) if (!v(n)) return show(`Please add ${label}.`, f.elements[n]);
     if (v("date") < SB.today()) return show("Please choose a date from today onwards.", date);
     { const m = dmsg(); if (m) return show(m, date); }   // v10.21: notice, closed days, blocked dates, daily limit

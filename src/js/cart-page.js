@@ -11,7 +11,7 @@ SB.load().then(async ({ biz, settings }) => {
     return { method, delivering, isDelivery, addr, area: f ? area : "", fee: f ? f.fee : 0, free: !!(f && f.free) };
   };
   // Why the order cannot be sent yet ("" = fine): a date that does not work, or Delivery without an area.
-  const blocker = () => SB.dateMsg(val("c-date"), "cart", cal, booked) || (extras().delivering && !extras().area ? "Please choose your delivery area." : "") || (extras().isDelivery && !SB.addr.ok(extras().addr) ? SB.addr.MSG : "");
+  const blocker = () => (SB.shop && SB.shop.paused ? SB.shop.text : "") || SB.dateMsg(val("c-date"), "cart", cal, booked) || (extras().delivering && !extras().area ? "Please choose your delivery area." : "") || (extras().isDelivery && !SB.addr.ok(extras().addr) ? SB.addr.MSG : "");
 
   const empty = () => `<div class="cart-empty"><p>Your cart is empty.</p><a class="btn" href="menu.html">Browse the menu</a></div>`;
   const row = ({ p, q, sub }) => `<li class="cart-row" data-id="${E(p.id)}">

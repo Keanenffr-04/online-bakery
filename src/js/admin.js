@@ -380,12 +380,12 @@
     <label class="chk"><input type="checkbox" name="featured" ${e.featured ? "checked" : ""}>Home page: Our best sellers</label>
     <label class="chk"><input type="checkbox" name="popular" ${e.popular ? "checked" : ""}>Home page: Most popular (my own pick)</label></fieldset>
     <p><button class="btn btn--sm" type="submit">Save</button> ${state.edit ? '<button class="btn btn--sm btn--ghost" type="button" data-act="pcancel">Cancel</button>' : ""}</p></form></div>
-    <div>${sec("msec", "Menu sections", d.categories.length + (d.categories.length === 1 ? " section" : " sections"), `<p class="muted">The groups on your Menu page. The order here is the order customers see (Menu page buttons, the menu in the header and the Home "Shop by treat" tiles). Hiding a section hides its items too. Changes reach customers after you Publish.</p>
+    <div>${sec("msec", "Menu sections", d.categories.length + (d.categories.length === 1 ? " section" : " sections"), `<p class="muted">The groups on your Menu page. The order here is the order customers see (Menu page buttons, the menu in the header and the Home "Shop by treat" tiles). Hiding a section hides its items too. Changes reach customers as soon as you press Save.</p>
     <ul class="adm-list">${d.categories.map((c, i) => { const n = d.products.filter(p => p.category === c.id).length; return `<li class="item sec-row"><form class="csec" data-form="csec" data-id="${esc(c.id)}"><input name="icon" value="${esc(c.icon || "")}" maxlength="4" aria-label="Emoji for ${esc(c.name)}"><input name="name" value="${esc(c.name)}" required maxlength="40" aria-label="Section name"><button class="btn btn--sm btn--ghost" type="submit">Save</button></form>
     <div class="item__tags"><span class="tag">${n} ${n === 1 ? "item" : "items"}</span>${c.hidden ? '<span class="tag">hidden</span>' : ""}</div>
     <div class="adm-actions"><button class="btn btn--sm btn--ghost" data-act="cup" data-id="${esc(c.id)}" aria-label="Move ${esc(c.name)} up" ${i === 0 ? "disabled" : ""}>&uarr;</button><button class="btn btn--sm btn--ghost" data-act="cdown" data-id="${esc(c.id)}" aria-label="Move ${esc(c.name)} down" ${i === d.categories.length - 1 ? "disabled" : ""}>&darr;</button><button class="btn btn--sm btn--ghost" data-act="chide" data-id="${esc(c.id)}" aria-pressed="${!!c.hidden}">${c.hidden ? "Show" : "Hide"}</button><button class="btn btn--sm btn--ghost" data-act="cdel" data-id="${esc(c.id)}" ${n ? 'disabled title="Move or delete its items first"' : ""}>Delete</button></div></li>`; }).join("") || "<li>No sections yet. Add one below, then you can add items.</li>"}</ul>
     <form class="sec-add" data-form="csecnew"><label for="csec-new-name">Add a section</label><div class="csec"><input name="icon" placeholder="🍪" maxlength="4" aria-label="Emoji for the new section"><input id="csec-new-name" name="name" placeholder="e.g. Cookies" required maxlength="40"><button class="btn btn--sm" type="submit">Add</button></div></form>`)}
-    ${sec("mitems", "Menu items", d.products.length + (d.products.length === 1 ? " item" : " items"), `<p class="muted">"Sold out today" greys an item out for customers and switches itself off at midnight. Like every change here it reaches customers after you Publish.</p>
+    ${sec("mitems", "Menu items", d.products.length + (d.products.length === 1 ? " item" : " items"), `<p class="muted">"Sold out today" greys an item out for customers and switches itself off at midnight. Like every change here it reaches customers as soon as you press Save.</p>
     <ul class="adm-list">${d.products.map(p => { const so = SB.isSoldOut(p); return `<li class="item"><div class="item__main"><span class="item__e" aria-hidden="true">${esc(p.emoji)}</span><div><strong>${esc(p.name)}</strong> <span class="muted">R ${esc(p.price)} &middot; ${esc(cat(p.category))}</span>
     <div class="item__tags">${SB.isNew(p) ? '<span class="tag">new</span>' : ""}${p.featured ? '<span class="tag">home</span>' : ""}${p.popular ? '<span class="tag">popular</span>' : ""}${so ? '<span class="tag tag--sold">sold out today</span>' : ""}${p.visible === false ? '<span class="tag">hidden</span>' : ""}${(p.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div></div></div>
     <div class="adm-actions"><button class="btn btn--sm ${so ? "" : "btn--ghost"}" data-act="psold" data-id="${p.id}" aria-pressed="${so}">${so ? "Back in stock" : "Sold out today"}</button><button class="btn btn--sm btn--ghost" data-act="pedit" data-id="${p.id}">Edit</button><button class="btn btn--sm btn--ghost" data-act="pdel" data-id="${p.id}">Delete</button></div></li>`; }).join("")}</ul>`)}</div></div>`;
@@ -469,9 +469,18 @@
   }
   // v10.26.1: the "Ordering & payment" tab. Everything about how customers order and pay lives here (it used to sit under Theme & layout). Same draft + Save as Theme & layout.
   const saveBar = () => `<div class="adm-save"><button class="btn btn--sm" data-act="lsave">Save</button> <button class="btn btn--sm btn--ghost" data-act="lreset">Reset</button><span class="muted">Save makes it live for everyone straight away. It saves both Ordering &amp; payment and Theme &amp; layout.</span></div>`;
+  function statusBox(s) {   // v10.27: shop status banner. Shown on every public page; "pause" also stops new orders from the Cart / Custom Order.
+    const o = s.shopStatus || {};
+    return `<p class="muted">A note under the header on every page (for example "On holiday, back on 3 Jan"). Tick the box to stop new orders too. The WhatsApp chat button always keeps working. If you set a <strong>back on</strong> date, it switches itself off on that day.</p>
+    <label class="chk"><input type="checkbox" data-act="st-on" ${o.enabled ? "checked" : ""}>Show the banner</label>
+    <label>Message</label><input data-act="st-msg" value="${esc(o.message || "")}" maxlength="160" placeholder="e.g. We are closed for the holidays. Orders open again soon.">
+    <label>Back on (optional)</label><input type="date" data-act="st-until" value="${esc(o.until || "")}">
+    <label class="chk"><input type="checkbox" data-act="st-pause" ${o.pause !== false ? "checked" : ""}>Also pause new orders from the Cart and Custom Order</label>`;
+  }
   function shop() {
     const s = state.draft;
     return `<div class="adm-side adm-side--one">
+    ${sec("status", "Shop status banner (holiday / closed)", (s.shopStatus || {}).enabled ? ((s.shopStatus || {}).pause !== false ? "showing, orders paused" : "showing") : "off", statusBox(s))}
     ${sec("rules", "Order calendar & delivery", (s.calendar || {}).enabled === false ? "calendar off" : ((s.calendar || {}).draft || (s.delivery || {}).draft ? "placeholder numbers" : "notice, limit, areas"), rulesBox(s))}
     ${sec("guide", "Cake price guide", (s.priceGuide || {}).enabled === false ? "off" : ((s.priceGuide || {}).draft ? "sample prices" : ((s.priceGuide || {}).sizes || []).length + " sizes"), guideBox(s))}
     ${sec("pay", "How to pay (EFT, SnapScan, Capitec Pay)", (s.payment || {}).enabled === false ? "off" : ((s.payment || {}).draft ? "not set up yet" : "shown to customers"), payBox(s))}
@@ -792,6 +801,11 @@
       g.draft = false;
       if (a === "pg-on") g.enabled = t.checked; else if (a === "pg-sn" && z) z.name = t.value.slice(0, 40); else if (a === "pg-ss" && z) z.serves = num(t.value, 1, 1000); else if (a === "pg-sp" && z) z.price = num(t.value, 0, 100000);
       else if (a === "pg-fn" && fx) fx.name = t.value.slice(0, 40); else if (a === "pg-fx" && fx) fx.extra = num(t.value, 0, 10000); else if (a === "pg-note") g.note = t.value.slice(0, 200); else return;
+      draftKey(); return;
+    }
+    if (a.startsWith("st-")) {   // v10.27: shop status banner
+      const o = s.shopStatus = s.shopStatus || { enabled: false, message: "", until: "", pause: true };
+      if (a === "st-on") o.enabled = t.checked; else if (a === "st-msg") o.message = String(t.value).slice(0, 160); else if (a === "st-pause") o.pause = t.checked; else if (a === "st-until") o.until = /^\d{4}-\d{2}-\d{2}$/.test(t.value) ? t.value : "";
       draftKey(); return;
     }
     if (a.startsWith("pay-")) {   // v10.26: how-to-pay fields

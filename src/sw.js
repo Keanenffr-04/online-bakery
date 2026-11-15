@@ -6,7 +6,7 @@
    - The admin (admin.html, admin.js, admin.css) is NEVER cached.
    - The cart and remembered details live in the phone's own storage, not here, so they can never be stale.
    Change VERSION whenever the site changes so old copies are cleared. */
-const VERSION = "sb-v10.26.17";
+const VERSION = "sb-v10.27";
 const SHELL = ["index.html", "menu.html", "cart.html", "custom-orders.html", "contact.html", "faq.html", "about.html", "offline.html",
   "css/site.css", "js/boot.js", "js/store.js", "js/site.js", "js/cart.js", "js/pages.js", "js/decor.js", "js/pwa.js",
   "themes/base.css", "themes/theme-classic.css", "themes/theme-cocoa.css", "themes/theme-pastel.css", "themes/theme-seasonal.css",

@@ -2,7 +2,7 @@
 
 *Written for Becca. This page is the list of **finished** work. What is still to do is in [`ROADMAP.md`](ROADMAP.md). New entries are added at the bottom and nothing is ever deleted.*
 
-**Latest version:** v10.26.17
+**Latest version:** v10.27
 
 ## Contents
 1. [What the website can do today](#today)
@@ -24,6 +24,7 @@
 - **Attach an inspiration photo** to a custom order (a picture of a cake they like). It is made smaller on their phone and stored privately; only the admin can open it.
 - **Leave a review** on a short page (name, optional stars, a few words). It only appears on the website after Becca approves it.
 - **A thank-you page** after ordering (what they sent, how to pay, an **Open WhatsApp** button that brings the order text with it, and the backup WhatsApp button), and one floating WhatsApp button on every page. **The cart empties itself once an order is sent.**
+- **See a shop status banner** when Becca is closed or busy (and, if she pauses orders, a plain message instead of sending; the WhatsApp chat button still works).
 - **Install the website as an app** on a phone (footer button on Android; Share > Add to Home Screen on iPhone). Pages already visited, the menu and the cart still open with a weak signal or no signal. Only on the real website.
 - **My account:** sign in with email or Google, see past orders, keep their details, change password or delete their account.
 - **Remember my details** on their own phone or computer, so they do not retype their name and number.
@@ -102,6 +103,7 @@ Oldest first. Click a version to jump to its detailed record. A version like **v
 | [v10.25](#v10-25) | 2026-11-09 | **Review link** (a short review page; you approve each review before it shows; the thank-you WhatsApp message carries the link) and **inspiration photo upload** on Custom Orders (stored privately, you open it next to the order). Run the newest `setup.sql` once (section 12). |
 | [v10.26.16](#v10-26-16) | 2026-11-10 | **The "paid" tick** (second half of idea 27 part 2, split in 2): **Mark paid** / **Undo paid** on each order, a green **paid** tag, a paid / not paid filter, **PAID** on the printed slip, **not paid yet** in Numbers, a "paid" column in the spreadsheet download, and a Live check test that strangers cannot tick their own order as paid. Run the newest `setup.sql`. |
 | [v10.26.17](#v10-26-17) | 2026-11-15 | **Install as an app + works when the signal is weak** (idea 47): an **Install the app** button in the footer (Android; iPhone shows the Safari steps), an app icon and full-screen look, and a small background helper that keeps the pages, menu and cart working during load shedding. Orders, sign-in and the admin are never saved offline. No database update. |
+| [v10.27](#v10-27) | 2026-11-15 | **Shop status banner** (a note on every page; optionally pauses new orders from the Cart and Custom Order; a "back on" date switches it off by itself) and the **old "Publish" wording fixed** in the admin. No database update. |
 | [v10.26.15](#v10-26-15) | 2026-11-10 | **Upload proof of payment** (first half of idea 27 part 2, split in 2): an upload box on the thank-you page (picture or PDF, up to 2 MB) into a private storage place; a **proof sent** tag and **View proof** button in the admin; deleted with the order; Live check tests the new storage; Privacy line. Run the newest `setup.sql`. |
 | [v10.26.14](#v10-26-14) | 2026-11-10 | **Both WhatsApps, the free way** (your list 25, item 6): the thank-you page offers "Send a copy to Keanen too" with the whole order message, for the Cart and the Custom Order. Nothing to update in the database. |
 | [v10.26.13](#v10-26-13) | 2026-11-10 | **Cosier WhatsApp message** (your list 25, item 7): a warm greeting with the customer's name and a warm sign-off on the Cart and Custom Order messages, with every needed line kept. Nothing to update in the database. |
@@ -608,6 +610,20 @@ Owner list 23 had one change: the Live check said "Strangers CAN look inside the
 Files: `src/js/admin.js`, `supabase/setup.sql`, `README.md`, `roadmap/*`, `docs/AI_HANDOFF.md`, `VERSION`.
 Tests (headless Chromium, mock Supabase + mocked storage answers): locked storage = green and the test file removed; listing leaks = red; the object opens = red; the test upload refused = yellow, nothing removed; no page errors. **The new SQL was NOT run on a real Postgres** (none in the sandbox): the owner's Live check is the real test. Honest note: this is probably a false alarm in the old check, but the extra lock makes the answer safe either way.
 Pushed to the backlog (also in `ROADMAP.md` 4b): a weekly automatic Live check with history; auto-removal of leftover test pictures; the same private-storage tick for proof of payment; deleting customer photos after a set time (with a Privacy page line).
+
+<a id="v10-27"></a>
+## v10.27: Shop status banner + the old "Publish" wording (done, 2026-11-15)
+Owner said "start next v/patch" and "if it's something big split it into 2 or 3". The version marked NEXT was two small items (plan items 4 and 45), so it was **not split**.
+1. **Setting** `shopStatus {enabled, message, until, pause}` (default off; `D.shopStatus` in `store.js`, merged in `SB.load()` like the other settings, so the live site gets it without any database change). `SB.shopStatus(settings)` returns `{on, paused, text}`: `until` is the day Becca is **back**, so on that day (visitor's own date, `SB.today()`) and after, both the banner and the pause switch themselves off; text = message (max 160) + " Back on 20 Dec." `SB.shop` is set by `SB.load()` for synchronous use. Never throws. No `setup.sql` change.
+2. **Banner** (`site.js`): a `role="status"` bar inserted before `<main>` on every public page (not the admin), "Orders paused" or "Please note" in bold + the message; style `.shop-status` (bottom of `site.css`, theme tokens, works in dark mode).
+3. **Pause.** When `pause` is on, the Cart (`blocker()` in `cart-page.js`) and the Custom Order (`submit` in `custom-order.js`) show the message and send nothing. **The floating WhatsApp button, the Contact page and the backup WhatsApp are untouched on purpose.**
+4. **Admin** (`statusBox()` + `st-*` handlers in `admin.js`): a first box in Ordering & payment with Show the banner, Message, Back on (date) and Also pause new orders; same draft + Save as the other boxes.
+5. **Wording:** the two "reaches customers after you Publish" lines (Menu sections, Menu items) now say "as soon as you press Save". The Save bar and Backup tab were already correct. README troubleshooting + day-to-day tables updated.
+6. `sw.js` cache version is now `sb-v10.27` (rule in HANDOFF item 48).
+Files: `src/js/store.js`, `src/js/site.js`, `src/js/cart-page.js`, `src/js/custom-order.js`, `src/js/admin.js`, `src/css/site.css`, `src/sw.js`, `README.md`, `roadmap/*`, `docs/AI_HANDOFF.md`, `VERSION`. No data file change (offline copy untouched), no `setup.sql` change.
+Tests (headless Chromium over a local web server, settings put in `localStorage` because there is no internet here): paused + future date shows "Orders paused ... Back on 20 Dec." on the Menu and the Cart and Custom Order both refuse with the same message; banner-only (pause off) shows "Please note ..." and the Cart and Custom Order work as before; a "back on" date of today or earlier shows nothing and blocks nothing; off shows nothing; exactly one banner per page; no console errors.
+**Honest limits (please hand-test once):** the **admin box was syntax-checked but not opened** (it needs a real sign-in). After the update: Admin > Ordering & payment > Shop status banner > tick Show the banner, type a message, Save, then open the website in a private window and check the banner; tick Also pause, open the Cart with an item and press send (it should refuse); untick everything, Save, and check it is gone.
+Pushed to the backlog (also in `ROADMAP.md` 4b): banner colours and a link button; closed-until from the calendar's blocked dates; pause only the Cart or only the Custom Order; a "tell me when you reopen" list.
 
 <a id="v10-26-17"></a>
 ## v10.26.17: Install as an app + works when the signal is weak (done, 2026-11-15)

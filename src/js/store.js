@@ -44,6 +44,7 @@
   const GAUTENG = [{"region": "Johannesburg", "areas": [["Alexandra", 240], ["Braamfontein", 310], ["Bryanston", 180], ["Cresta", 240], ["Dainfern", 180], ["Diepkloof", 310], ["Douglasdale", 180], ["Eldorado Park", 420], ["Emmarentia", 240], ["Florida", 310], ["Fourways", 180], ["Greenside", 240], ["Honeydew", 240], ["Houghton", 240], ["Johannesburg CBD", 310], ["Johannesburg South", 310], ["Kensington", 310], ["Lenasia", 420], ["Linden", 240], ["Lonehill", 180], ["Maboneng", 310], ["Marlboro", 240], ["Melrose", 240], ["Melville", 310], ["Midrand", 180], ["Mondeor", 310], ["Morningside", 240], ["Northcliff", 240], ["Northriding", 240], ["Orlando", 310], ["Parkhurst", 240], ["Parktown", 310], ["Paulshof", 180], ["Randburg", 240], ["Rivonia", 180], ["Roodepoort", 310], ["Rosebank", 240], ["Rosettenville", 310], ["Sandton", 240], ["Soweto", 310], ["Sunninghill", 180], ["Waterfall", 130], ["Wendywood", 180], ["Woodmead", 180]]}, {"region": "Tshwane", "areas": [["Akasia", 180], ["Arcadia", 180], ["Atteridgeville", 90], ["Brooklyn", 180], ["Centurion", 130], ["Cullinan", 310], ["Eldoraigne", 90], ["Equestria", 180], ["Erasmuskloof", 180], ["Faerie Glen", 180], ["Garsfontein", 180], ["Hammanskraal", 310], ["Hatfield", 180], ["Highveld", 90], ["Irene", 130], ["Laudium", 90], ["Lynnwood", 180], ["Mamelodi", 240], ["Menlyn", 180], ["Montana", 180], ["Moreleta Park", 180], ["Olievenhoutbosch", 130], ["Pretoria CBD", 180], ["Pretoria East", 180], ["Pretoria North", 180], ["Pretoria West", 130], ["Rayton", 310], ["Rooihuiskraal", 90], ["Silverton", 180], ["Soshanguve", 310], ["Sunnyside", 130], ["Waterkloof", 180], ["Wierda Park", 130], ["Wonderboom", 180]]}, {"region": "Ekurhuleni", "areas": [["Alberton", 310], ["Bedfordview", 310], ["Benoni", 310], ["Boksburg", 310], ["Brakpan", 310], ["Daveyton", 310], ["Duduza", 420], ["Edenvale", 240], ["Germiston", 310], ["Isando", 240], ["Katlehong", 420], ["Kempton Park", 240], ["Modderfontein", 240], ["Nigel", 420], ["OR Tambo Airport", 240], ["Primrose", 310], ["Springs", 420], ["Tembisa", 180], ["Thokoza", 420], ["Vosloorus", 420]]}, {"region": "West Rand", "areas": [["Bekkersdal", 420], ["Carletonville", 520], ["Cradle of Humankind", 240], ["Fochville", 550], ["Kagiso", 310], ["Krugersdorp", 310], ["Magaliesburg", 420], ["Muldersdrift", 240], ["Randfontein", 420], ["Westonaria", 420]]}, {"region": "Sedibeng", "areas": [["Eikenhof", 420], ["Evaton", 450], ["Heidelberg", 440], ["Henley on Klip", 420], ["Meyerton", 450], ["Sebokeng", 490], ["Sharpeville", 570], ["Vanderbijlpark", 600], ["Vereeniging", 550], ["Walkerville", 420]]}].flatMap(g => g.areas.map(([name, fee]) => ({ name, fee, region: g.region })));
   const D = { theme: "classic", tagline: "", heroStyle: "logo", greeting: "Welcome in, something sweet is baking.", home: { hero: true, shop: true, featured: true, fresh: true, meet: true, steps: true, cta: true }, homeOrder: ["hero", "shop", "featured", "fresh", "reviews", "meet", "steps", "cta"], meet: { heading: "Meet Becca", text: MEET_TEXT, draft: true }, featuredCount: 3, featuredStyle: "glass", recentCount: 3, popularCount: 3, popularAuto: true, newDays: 14, decorations: true, autoTheme: { enabled: true, rules: SEASON_RULES }, menuLayout: "grid", faq: [], reviews: [], specials: { enabled: true, items: ["Today's specials: ask Becca on WhatsApp", "Custom cakes for every occasion, order online"] }, orders: { enabled: true, items: ["How to order: message Becca on WhatsApp", "Tell us what you'd like, the date you need it and any notes"] },
     // v10.21: order calendar + delivery fees. PLACEHOLDER numbers (draft: true) until Becca sets her real ones in Admin > Ordering & payment > Order calendar & delivery.
+    shopStatus: { enabled: false, message: "", until: "", pause: true },   // v10.27: banner on every page; pause = no new orders from the Cart / Custom Order
     calendar: { enabled: true, draft: true, cartDays: 3, customDays: 7, dailyLimit: 6, closedDays: [], blocked: [] },
     delivery: { enabled: true, draft: true, areas: GAUTENG.map(a => ({ ...a })), freeOver: 0, collectionNote: "Collection is free. Becca shares the pick-up details when she confirms." },
     // v10.22: cake price guide. PLACEHOLDER sizes and prices (draft: true) until Becca sets her real ones in Admin > Ordering & payment > Cake price guide.
@@ -78,6 +79,17 @@
       if (d.length < 8 || d.length > 15) return { error: "That phone number doesn't look right. Check it and try again." };
       const cc = intl ? (SB.COUNTRIES.map(c => c[0]).sort((a, b) => b.length - a.length).find(c => d.startsWith(c)) || "") : sel.value;
       return { digits: d, display: cc ? "+" + cc + " " + SB.groupDigits(d.slice(cc.length)) : "+" + d };
+    },
+    // v10.27: the shop status banner. {on, paused, text}. "until" is the day Becca is BACK: on that day (and after) the banner and the pause switch themselves off.
+    // Never throws. The WhatsApp chat button is not affected: a customer can always still message Becca.
+    shopStatus(s) {
+      const o = (s && s.shopStatus) || {}, off = { on: false, paused: false, text: "" };
+      if (!o.enabled) return off;
+      const back = /^\d{4}-\d{2}-\d{2}$/.test(o.until || "") ? o.until : "";
+      if (back && SB.today() >= back) return off;
+      const msg = String(o.message || "").trim().slice(0, 160) || (o.pause !== false ? "We are not taking new orders right now." : "A quick note from the bakery."),
+        when = back ? " Back on " + dayText(new Date(+back.slice(0, 4), +back.slice(5, 7) - 1, +back.slice(8, 10))) + "." : "";
+      return { on: true, paused: o.pause !== false, text: msg + when };
     },
     // v10.10: today's date in the visitor's own time zone (YYYY-MM-DD). toISOString() is UTC and shows "yesterday" in South Africa
     // between 00:00 and 02:00, so every "today" in the site uses this instead.
@@ -374,6 +386,7 @@
         const pv = window.top !== window ? J(sessionStorage, "sb_preview") : null;
         const base = { ...D, ...(pubSet || {}) }, own = (pv && pv.settings) || (SB.dbOK || window.SB_AS_CUSTOMER ? null : J(localStorage, "sb_settings")) || {};
         const settings = { ...base, ...own, home: { ...D.home, ...(base.home || {}), ...(own.home || {}) }, meet: { ...D.meet, ...(base.meet || {}), ...(own.meet || {}) }, specials: { ...D.specials, ...(base.specials || {}), ...(own.specials || {}) }, orders: { ...D.orders, ...(base.orders || {}), ...(own.orders || {}) }, autoTheme: { ...D.autoTheme, ...(base.autoTheme || {}), ...(own.autoTheme || {}) },
+          shopStatus: { ...D.shopStatus, ...(base.shopStatus || {}), ...(own.shopStatus || {}) },   // v10.27
           calendar: { ...D.calendar, ...(base.calendar || {}), ...(own.calendar || {}) }, delivery: { ...D.delivery, ...(base.delivery || {}), ...(own.delivery || {}) },   // v10.21
           priceGuide: { ...D.priceGuide, ...(base.priceGuide || {}), ...(own.priceGuide || {}) },   // v10.22
           payment: (() => { const b = base.payment || {}, w = own.payment || {}; return { ...D.payment, ...b, ...w, bank: { ...D.payment.bank, ...(b.bank || {}), ...(w.bank || {}) }, snapscan: { ...D.payment.snapscan, ...(b.snapscan || {}), ...(w.snapscan || {}) }, capitec: { ...D.payment.capitec, ...(b.capitec || {}), ...(w.capitec || {}) } }; })() };   // v10.26
@@ -391,6 +404,7 @@
         // the admin keeps using categories / products (everything).
         const cats = data.categories || [], prods = data.products || [], hid = new Set(cats.filter(c => c.hidden).map(c => c.id));
         SB.newDays = settings.newDays == null ? 14 : +settings.newDays;
+        SB.shop = SB.shopStatus(settings);   // v10.27
         return { biz: biz || {}, settings, themeNow, season, categories: cats, products: prods, shownCategories: cats.filter(c => !c.hidden), shownProducts: prods.filter(p => p.visible !== false && !hid.has(p.category)), published: { settings: base, products: pubProd } };
       })());
     },
