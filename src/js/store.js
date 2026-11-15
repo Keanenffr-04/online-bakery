@@ -128,8 +128,15 @@
       try {
         const c = new AbortController(), tm = setTimeout(() => c.abort(), 4000);
         const r = await fetch(cfg.url + "/rest/v1/site_data?select=key,value", { headers: { apikey: cfg.key }, signal: c.signal }); clearTimeout(tm);
-        if (!r.ok) return null; const o = {}; (await r.json()).forEach(x => { o[x.key] = x.value; }); return o;
-      } catch (e) { return null; }
+        if (!r.ok) return SB.dbLast(); const o = {}; (await r.json()).forEach(x => { o[x.key] = x.value; });
+        try { if (o.products || o.settings) localStorage.setItem("sb_db_last", JSON.stringify({ products: o.products, settings: o.settings })); } catch (e) { }   // v10.26.17: public menu + settings only
+        return o;
+      } catch (e) { return SB.dbLast(); }
+    },
+    // v10.26.17: no signal (load shedding)? Show the last menu + settings this phone got from the database, so the shop still opens. Public data only, never orders or details.
+    // Not used on the admin, in the customer-view preview or from a file: those must always show the real thing.
+    dbLast() {
+      try { if (location.protocol === "file:" || window.SB_AS_CUSTOMER || /admin\.html$/.test(location.pathname)) return null; const o = JSON.parse(localStorage.getItem("sb_db_last") || "null"); return o && (o.products || o.settings) ? o : null; } catch (e) { return null; }
     },
     // v10.21: how many orders are already booked per date (upcoming, cancelled ignored): {"2026-11-20": 3} or null if unavailable. Needs setup.sql section 9.
     // Only dates + counts are public, never names or phones. Never throws.

@@ -1,6 +1,6 @@
 # 🗺️ Roadmap: what's next and what we need from you
 
-**Where we are:** v10.26.16 &nbsp;|&nbsp; **Next up:** v10.26.17 (install as an app), then v10.27 (shop status banner) &nbsp;|&nbsp; **Rule:** 2 things per version.
+**Where we are:** v10.26.17 &nbsp;|&nbsp; **Next up:** v10.27 (shop status banner + admin wording), then v10.28 (vouchers + loyalty) &nbsp;|&nbsp; **Rule:** 2 things per version.
 
 *This page is written for Becca. No website or coding knowledge needed. Words you might not know are explained in the "Words explained" list in the [README](../README.md). Finished work is in [`BACKLOG.md`](BACKLOG.md).*
 
@@ -26,7 +26,8 @@
 - ✅ **New in v10.26.14:** (your list 25, item 6, **the free way you chose**) every order can now reach **both** your WhatsApps. After a customer sends an order to Becca, the thank-you page has a green **"Send a copy to Keanen too"** button that opens WhatsApp to the second number with the **whole order message** already typed, so it is one extra tap and costs nothing. It works for the Cart and the Custom Order, and the orders are still saved online for both admins. (The paid Meta WhatsApp Business route is in the ideas list for later, if you ever want it to happen with no tap at all.) No database update needed.
 - ✅ **New in v10.26.15:** (the first half of your "proof of payment + paid tick" version, **split in 2 as you asked**) customers can now **upload their proof of payment** on the thank-you page, under the How to pay box: a screenshot, a photo or a PDF (up to 2 MB). It goes to a **private place that only you and Keanen can open**; in the admin the order shows a green **proof sent** tag and a **View proof** button. Deleting an order deletes its proof too. The box only shows once your real payment details are in (the draft flag is off) and only on the live website, never in the local preview. The Live check also tests the new storage the way a stranger would. The Privacy page has a line about it. **Run the newest `setup.sql` once** (section 2c), then run the Live check.
 - ✅ **New in v10.26.16:** (the second half of your "proof of payment + paid tick" version) a **paid tick** on every order. In Admin > Orders each order has a **Mark paid** button (and **Undo paid** if you slip); a green **paid** tag shows next to it. A new filter shows **paid** or **not paid** orders, the printed slip gets a green **PAID** stamp, and the **Numbers** box shows **not paid yet**, the money still owed. Customers cannot tick it themselves. **Run the newest `setup.sql` once** (section 2c); until then the paid buttons stay hidden.
-- ⏭️ **Next:** the **installable app** (v10.26.17), then the shop status banner (v10.27). *The proof-of-payment version was split in 2 because it was too big to build safely in one go.* *Earlier: Your list 27 was split in 3 for the same reason.*
+- ✅ **New in v10.26.17:** (idea 47) the website can be **installed on a phone like an app**: an **Install the app** button in the footer on Android (iPhone shows the two Safari taps: Share, then Add to Home Screen), with its own icon and a full-screen look. The **menu, the cart and pages already visited still open when the signal is weak or during load shedding**; the last menu from the database is kept on the phone. Orders, sign-in and the admin are never saved offline, and a new website version replaces the saved one as soon as there is signal. It only works on the real https website (not in your local preview). The Privacy page has a line about it. No database update needed.
+- ⏭️ **Next:** the **shop status banner** and the old "Publish" wording in the admin (v10.27), then vouchers + loyalty (v10.28). *The proof-of-payment version was split in 2 because it was too big to build safely in one go.* *Earlier: Your list 27 was split in 3 for the same reason.*
 - *(older)* Proof of payment and the installable app slid back to v10.26.15 and v10.26.16. *Your list 27 was split in 3 because it was too big to build safely in one go.* *We split the old v10.26.6 in 3 because it was too big to build safely in one go.*
 - ⏳ **Waiting on you:** real prices, FAQ answers, reviews, your story, Instagram / Facebook names and photos. The full checklist is in section 2.
 - 🚀 **Last step:** putting the website online, only when you say "I'm happy with everything".
@@ -60,11 +61,12 @@ Your change lists always go **first**, so the versions below may slide back by o
 | ~~v10.26.14~~ | ✅ Done | **Every order reaches both of your WhatsApps** (list 25, item 6). A website cannot message two chats by itself: the tap-to-send link opens one chat. Real automatic sending to two numbers needs the **WhatsApp Business Platform** (a Meta business account, a number registered for it, and a small cost per message) plus a small server step in Supabase. We will first set up what is free and close to it, and ask you which way you want to go. | A decision from you: free workaround or Meta WhatsApp Business account |
 | ~~v10.26.15~~ | ✅ Done | **Upload proof of payment** (idea 27, part 2, step 1 of 2): an upload box on the thank-you page (picture or PDF, up to 2 MB), stored privately; a **proof sent** tag and a **View proof** button next to the order in the admin; proof is deleted with the order. Needs the newest `setup.sql`. | Run the newest `setup.sql` once |
 | ~~v10.26.16~~ | ✅ Done | **A "paid" tick per order** (idea 27, part 2, step 2 of 2): a **Mark paid** button and a green **paid** tag on each order, a paid / not paid filter, **PAID** printed on the slip, and unpaid money shown in Numbers. Needs the newest `setup.sql`. | Nothing new |
-| **v10.26.17** | ⏭️ Next | **Install on the home screen like an app**, and the menu and cart keep working when the internet is flaky or during load shedding (idea 47). | Nothing new |
-| v10.27 | 📅 Planned | **Shop status banner** ("on holiday until 3 Jan", pauses orders) + the **old "Publish" wording fixed** in the admin (4 and 45). | Nothing new |
+| ~~v10.26.17~~ | ✅ Done | **Install on the home screen like an app** (idea 47): install button, app icon, full-screen look; the menu, cart and visited pages still open when the signal is weak. Never saves orders, sign-in or the admin. | Nothing new |
+| **v10.27** | ⏭️ Next | **Shop status banner** ("on holiday until 3 Jan", pauses orders) + the **old "Publish" wording fixed** in the admin (4 and 45). | Nothing new |
 | v10.28 | 📅 Planned | **Gift vouchers** (you give a code, the customer types it in the cart, it comes off the total) + a **loyalty reward** (for example every 10th order a free cupcake box). | Your voucher and loyalty rules |
-| v10.29 | 📅 Planned | **Deposits / online payment** (Yoco, PayFast or Ozow). A deposit secures the date. On its own because it handles real money. | A payment account that you open |
-| v10.30 | 📅 Planned | **Specials list:** customers who tick "yes, send me specials" (POPIA-friendly, with an easy unsubscribe) + **Home page, round 3**. | Nothing new |
+| v10.29 | 📅 Planned | **Deposits, tracked by hand** (split of the old v10.29, because it handles money): a **deposit amount** and a **balance still to pay** on each order (grows the paid tick into an amount), shown on the slip, in Numbers and in the WhatsApp message. No payment company yet. | Your deposit rule (for example 50% for cakes over R...) |
+| v10.30 | 📅 Planned | **Online payment link** (Yoco, PayFast or Ozow), step 2 of the old v10.29: a customer can pay the deposit online and the order ticks itself. Needs a small server step in Supabase. | A payment account that you open |
+| v10.31 | 📅 Planned | **Specials list:** customers who tick "yes, send me specials" (POPIA-friendly, with an easy unsubscribe) + **Home page, round 3**. | Nothing new |
 | When photos exist | ⏳ Waiting | **Real product photos** instead of emoji + an **"Our work" gallery** | Your photos (tip: same light and background for every photo) |
 | After launch | 📅 Planned | **The rest of your 60 ideas** (section 4c), two at a time, in the order you choose. Ideas will also be added as real customers show us what they need. | Your numbers |
 | Last (v11) | ⏳ Waiting | **Put the website online:** hosting, small browser icon, search-engine tidy-up, Google Business Profile, share picture for WhatsApp / Facebook, your own web address, launch checklist | You saying "I'm happy with everything" |
@@ -249,6 +251,13 @@ Not scheduled. Tell us which to pull into a version. The ranked **top 10** is in
 - **A full online shop like Takealot (list 25, item 8).** Today customers fill a cart and send it on WhatsApp, Becca confirms and they pay by hand. A Takealot-style flow adds: paying on the website (v10.29), live stock counts, an order-tracking page for the customer ("baking", "ready"), and email receipts (needs the email sender, 2a). We will do it in small steps after v10.29, only when you say so.
 
 ### 4b. Collected from finished versions (gathered here in v10.21.1)
+
+**From v10.26.17 (install as an app)**
+- Real **push notifications** for Becca on a closed phone (needs a push service and the installed app; the chime only works while the admin is open)
+- An **"Add to Home Screen" nudge after a customer's second visit** (today it is only the quiet footer button)
+- An **"orders waiting to send" queue** when a customer is offline at the moment they press send (today the WhatsApp message still opens and the saved copy is skipped)
+- A **"you are offline" strip** at the top of the menu and cart
+- Pre-save more pages (Privacy, Terms, Reviews) in the app
 Every version leaves a few "good idea, but not now" notes. They used to be spread through the backlog; here they are in one place. The tag shows which version they came from.
 
 **Orders and customers**
@@ -468,7 +477,7 @@ You asked for everything we think the website could still add. Nothing here is b
 
 **F. Safe, fast and dependable**
 46. ✅ *tool built in v10.23 (admin Live check); the hand-test with Becca is guide 5e)* ⭐ **A proper test against your real online database.** Everything so far was tested against a pretend database because our workshop has no internet. We would walk through it with you (about 20 minutes): place an order, change its status, sign up as a customer, delete an account, check "Most popular". Do this before launch. *S*
-47. **Install on the home screen like an app,** and keep the menu and cart working when the internet is flaky or during load shedding. *M*
+47. ✅ *built in v10.26.17* **Install on the home screen like an app,** and keep the menu and cart working when the internet is flaky or during load shedding. *M*
 48. ✅ *built in v10.23 (a CAPTCHA is the optional extra, see 4b)* **Spam protection** on orders and sign-up, plus a keep-alive so the free online database never pauses. *M*
 49. **Backup reminder** (or a weekly backup file) because the free plan has no automatic backups. *S*
 50. **Screen-reader, keyboard and small-phone check.** *M*
