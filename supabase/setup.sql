@@ -308,8 +308,19 @@ drop policy if exists "customers add orders" on public.orders;
 create policy "customers add orders" on public.orders for insert to anon, authenticated
   with check (source in ('cart', 'custom') and status = 'pending' and paid = false and (user_id is null or user_id = auth.uid()));
 
+-- 16. (v10.28) Deposits tracked by hand. One amount per order (whole rands), set by an admin only. The balance is worked out in the admin
+-- (total minus deposit). Customers can add an order but the rule below makes sure nobody can add one that already carries a deposit.
+-- Re-runnable; nothing is deleted and existing orders start with no deposit.
+alter table public.orders add column if not exists deposit numeric not null default 0;
+do $$ begin
+  alter table public.orders add constraint orders_deposit_range check (deposit >= 0 and deposit < 1000000);
+exception when duplicate_object then null; end $$;
+drop policy if exists "customers add orders" on public.orders;
+create policy "customers add orders" on public.orders for insert to anon, authenticated
+  with check (source in ('cart', 'custom') and status = 'pending' and paid = false and deposit = 0 and (user_id is null or user_id = auth.uid()));
+
 -- The admin's "Live check" asks this to see whether the database has the newest setup.sql.
 create or replace function public.setup_version() returns text
-language sql immutable as $$ select '10.26.16'::text $$;
+language sql immutable as $$ select '10.28'::text $$;
 revoke all on function public.setup_version() from public;
 grant execute on function public.setup_version() to anon, authenticated;
