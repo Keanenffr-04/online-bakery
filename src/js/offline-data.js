@@ -867,6 +867,13 @@ window.SB_OFFLINE = {
         "on": false,
         "cell": ""
       }
+    },
+    "depositRule": {
+      "enabled": true,
+      "draft": true,
+      "percent": 50,
+      "minTotal": 500,
+      "note": ""
     }
   },
   "products": {

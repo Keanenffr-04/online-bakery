@@ -2,7 +2,7 @@
 
 *Written for Becca. This page is the list of **finished** work. What is still to do is in [`ROADMAP.md`](ROADMAP.md). New entries are added at the bottom and nothing is ever deleted.*
 
-**Latest version:** v10.28
+**Latest version:** v10.28.1
 
 ## Contents
 1. [What the website can do today](#today)
@@ -105,6 +105,7 @@ Oldest first. Click a version to jump to its detailed record. A version like **v
 | [v10.26.16](#v10-26-16) | 2026-11-10 | **The "paid" tick** (second half of idea 27 part 2, split in 2): **Mark paid** / **Undo paid** on each order, a green **paid** tag, a paid / not paid filter, **PAID** on the printed slip, **not paid yet** in Numbers, a "paid" column in the spreadsheet download, and a Live check test that strangers cannot tick their own order as paid. Run the newest `setup.sql`. |
 | [v10.26.17](#v10-26-17) | 2026-11-15 | **Install as an app + works when the signal is weak** (idea 47): an **Install the app** button in the footer (Android; iPhone shows the Safari steps), an app icon and full-screen look, and a small background helper that keeps the pages, menu and cart working during load shedding. Orders, sign-in and the admin are never saved offline. No database update. |
 | [v10.27](#v10-27) | 2026-11-15 | **Shop status banner** (a note on every page; optionally pauses new orders from the Cart and Custom Order; a "back on" date switches it off by itself) and the **old "Publish" wording fixed** in the admin. No database update. |
+| [v10.28.1](#v10-28-1) | 2026-11-17 | **Deposits, part 2 of 2:** a **Deposit rule** (sample, Draft: 50% from R 500) with a **Suggest deposit** button, and the **deposit and balance lines** in the WhatsApp messages and the How to pay box. Requests for a deposit only go to customers once the rule is yours (not Draft). Nothing to update in the database. |
 | [v10.28](#v10-28) | 2026-11-15 | **Deposits, tracked by hand (part 1 of 2):** type the deposit a customer paid next to each order (**Save deposit**); the order shows a **deposit** tag and the **balance still to pay**, the printed slip and the CSV carry both, and **Numbers** counts the balances as **not paid yet** and shows **deposits held**. **Run the newest `setup.sql` once** (section 16); until then the deposit box stays hidden. The deposit rule and the WhatsApp lines come next in v10.28.1. |
 | [v10.27.1](#v10-27-1) | 2026-11-15 | **Pause button removed** (the little button for the moving decorations is gone from every page) and **gift vouchers + loyalty postponed** to the ideas list; the plan moved up by one version. No database update. |
 | [v10.26.15](#v10-26-15) | 2026-11-10 | **Upload proof of payment** (first half of idea 27 part 2, split in 2): an upload box on the thank-you page (picture or PDF, up to 2 MB) into a private storage place; a **proof sent** tag and **View proof** button in the admin; deleted with the order; Live check tests the new storage; Privacy line. Run the newest `setup.sql`. |
@@ -824,3 +825,11 @@ Owner list 24 had two changes: (1) add Keanen Russon's WhatsApp (081 211 8414) s
 Files: `config/business.json`, `src/js/offline-data.js`, `src/js/store.js`, `src/js/site.js`, `src/js/thanks.js`, `src/contact.html`, `README.md`, `roadmap/*`, `docs/AI_HANDOFF.md`, `VERSION`. No `setup.sql` change (`SETUP_VERSION` stays `10.26.2`).
 Tests (headless Chromium, file://): Contact shows Keanen's button with `wa.me/27812118414` and Becca's buttons unchanged; the thank-you page button opens a chat with the order typed out; with the number emptied both buttons disappear; index, cart, custom orders, menu, FAQ and About load with no page errors.
 Pushed to the backlog (also in `ROADMAP.md` 4b): the line on the Cart / Custom Order pages and under the floating button; payment details inside the "confirmed" WhatsApp message (a customer who closed the thank-you page never sees them); a Privacy page line about Keanen (POPIA, owner to confirm); changing the number in the admin; routing by day or time.
+
+<a id="v10-28-1"></a>
+## v10.28.1: Deposits, part 2 of 2 (done, 2026-11-17)
+Owner said "start next v/patch" (+ split if too big). It was small enough for one patch. No deposit rule has been given yet, so it ships as a **Draft sample**.
+1. **Setting** `depositRule {enabled, draft, percent, minTotal, note}` (default 50 / 500, `draft: true`), merged in `SB.load()`, copied into `config/site-settings.json` and `offline-data.js`. `SB.depositFor(rule, total)` = whole rands, 0 when off / no total / under the minimum, never above the total.
+2. **Admin:** Deposit rule box (Ordering & payment tab), `dr-*` handlers (any edit clears `draft`); **Suggest deposit** (`osug`) fills the Deposit R box only, never saves, never re-draws.
+3. **Messages:** `waText()` confirmed = deposit received + balance, or (rule not Draft) a deposit request; ready = balance. Thank-you How to pay box shows "Deposit to secure your order" only when the rule is not Draft and the payment details are real.
+4. `sw.js` cache `sb-v10.28.1`; `VERSION` `0.10.28.1`. No `setup.sql` change.

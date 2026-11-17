@@ -218,8 +218,12 @@
   const waText = o => {
     const biz = SB._biz || {}, first = String(o.name || "").trim().split(/\s+/)[0] || "there", what = String(o.items || "").slice(0, 300), method = (o.details && o.details.method) || "";
     const dateTxt = o.date ? " for " + o.date : "", tot = +o.total ? " The total is " + money(+o.total) + "." : "", sig = " " + (biz.name || "The Sweetest Bakery");
-    if (o.status === "confirmed") return `Hi ${first}, your order is confirmed: ${what}${dateTxt}.${tot} Thank you!${sig}`;
-    if (o.status === "ready") return `Hi ${first}, your order is ready${/deliver/i.test(method) ? " and will be delivered as arranged" : " for collection"}: ${what}. Thank you!${sig}`;
+    // v10.28.1: deposit lines. A received deposit is always mentioned; a deposit REQUEST only goes out once Becca has set her own rule (the sample rule is marked Draft and is never sent to customers).
+    const rule = (state.data && state.data.settings && state.data.settings.depositRule) || {}, live = hasPaid() && hasDeposit() && o.paid !== true && +o.total > 0;
+    const got = live ? dep(o) : 0, ask = live && got <= 0 && !rule.draft ? SB.depositFor(rule, +o.total) : 0;
+    const depTxt = got > 0 ? ` Deposit received: ${money(got)}. Balance to pay: ${money(bal(o))}.` : (ask > 0 ? ` To secure your order we ask for a deposit of ${money(ask)}.${rule.note ? " " + rule.note : ""}` : "");
+    if (o.status === "confirmed") return `Hi ${first}, your order is confirmed: ${what}${dateTxt}.${tot}${depTxt} Thank you!${sig}`;
+    if (o.status === "ready") return `Hi ${first}, your order is ready${/deliver/i.test(method) ? " and will be delivered as arranged" : " for collection"}: ${what}.${got > 0 ? ` Balance to pay: ${money(bal(o))}.` : ""} Thank you!${sig}`;
     if (o.status === "completed") return `Hi ${first}, thank you for your order! We hope you enjoy it. If you loved it, we would love to bake for you again. If you have a minute, a short review means a lot: ${reviewUrl()}${sig}`;   // v10.25
     if (o.status === "cancelled") return `Hi ${first}, your order (${what}) has been cancelled. Message us any time if you would like to order again.${sig}`;
     return `Hi ${first}, this is ${sig.trim()} about your order: ${what}.`;
@@ -361,7 +365,7 @@
     ${hasPaid() ? `<select data-act="payfilter" style="width:auto" aria-label="Show paid or not paid orders"><option value="all" ${pf === "all" ? "selected" : ""}>paid or not</option><option value="paid" ${pf === "paid" ? "selected" : ""}>paid (${o.filter(x => x.paid === true).length})</option><option value="unpaid" ${pf === "unpaid" ? "selected" : ""}>not paid (${o.filter(owing).length})</option></select>` : ""}</div></div>
     <ul class="adm-list">${list.map(x => `<li><div><strong>${esc(x.name)}</strong> <span class="tag tag--${x.status}">${x.status}</span>${x.paid === true ? ' <span class="tag tag--paid" title="Marked as paid">paid</span>' : (hasDeposit() && dep(x) > 0 ? ' <span class="tag tag--confirmed" title="A deposit has been received">deposit ' + esc(money(dep(x))) + '</span>' : "")}${state.proofs && state.proofs.has(x.id) ? ' <span class="tag tag--ready" title="The customer sent a proof of payment">proof sent</span>' : ""}<br><span class="muted">${esc(x.items)}${x.date ? " &middot; for " + esc(x.date) : ""}${x.source && x.source !== "admin" ? " &middot; from the website (" + (x.source === "cart" ? "cart" : "custom order") + ")" : ""}${x.details && x.details.delivery && x.details.delivery.area ? " &middot; delivery to " + esc(x.details.delivery.area) + (+x.details.delivery.fee ? " (R " + esc(x.details.delivery.fee) + ")" : "") : ""}${x.details && x.details.delivery && x.details.delivery.address ? " &middot; address: " + esc(x.details.delivery.address) : ""}${x.total ? " &middot; R " + esc(x.total) : ""}${hasDeposit() && x.paid !== true && dep(x) > 0 && +x.total > 0 ? " &middot; <strong>balance " + esc(money(bal(x))) + "</strong>" : ""}<br>Placed ${esc(placed(x))}</span>${lastChange(x.id)}</div>
     <div class="adm-actions">${NEXT[x.status] ? `<button class="btn btn--sm" data-act="onext" data-id="${x.id}" data-v="${NEXT[x.status][0]}">${NEXT[x.status][1]}</button>` : ""}<select data-act="ostatus" data-id="${x.id}" style="width:auto" aria-label="Change status">${ST.map(s => `<option ${s === x.status ? "selected" : ""}>${s}</option>`).join("")}</select>
-    ${hasPaid() && hasDeposit() && x.status !== "cancelled" && x.paid !== true ? `<span class="adm-dep"><input type="number" min="0" step="1" inputmode="numeric" data-dep="${x.id}" value="${dep(x) || ""}" placeholder="Deposit R" aria-label="Deposit received for ${esc(x.name)}" style="width:7.5rem"><button class="btn btn--sm btn--ghost" data-act="odep" data-id="${x.id}" title="Saves the deposit this customer paid. Leave it empty or 0 to clear it.">Save deposit</button></span>` : ""}
+    ${hasPaid() && hasDeposit() && x.status !== "cancelled" && x.paid !== true ? `<span class="adm-dep"><input type="number" min="0" step="1" inputmode="numeric" data-dep="${x.id}" value="${dep(x) || ""}" placeholder="Deposit R" aria-label="Deposit received for ${esc(x.name)}" style="width:7.5rem"><button class="btn btn--sm btn--ghost" data-act="odep" data-id="${x.id}" title="Saves the deposit this customer paid. Leave it empty or 0 to clear it.">Save deposit</button>${+x.total > 0 && SB.depositFor((state.data.settings || {}).depositRule, +x.total) > 0 ? `<button class="btn btn--sm btn--ghost" data-act="osug" data-id="${x.id}" title="Types the amount your deposit rule asks for into the box. It does not save anything: press Save deposit once the customer has really paid.">Suggest deposit</button>` : ""}</span>` : ""}
     ${hasPaid() && x.status !== "cancelled" ? (x.paid === true ? `<button class="btn btn--sm btn--ghost" data-act="opaid" data-id="${x.id}" data-v="0" title="Takes the paid tick off again">Undo paid</button>` : `<button class="btn btn--sm" data-act="opaid" data-id="${x.id}" data-v="1" title="Ticks this order as paid">Mark paid</button>`) : ""}
     <button class="btn btn--sm btn--ghost" data-act="oslip" data-id="${x.id}">Print slip</button>
     ${x.details && x.details.photo ? `<button class="btn btn--sm btn--ghost" data-act="ophoto" data-v="${esc(x.details.photo)}" title="Opens the inspiration photo the customer attached">View photo</button>` : ""}
@@ -474,6 +478,16 @@
   }
   // v10.26.1: the "Ordering & payment" tab. Everything about how customers order and pay lives here (it used to sit under Theme & layout). Same draft + Save as Theme & layout.
   const saveBar = () => `<div class="adm-save"><button class="btn btn--sm" data-act="lsave">Save</button> <button class="btn btn--sm btn--ghost" data-act="lreset">Reset</button><span class="muted">Save makes it live for everyone straight away. It saves both Ordering &amp; payment and Theme &amp; layout.</span></div>`;
+  function depositBox(s) {   // v10.28.1: the deposit rule. Only suggests an amount; Becca still types what was really received.
+    const r = s.depositRule || {}, ex = SB.depositFor(r, 1000);
+    return `${r.draft ? `<div class="msg msg--warn">This is a <strong>sample rule</strong> (50% on orders of R 500 or more). While it is marked Draft, the Suggest deposit button works for you but <strong>no deposit request is put in the WhatsApp messages</strong>. Change a number below and Save to make it yours.</div>` : ""}
+    <p class="muted">Tells the <strong>Suggest deposit</strong> button in Orders what to type in the Deposit R box. It never saves by itself. Once it is your own rule, the confirmed-order WhatsApp message and the How to pay box also ask the customer for the deposit.</p>
+    <label class="chk"><input type="checkbox" data-act="dr-on" ${r.enabled !== false ? "checked" : ""}>Use a deposit rule</label>
+    <div class="adm-row"><div><label>Deposit is this % of the total</label><input type="number" min="1" max="100" data-act="dr-pc" value="${+r.percent || 0}"></div>
+    <div><label>For orders of R ... or more</label><input type="number" min="0" max="100000" data-act="dr-min" value="${+r.minTotal || 0}"></div></div>
+    <label>Extra line in the message <span class="muted">(optional, for example "Deposits are not refundable")</span></label><input data-act="dr-note" maxlength="120" value="${esc(r.note || "")}">
+    <p class="muted">Example: an order of R 1,000 asks for ${ex > 0 ? money(ex) : "no deposit"}. Orders under R ${+r.minTotal || 0}, and custom orders that have no price yet, ask for none.</p>`;
+  }
   function statusBox(s) {   // v10.27: shop status banner. Shown on every public page; "pause" also stops new orders from the Cart / Custom Order.
     const o = s.shopStatus || {};
     return `<p class="muted">A note under the header on every page (for example "On holiday, back on 3 Jan"). Tick the box to stop new orders too. The WhatsApp chat button always keeps working. If you set a <strong>back on</strong> date, it switches itself off on that day.</p>
@@ -488,6 +502,7 @@
     ${sec("status", "Shop status banner (holiday / closed)", (s.shopStatus || {}).enabled ? ((s.shopStatus || {}).pause !== false ? "showing, orders paused" : "showing") : "off", statusBox(s))}
     ${sec("rules", "Order calendar & delivery", (s.calendar || {}).enabled === false ? "calendar off" : ((s.calendar || {}).draft || (s.delivery || {}).draft ? "placeholder numbers" : "notice, limit, areas"), rulesBox(s))}
     ${sec("guide", "Cake price guide", (s.priceGuide || {}).enabled === false ? "off" : ((s.priceGuide || {}).draft ? "sample prices" : ((s.priceGuide || {}).sizes || []).length + " sizes"), guideBox(s))}
+    ${sec("deposit", "Deposit rule", (s.depositRule || {}).enabled === false ? "off" : ((s.depositRule || {}).draft ? "sample rule (Draft)" : (+(s.depositRule || {}).percent || 0) + "% from R " + (+(s.depositRule || {}).minTotal || 0)), depositBox(s))}
     ${sec("pay", "How to pay (EFT, SnapScan, Capitec Pay)", (s.payment || {}).enabled === false ? "off" : ((s.payment || {}).draft ? "not set up yet" : "shown to customers"), payBox(s))}
     ${saveBar()}</div>`;
   }
@@ -815,6 +830,12 @@
       if (a === "st-on") o.enabled = t.checked; else if (a === "st-msg") o.message = String(t.value).slice(0, 160); else if (a === "st-pause") o.pause = t.checked; else if (a === "st-until") o.until = /^\d{4}-\d{2}-\d{2}$/.test(t.value) ? t.value : "";
       draftKey(); return;
     }
+    if (a.startsWith("dr-")) {   // v10.28.1: deposit rule
+      const r = s.depositRule = s.depositRule || { enabled: true, draft: true, percent: 50, minTotal: 500, note: "" }, n = (x, lo, hi) => Math.min(hi, Math.max(lo, Math.round(+x) || 0));
+      r.draft = false;
+      if (a === "dr-on") r.enabled = t.checked; else if (a === "dr-pc") r.percent = n(t.value, 1, 100); else if (a === "dr-min") r.minTotal = n(t.value, 0, 100000); else if (a === "dr-note") r.note = String(t.value).slice(0, 120); else return;
+      draftKey(); return;
+    }
     if (a.startsWith("pay-")) {   // v10.26: how-to-pay fields
       const p = s.payment = s.payment || {}, bk = p.bank = p.bank || {}, sn = p.snapscan = p.snapscan || {}, cp = p.capitec = p.capitec || {}, v = t.value, cut = n => String(v).slice(0, n);
       p.draft = false;
@@ -889,6 +910,11 @@
       if (!r.error) await logOrder(o0, on ? "marked paid" : "paid tick removed");
       await loadAdminData();
       return go("orders", r.error ? (/paid/i.test(r.error.message || "") ? "The paid tick needs a one-off database update: run the newest supabase/setup.sql (roadmap 2c), then try again." : "Could not update: " + r.error.message) : (on ? "Marked as paid." : "Paid tick removed."));
+    }
+    if (a === "osug") {   // v10.28.1: fills the Deposit R box from the deposit rule. Never saves, never re-draws (so nothing typed elsewhere is lost).
+      const o0 = state.orders.find(x => x.id === id) || {}, box = app.querySelector('input[data-dep="' + id + '"]'), n = SB.depositFor((state.data.settings || {}).depositRule, +o0.total);
+      if (box && n > 0) { box.value = n; box.focus(); box.title = "Suggested by your deposit rule. Press Save deposit once the customer has paid it."; }
+      return;
     }
     if (a === "odep") {   // v10.28: deposit by hand (orders.deposit, setup.sql section 16)
       const o0 = state.orders.find(x => x.id === id) || {}, box = app.querySelector('input[data-dep="' + id + '"]'), raw = box ? String(box.value).trim() : "", n = raw === "" ? 0 : Math.round(+raw);

@@ -1,13 +1,15 @@
 /* thanks.js (v10.19.1): the page after an order is sent. Shows what was just sent (kept only in this browser tab, never read from the database). */
 /* v10.26: "How to pay" box (EFT / SnapScan / Capitec Pay). Only shown once Becca has typed her real details (SB.payInfo returns null while they are the empty placeholder). Never sent anywhere: it only reads settings. */
-function payBox(pi, o, esc) {
+function payBox(pi, o, esc, rule) {
   if (!pi) return "";
+  const dep = rule && !rule.draft ? SB.depositFor(rule, o.total) : 0;   // v10.28.1: only once Becca has set her own deposit rule
   const ref = (o.name || "").trim() || "your name", row = (k, v, copy) => `<tr><th scope="row">${k}</th><td>${esc(v)}${copy ? ` <button class="btn btn--sm btn--ghost" type="button" data-copy="${esc(v)}">Copy</button>` : ""}</td></tr>`;
   const rows = pi.bank ? row("Bank", pi.bank.bank) + row("Account name", pi.bank.holder) + row("Account number", pi.bank.number, true) + (pi.bank.type ? row("Account type", pi.bank.type) : "") + (pi.bank.branch ? row("Branch code", pi.bank.branch) : "") : "";
   return `<div class="thanks__box thanks__pay"><h2>How to pay</h2>${pi.intro ? `<p><strong>${esc(pi.intro)}</strong></p>` : ""}
     ${rows ? `<p class="adm-sub">EFT</p><table class="thanks__tbl">${rows}</table>` : ""}
     ${pi.snap ? `<p><a class="btn btn--ghost" target="_blank" rel="noopener" href="${esc(pi.snap.link)}">Pay with SnapScan</a></p>` : ""}
     ${pi.cap ? `<p><strong>Capitec Pay:</strong> ${esc(pi.cap.cell)} <button class="btn btn--sm btn--ghost" type="button" data-copy="${esc(pi.cap.cell)}">Copy</button></p>` : ""}
+    ${dep > 0 ? `<p><strong>Deposit to secure your order: R ${esc(dep)}</strong> <span class="muted">(the rest is paid later, Becca confirms the balance)</span>${rule.note ? `<br><span class="muted">${esc(rule.note)}</span>` : ""}</p>` : ""}
     <p>Payment reference: <strong>${esc(ref)}</strong> <button class="btn btn--sm btn--ghost" type="button" data-copy="${esc(ref)}">Copy</button></p>
     ${pi.note ? `<p class="muted">${esc(pi.note)}</p>` : ""}<p class="thanks__msg" id="copy-msg" role="status" hidden></p></div>`;
 }
@@ -50,7 +52,7 @@ SB.load().then(({ biz, settings }) => {
     <p>Your ${o.source === "custom" ? "custom cake request" : "order"} is saved${when}. <strong>It is not confirmed yet:</strong> Becca replies on WhatsApp to confirm it and the price. If WhatsApp did not open, or you did not press send there, use the button below (it brings your order text with it).</p>
     <div class="thanks__box"><h2>What you sent</h2><ul>${(o.items || []).map(i => `<li>${esc(i)}</li>`).join("")}</ul>${o.total ? `<p><strong>Total: R ${esc(Math.round(o.total))}</strong></p>` : ""}${o.method && o.method !== "Not sure yet" ? `<p class="muted">${esc(o.method)}</p>` : ""}${o.address ? `<p class="muted">Deliver to: ${esc(o.address)}</p>` : ""}</div>
     ${backupBtn(biz, o)}
-    ${payBox(SB.payInfo(settings.payment), o, esc)}
+    ${payBox(SB.payInfo(settings.payment), o, esc, settings.depositRule)}
     ${proofBox(o, SB.payInfo(settings.payment))}
     <p class="thanks__actions">${biz.whatsappLink ? `<a class="btn btn--whatsapp" target="_blank" rel="noopener" href="${esc(biz.whatsappLink + (o.wa ? "?text=" + encodeURIComponent(o.wa) : ""))}">Open WhatsApp</a>` : ""}<a class="btn btn--ghost" href="menu.html">Back to the menu</a><a class="btn btn--ghost" href="account.html">My account</a></p>
     ${o.source === "custom" ? `<p><a class="btn btn--ghost" href="custom-orders.html">Make another custom request</a></p>` : ""}`;
